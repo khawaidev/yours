@@ -181,16 +181,11 @@
 <!-- Swipe Carousel -->
 <div class="carousel-container flex overflow-x-auto snap-x snap-mandatory hide-scrollbar w-full flex-grow items-center touch-pan-x" style="padding: 0 7.5vw; height: 63vh; gap: 4vw; -webkit-overflow-scrolling: touch;">
 <!-- Option: Women -->
-<button class="carousel-item active-card flex-none w-[85vw] h-full relative rounded-3xl overflow-hidden snap-center group focus:outline-none focus:ring-2 focus:ring-primary-container bg-surface-container-low" style="border-width: medium; border-style: none; border-color: currentcolor; border-image: none;">
+<button class="carousel-item active-card flex-none w-[85vw] h-full relative rounded-3xl overflow-hidden snap-center group focus:outline-none focus:ring-2 focus:ring-primary-container bg-surface-container-low">
 <video autoplay="" class="absolute inset-0 w-full h-full object-contain pointer-events-none" loop="" muted="" playsinline="">
 <source src="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/pixelbin-video%20(4)%20(1).mp4" type="video/mp4">
 </video>
 <div class="absolute inset-0 gradient-overlay pointer-events-none"></div>
-<!-- Selection Indicator -->
-<div class="absolute top-6 right-6 w-8 h-8 rounded-full border-2 border-white/70 selection-circle flex items-center justify-center opacity-0 group-[.selected]:opacity-100 transition-opacity">
-<div class="w-4 h-4 bg-white rounded-full"></div>
-</div>
-<div class="absolute top-6 right-6 w-8 h-8 rounded-full border-2 border-white/70 selection-circle group-[.selected]:hidden"></div>
 <!-- Label -->
 <div class="absolute bottom-8 left-0 w-full px-6 text-left pointer-events-none">
 <span class="text-white font-extrabold text-3xl tracking-tight">Women</span>
@@ -202,11 +197,6 @@
 <source src="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/pixelbin-video%20(5)%20(1).mp4" type="video/mp4">
 </video>
 <div class="absolute inset-0 gradient-overlay pointer-events-none"></div>
-<!-- Selection Indicator -->
-<div class="absolute top-6 right-6 w-8 h-8 rounded-full border-2 border-white/70 selection-circle flex items-center justify-center opacity-0 group-[.selected]:opacity-100 transition-opacity">
-<div class="w-4 h-4 bg-white rounded-full"></div>
-</div>
-<div class="absolute top-6 right-6 w-8 h-8 rounded-full border-2 border-white/70 selection-circle group-[.selected]:hidden"></div>
 <!-- Label -->
 <div class="absolute bottom-8 left-0 w-full px-6 text-left pointer-events-none">
 <span class="text-white font-extrabold text-3xl tracking-tight">Men</span>
@@ -218,11 +208,6 @@
 <source src="https://assets.mixkit.co/videos/preview/mixkit-creative-fashion-portrait-of-a-woman-in-neon-light-43285-large.mp4" type="video/mp4">
 </video>
 <div class="absolute inset-0 gradient-overlay pointer-events-none"></div>
-<!-- Selection Indicator -->
-<div class="absolute top-6 right-6 w-8 h-8 rounded-full border-2 border-white/70 selection-circle flex items-center justify-center opacity-0 group-[.selected]:opacity-100 transition-opacity">
-<div class="w-4 h-4 bg-white rounded-full"></div>
-</div>
-<div class="absolute top-6 right-6 w-8 h-8 rounded-full border-2 border-white/70 selection-circle group-[.selected]:hidden"></div>
 <!-- Label -->
 <div class="absolute bottom-8 left-0 w-full px-6 text-left pointer-events-none">
 <span class="text-white font-extrabold text-3xl tracking-tight">Non-binary</span>
@@ -234,11 +219,6 @@
 <source src="https://assets.mixkit.co/videos/preview/mixkit-friends-having-a-party-at-the-beach-4171-large.mp4" type="video/mp4">
 </video>
 <div class="absolute inset-0 gradient-overlay pointer-events-none"></div>
-<!-- Selection Indicator -->
-<div class="absolute top-6 right-6 w-8 h-8 rounded-full border-2 border-white/70 selection-circle flex items-center justify-center opacity-0 group-[.selected]:opacity-100 transition-opacity">
-<div class="w-4 h-4 bg-white rounded-full"></div>
-</div>
-<div class="absolute top-6 right-6 w-8 h-8 rounded-full border-2 border-white/70 selection-circle group-[.selected]:hidden"></div>
 <!-- Label -->
 <div class="absolute bottom-8 left-0 w-full px-6 text-left pointer-events-none">
 <span class="text-white font-extrabold text-3xl tracking-tight">Everyone</span>
@@ -252,32 +232,17 @@
 <button onclick="window.location.href='age-interest.html'" class="w-full bg-white text-black font-bold py-4 rounded-full focus:outline-none focus:ring-4 focus:ring-surface-bright transition-all shadow-lg active:scale-[0.98] cursor-pointer">
     Continue
   </button>
-<!-- Footer Privacy Policy moved to bottom fixed area -->
-<div class="mt-4 text-center">
-<p class="text-xs text-on-surface-variant font-medium">
-      Why do we need this info? 
-      <a class="text-white underline underline-offset-4 decoration-white/50 hover:text-primary-container transition-colors" href="#">Privacy Policy</a>
-</p>
-</div>
 </div>
 <script>
   document.addEventListener("DOMContentLoaded", () => {
     const container = document.querySelector('.carousel-container');
     const items = document.querySelectorAll('.carousel-item');
 
-    // Selection logic
+    // Selection logic (highlights the tapped card with an accent ring)
     items.forEach(item => {
       item.addEventListener('click', () => {
-        // Toggle selected state (for demo purposes)
         item.classList.toggle('selected');
-        const indicator = item.querySelector('.selection-circle:not(.hidden)');
-        if (item.classList.contains('selected') && !item.querySelector('.w-4.h-4.bg-white')) {
-          // If it was just an empty circle, we'd swap it. 
-          // The HTML handles it for the first item via group-[.selected]
-          item.style.border = "2px solid #ff5c35";
-        } else {
-          item.style.border = "none";
-        }
+        item.style.boxShadow = item.classList.contains('selected') ? "0 0 0 2px #ff5c35" : "none";
       });
     });
 

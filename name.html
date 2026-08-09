@@ -88,7 +88,7 @@
 <!-- END: Main Content Section -->
 <!-- BEGIN: Footer Section (Button) -->
 <footer class="px-6 pb-10 pt-4 bg-blush-bg" data-purpose="footer-action">
-<button onclick="window.location.href='Gender-interest.html'" class="w-full bg-blush-button text-blush-button-text font-bold text-lg py-4 rounded-full active:scale-95 transition-transform duration-150 cursor-pointer" data-purpose="continue-button">
+<button id="continue-btn" class="w-full bg-blush-button text-blush-button-text font-bold text-lg py-4 rounded-full active:scale-95 disabled:active:scale-100 transition-transform duration-150 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed" data-purpose="continue-button" disabled>
       Continue
     </button>
 </footer>
@@ -98,13 +98,33 @@
     document.addEventListener('DOMContentLoaded', () => {
       const input = document.getElementById('name-input');
       const cursor = document.getElementById('custom-cursor');
+      const continueBtn = document.getElementById('continue-btn');
 
       // Focus input on load for immediate typing
       input.focus();
 
-      // Simple logic: if there is text, hide the fake central cursor and rely on default behavior or custom JS positioning.
-      // For this static recreation, we'll just hide the fake cursor when typing starts to show standard behavior is possible.
+      // Only letters (a-z, A-Z) and spaces are allowed in the name
+      const sanitizeName = (value) => value.replace(/[^a-zA-Z\s]/g, '');
+
+      // Continue stays disabled until the name contains at least one letter
+      const updateContinueState = () => {
+        continueBtn.disabled = !/[a-zA-Z]/.test(input.value.trim());
+      };
+
+      const submitName = () => {
+        if (/[a-zA-Z]/.test(input.value.trim())) {
+          window.location.href = 'Gender-interest.html';
+        }
+      };
+
       input.addEventListener('input', () => {
+        // Strip any non-letter / non-space characters (e.g. from pasted text)
+        const sanitized = sanitizeName(input.value);
+        if (sanitized !== input.value) {
+          input.value = sanitized;
+          input.setSelectionRange(input.value.length, input.value.length);
+        }
+        // Fake cursor visibility
         if (input.value.length > 0) {
           cursor.style.display = 'none';
           input.style.caretColor = '#FFFFFF'; // Show real cursor
@@ -112,18 +132,28 @@
           cursor.style.display = 'block';
           input.style.caretColor = 'transparent'; // Hide real cursor
         }
+        updateContinueState();
       });
-      
+
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !continueBtn.disabled) submitName();
+      });
+
+      // Wire up the Continue button (disabled buttons don't fire clicks, so this is safe)
+      continueBtn.addEventListener('click', submitName);
+
       // Ensure focus keeps it blinking if empty
       input.addEventListener('focus', () => {
          if (input.value.length === 0) {
             cursor.style.display = 'block';
          }
       });
-      
+
       input.addEventListener('blur', () => {
           cursor.style.display = 'none';
-      })
+      });
+
+      updateContinueState();
     });
   </script>
 <script src="js/animations.js"></script>

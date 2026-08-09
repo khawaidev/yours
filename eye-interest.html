@@ -123,7 +123,6 @@
             transition: filter 0.3s ease, transform 0.3s ease, opacity 0.3s ease;
         }
         .card-active {
-            box-shadow: 0 0 15px rgba(255, 92, 53, 0.5);
             border-color: #ff5c35;
             filter: blur(0px);
             opacity: 1;
@@ -137,7 +136,7 @@
     </style>
 <style>
     body {
-      min-height: max(884px, 100dvh);
+      min-height: 100dvh;
     }
   </style>
 </head>
@@ -147,16 +146,11 @@
 <button onclick="window.location.href='art-interest.html'" aria-label="Go back" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-variant transition-colors cursor-pointer">
 <span class="material-symbols-outlined text-white" data-icon="arrow_back">arrow_back</span>
 </button>
-<!-- Progress Bar -->
-<div class="flex-1 max-w-[200px] flex gap-2 mx-4">
-<div class="h-1 flex-1 bg-surface-container rounded-full overflow-hidden">
-<div class="h-full bg-surface-variant w-full rounded-full"></div>
+<!-- Progress Bar (same style as the other onboarding pages) -->
+<div class="flex-1 max-w-[200px] mx-4">
+<div class="h-1 bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-primary-container w-[60%] rounded-full"></div>
 </div>
-<div class="h-1 flex-1 bg-surface-container rounded-full overflow-hidden">
-<div class="h-full bg-gradient-to-r from-primary to-secondary w-full rounded-full shadow-[0_0_8px_rgba(255,180,163,0.6)]"></div>
-</div>
-<div class="h-1 flex-1 bg-surface-container rounded-full overflow-hidden"></div>
-<div class="h-1 flex-1 bg-surface-container rounded-full overflow-hidden"></div>
 </div>
 <div class="w-10"></div> <!-- Spacer to balance back button -->
 </header>
@@ -170,7 +164,7 @@
 <!-- Swipe Gallery -->
 <div class="swipe-container flex-1 items-center pb-8">
 <!-- Card 1: Boss Lady -->
-<button class="swipe-card relative rounded-2xl overflow-hidden bg-surface group border hover:border-primary/50 text-left card-inactive border-surface-container" onclick="selectCard(this)">
+<button class="swipe-card relative rounded-xl overflow-hidden bg-surface group border hover:border-primary/50 text-left card-inactive border-surface-container" onclick="selectCard(this)">
 <div class="absolute inset-0 bg-cover bg-center" data-alt="A portrait of a sophisticated, confident woman in her 40s wearing stylish, dark-rimmed glasses and a crisp white silk blouse." style="background-image: url(&quot;https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/ChatGPT%20Image%20Aug%208%2C%202026%2C%2001_11_43%20AM.png&quot;);"></div>
 <div class="absolute inset-0 glass-overlay"></div>
 <!-- Label -->
@@ -179,7 +173,7 @@
 </div>
 </button>
 <!-- Card 2: MILF -->
-<button class="swipe-card relative rounded-2xl overflow-hidden bg-surface group border hover:border-primary/50 text-left card-inactive border-surface-container" onclick="selectCard(this)">
+<button class="swipe-card relative rounded-xl overflow-hidden bg-surface group border hover:border-primary/50 text-left card-inactive border-surface-container" onclick="selectCard(this)">
 <div class="absolute inset-0 bg-cover bg-center" data-alt="A captivating portrait of an attractive, mature woman with blonde hair styled in a messy chic updo." style="background-image: url(&quot;https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/ChatGPT%20Image%20Aug%208%2C%202026%2C%2001_21_33%20AM.png&quot;);"></div>
 <div class="absolute inset-0 glass-overlay"></div>
 <!-- Label -->
@@ -188,7 +182,7 @@
 </div>
 </button>
 <!-- Card 3: Sugar Mama -->
-<button class="swipe-card relative rounded-2xl overflow-hidden bg-surface group border hover:border-primary/50 text-left card-inactive border-surface-container" onclick="selectCard(this)">
+<button class="swipe-card relative rounded-xl overflow-hidden bg-surface group border hover:border-primary/50 text-left card-inactive border-surface-container" onclick="selectCard(this)">
 <div class="absolute inset-0 bg-cover bg-center" data-alt="A vibrant portrait of a stunning, wealthy-looking woman with rich brown skin and voluminous dark hair." style="background-image: url(&quot;https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/ChatGPT%20Image%20Aug%208%2C%202026%2C%2001_29_36%20AM.png&quot;);"></div>
 <div class="absolute inset-0 glass-overlay"></div>
 <!-- Label -->
@@ -197,7 +191,7 @@
 </div>
 </button>
 <!-- Card 4: BDSM Queen -->
-<button class="swipe-card relative rounded-2xl overflow-hidden bg-surface group border hover:border-primary/50 text-left card-active" onclick="selectCard(this)">
+<button class="swipe-card relative rounded-xl overflow-hidden bg-surface group border hover:border-primary/50 text-left card-active" onclick="selectCard(this)">
 <div class="absolute inset-0 bg-cover bg-center" data-alt="A dramatic portrait of an intense, authoritative woman with dark hair." style="background-image: url(&quot;https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/ChatGPT%20Image%20Aug%208%2C%202026%2C%2001_40_45%20AM.png&quot;);"></div>
 <div class="absolute inset-0 glass-overlay"></div>
 <!-- Label -->

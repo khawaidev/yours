@@ -82,7 +82,7 @@
       padding-left: 7.5vw;
       padding-right: 7.5vw;
       gap: 4vw;
-      width: 100vw;
+      width: 100%;
     }
 
     .carousel-item {
@@ -104,40 +104,35 @@
     }
   </style>
 </head>
-<body class="antialiased min-h-screen flex flex-col font-sans selection:bg-primary selection:text-on-primary"><div class="w-full h-1 bg-surface-container-highest sticky top-0 z-20">
-<div class="h-full bg-primary-container w-[35%] transition-all duration-500"></div>
-</div>
+<body class="antialiased min-h-screen flex flex-col font-sans selection:bg-primary selection:text-on-primary">
 <!-- BEGIN: Top Navigation & Progress -->
-<header class="w-full pt-[44px] pb-4 px-6 flex flex-col items-center sticky top-0 bg-surface z-10" data-purpose="top-navigation"><div class="w-full h-1 bg-surface-container-highest absolute top-0 left-0 overflow-hidden"><div class="h-full bg-primary-container w-[20%] transition-all duration-500"></div></div><div class="w-full h-1 bg-surface-container-highest absolute top-0 left-0 overflow-hidden">
-<div class="h-full bg-primary-container w-[20%] transition-all duration-500"></div>
+<header class="w-full sticky top-0 z-20 bg-surface" data-purpose="top-navigation">
+<!-- Progress Bar (full-width, same style as other onboarding pages) -->
+<div class="w-full h-1 bg-surface-container-highest overflow-hidden">
+<div id="progress-fill" class="h-full bg-primary-container rounded-full w-[35%] transition-all duration-500"></div>
 </div>
-<div class="w-full flex items-center justify-between relative">
+<div class="w-full flex items-center gap-3 px-6 pt-4 pb-3">
 <!-- Back Button -->
-<button onclick="window.location.href='Gender-interest.html'" aria-label="Go back" class="text-white hover:text-primary transition-colors p-2 -ml-2 rounded-full cursor-pointer">
+<button onclick="window.location.href='Gender-interest.html'" aria-label="Go back" class="text-white hover:text-primary transition-colors p-2 -ml-2 rounded-full cursor-pointer shrink-0">
 <span class="material-symbols-outlined text-[28px] font-bold">arrow_back_ios_new</span>
 </button>
-<!-- Progress Bar Container -->
-<div class="absolute left-1/2 -translate-x-1/2 w-48 h-1.5 bg-surface-container-highest rounded-full overflow-hidden">
-<!-- Progress Indicator -->
-<div class="h-full bg-primary-container rounded-full w-[35%] transition-all duration-300"></div>
+<!-- Title & Subtitle inline with the back arrow -->
+<div class="min-w-0" data-purpose="page-headers">
+<h1 class="text-[28px] leading-tight font-extrabold text-white tracking-tight">What age do you prefer?</h1>
+<p class="text-[15px] font-medium text-white mt-1">Choose one option</p>
 </div>
 </div>
 </header>
 <!-- END: Top Navigation & Progress -->
 <!-- BEGIN: Main Content Area -->
 <main class="flex-grow flex flex-col items-center pt-6 pb-6 w-full relative" data-purpose="main-content">
-<!-- Title Section -->
-<div class="text-center mb-6 w-full px-6" data-purpose="page-headers">
-<h1 class="text-[32px] leading-tight font-extrabold text-white mb-2 tracking-tight">What age do you prefer?</h1>
-<p class="text-[15px] font-medium text-white">Choose one option</p>
-</div>
 <!-- Carousel -->
 <div class="carousel-container" id="carousel">
 <!-- Option 1: Young -->
 <div aria-label="Select Young preference" class="carousel-item rounded-3xl overflow-hidden shadow-2xl relative group cursor-pointer active" data-index="0">
 <img alt="Young Woman" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" src="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/ChatGPT%20Image%20Aug%208%2C%202026%2C%2012_42_32%20AM.png">
 <div class="absolute inset-0 gradient-overlay pointer-events-none"></div>
-<div class="absolute top-4 right-4 w-7 h-7 rounded-full border-2 border-white/70 bg-transparent transition-colors indicator bg-white"></div>
+
 <div class="absolute bottom-8 w-full text-center px-4 pointer-events-none">
 <h2 class="text-white text-3xl font-bold tracking-wide drop-shadow-md">Young</h2>
 </div>
@@ -146,7 +141,7 @@
 <div aria-label="Select Mature preference" class="carousel-item rounded-3xl overflow-hidden shadow-2xl relative group cursor-pointer" data-index="1">
 <img alt="Mature Woman" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" src="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/ChatGPT%20Image%20Aug%207%2C%202026%2C%2002_52_19%20AM.png">
 <div class="absolute inset-0 gradient-overlay pointer-events-none"></div>
-<div class="absolute top-4 right-4 w-7 h-7 rounded-full border-2 border-white/70 bg-transparent transition-colors indicator"></div>
+
 <div class="absolute bottom-8 w-full text-center px-4 pointer-events-none">
 <h2 class="text-white text-3xl font-bold tracking-wide drop-shadow-md">Mature</h2>
 </div>
@@ -186,18 +181,19 @@
           item.classList.remove('active');
         }
       });
+
+      // Functional progress bar: fill advances with the active card
+      const progressFill = document.getElementById('progress-fill');
+      if (progressFill) {
+        progressFill.style.width = (35 + activeIndex * 35) + '%';
+      }
     };
 
     carousel.addEventListener('scroll', updateActiveItem);
     
-    // Allow clicking to select and snap
+    // Allow clicking to snap a card into view
     items.forEach(item => {
       item.addEventListener('click', () => {
-        // Toggle selection indicator
-        items.forEach(i => i.querySelector('.indicator').classList.remove('bg-white'));
-        item.querySelector('.indicator').classList.add('bg-white');
-        
-        // Scroll to center
         const scrollTarget = item.offsetLeft - (carousel.clientWidth - item.clientWidth) / 2;
         carousel.scrollTo({
           left: scrollTarget,
