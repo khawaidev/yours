@@ -1,0 +1,96 @@
+<!DOCTYPE html><html lang="en" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Blush - Training Transition</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<style data-purpose="custom-fonts">
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+  </style>
+<style data-purpose="background-blur">.bg-image {
+    background-image: url(https://lh3.googleusercontent.com/aida-public/AB6AXuB73ZQwtUiudCZE-Crzx2QMXcDptM7U5ZtqQ5WayP64ACOc3fFINsVB4t0NB-9YZh2GXvTKDWVI2I_XSGCkMVRmDd5-0wX8HmHoZ-PsenaGclXlV2V5lJqJq_af7T2anKCshFj9vQkVMIpWGDF5j3F6QWp90l6b0m8FtekX-gBDVUPhu_Ac1st5-N-NICwCPLHBM08sB6RUuY38OtgwovnonvrZ40_91Mr8F0hRk18igGkMWfbkCkXWdA);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    position: relative
+    }
+.bg-image::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 1
+    }</style>
+<style data-purpose="spinner-animation">
+    .spinner-ring {
+      stroke-dasharray: 283;
+      stroke-dashoffset: 75;
+      animation: spin 2s linear infinite;
+      transform-origin: 50% 50%;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+<link data-snapdom="injected-import" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&amp;display=swap" rel="stylesheet"></head>
+<body class="bg-gray-900 text-white min-h-screen flex flex-col justify-between overflow-hidden"><div class="absolute inset-0 z-0" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCkIrF72uV7925rvR4lmBqCjRfQ8232SVgimIwMIHxc1hR5hL9iRDoAyBlpwTvR9HylKV4srS3-irALPOYjw6VsNM0SPR2F0x_2N_WG1uHI9ei487NmtFP8xHt2BQ1YTaTz1AuegAY7tZUN-JzRHgDZmLURwQrDtCzYN5scIlkdqOIfW0HeXRHBgIeMI2XXldt0IX-aX3yyjp1X05wH1cc4ME-lyQHaB5Hl4UTjuSFigj0LIj_q66TemQ'); background-size: cover; background-position: center center; filter: blur(10px); transform: scale(1.1);"></div>
+<!-- Main Content Wrapper to ensure z-index over the blur overlay -->
+<div class="relative z-10 flex flex-col min-h-screen p-6 pt-24 pb-12">
+<!-- BEGIN: Top Section - Statistic -->
+<main class="flex-grow flex flex-col items-center justify-start text-center space-y-4">
+<h1 class="text-7xl font-extrabold tracking-tighter shadow-sm" style="text-shadow: rgba(0, 0, 0, 0.5) 0px 2px 10px;">98%</h1>
+<p class="text-2xl font-bold leading-tight max-w-[280px] shadow-sm" style="text-shadow: rgba(0, 0, 0, 0.5) 0px 1px 5px;">
+        of Blush users explored fantasies they never could before
+      </p>
+</main>
+<!-- END: Top Section - Statistic -->
+<!-- BEGIN: Bottom Section - Loading Indicator -->
+<footer class="flex flex-col items-center justify-end pb-8 space-y-6">
+<!-- Fingerprint Icon with Progress Ring -->
+<div class="relative w-40 h-40 flex items-center justify-center">
+<!-- SVG Progress Ring Background -->
+<svg class="absolute inset-0 w-full h-full text-white/20" viewBox="0 0 100 100">
+<circle cx="50" cy="50" fill="none" r="45" stroke="currentColor" stroke-width="4"></circle>
+</svg>
+<!-- SVG Progress Ring Animated -->
+<svg class="absolute inset-0 w-full h-full text-white" viewBox="0 0 100 100">
+<circle class="spinner-ring" cx="50" cy="50" fill="none" r="45" stroke="currentColor" stroke-linecap="round" stroke-width="4" transform="rotate(-90 50 50)"></circle>
+</svg>
+<!-- Fingerprint SVG Icon -->
+<svg class="w-16 h-16 text-white" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M12 9a4 4 0 0 0-4 4v4"></path>
+<path d="M12 5a8 8 0 0 0-8 8v4"></path>
+<path d="M16 13a4 4 0 0 1 0 8"></path>
+<path d="M20 9a8 8 0 0 1 0 12"></path>
+<path d="M12 17v4"></path>
+<path d="M8 17v4"></path>
+<path d="M16 17v.01"></path>
+</svg>
+</div>
+<!-- Loading Text -->
+<p class="text-base font-semibold tracking-wide" style="text-shadow: rgba(0, 0, 0, 0.5) 0px 1px 5px;">
+        Training our AI on your preferences...
+      </p>
+</footer>
+<!-- END: Bottom Section - Loading Indicator -->
+</div>
+
+<script>
+  // Automatically redirect after 3 seconds of analysis
+  setTimeout(() => {
+    window.location.href = 'demo-image.html';
+  }, 3000);
+  
+  // Or click anywhere to skip
+  document.body.addEventListener('click', () => {
+    window.location.href = 'demo-image.html';
+  });
+</script>
+<script src="js/animations.js"></script>
+</body></html>

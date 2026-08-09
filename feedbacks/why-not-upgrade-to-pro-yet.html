@@ -1,0 +1,162 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Blush Survey Screen</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<style data-purpose="custom-styles">
+    /* Adding custom font family setup for a more accurate representation */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #121212; /* Dark background matching the screenshot */
+      color: #FFFFFF;
+      /* Prevent scrolling on the body to keep the fixed button in place */
+      overflow-y: hidden;
+    }
+    
+    /* Custom styles for the radio/checkbox circle */
+    .custom-radio {
+      appearance: none;
+      background-color: transparent;
+      margin: 0;
+      font: inherit;
+      color: currentColor;
+      width: 24px;
+      height: 24px;
+      border: 2px solid #4a4a4a;
+      border-radius: 50%;
+      display: grid;
+      place-content: center;
+      transition: all 0.2s ease-in-out;
+    }
+
+    .custom-radio::before {
+      content: "";
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      transform: scale(0);
+      transition: 120ms transform ease-in-out;
+      box-shadow: inset 1em 1em white;
+    }
+
+    .custom-radio:checked {
+      border-color: white;
+    }
+
+    .custom-radio:checked::before {
+      transform: scale(1);
+    }
+    
+    /* Hide scrollbar for the options list but keep functionality */
+    .hide-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .hide-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'blush-bg': '#121212',
+            'blush-surface': '#1C1C1E',
+            'blush-border': '#333333',
+            'blush-text': '#FFFFFF',
+            'blush-text-muted': '#A0A0A0',
+            'blush-accent': '#FF5A5F', // Approximate red/orange accent
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-blush-bg text-blush-text h-screen flex flex-col antialiased">
+<!-- BEGIN: Top Navigation & Progress -->
+<header class="flex items-center justify-between px-6 py-4 pt-12" data-purpose="top-navigation">
+<!-- Back Button -->
+<button aria-label="Go back" class="p-2 -ml-2 text-white focus:outline-none">
+<svg class="h-6 w-6 font-bold" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M15 19l-7-7 7-7" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</button>
+<!-- Progress Bar -->
+<div class="flex-1 mx-8 relative flex items-center justify-center">
+<div class="h-1.5 w-full bg-[#333333] rounded-full overflow-hidden flex">
+<div class="h-full bg-[#FF5A5F] w-1/2 rounded-full"></div>
+</div>
+</div>
+<!-- Close Button -->
+<button aria-label="Close" class="p-2 -mr-2 text-white focus:outline-none">
+<svg class="h-6 w-6 font-bold" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</button>
+</header>
+<!-- END: Top Navigation & Progress -->
+<!-- BEGIN: Header Content -->
+<section class="px-6 py-6 text-center shrink-0" data-purpose="header-content">
+<h1 class="text-3xl font-extrabold tracking-tight leading-tight mb-3">
+      Why haven't you upgraded to the PRO version?
+    </h1>
+<p class="text-base font-medium text-gray-300">
+      Pick as many as you like
+    </p>
+</section>
+<!-- END: Header Content -->
+<!-- BEGIN: Options List -->
+<!-- Using flex-1 to take remaining space and overflow-y-auto for scrolling -->
+<main class="flex-1 overflow-y-auto px-6 pb-32 hide-scrollbar" data-purpose="survey-options">
+<form class="space-y-4" id="survey-form">
+<!-- Option 1 -->
+<label class="flex items-center justify-between p-5 rounded-3xl border border-[#333333] bg-[#1a1a1a] cursor-pointer hover:bg-[#222222] transition-colors">
+<span class="text-base font-semibold leading-snug pr-4">I don't understand the benefits of the PRO version</span>
+<input class="custom-radio shrink-0" name="reason" type="checkbox" value="benefits">
+</label>
+<!-- Option 2 -->
+<label class="flex items-center justify-between p-5 rounded-3xl border border-[#333333] bg-[#1a1a1a] cursor-pointer hover:bg-[#222222] transition-colors">
+<span class="text-base font-semibold leading-snug pr-4">The price is too high</span>
+<input class="custom-radio shrink-0" name="reason" type="checkbox" value="price">
+</label>
+<!-- Option 3 -->
+<label class="flex items-center justify-between p-5 rounded-3xl border border-[#333333] bg-[#1a1a1a] cursor-pointer hover:bg-[#222222] transition-colors">
+<span class="text-base font-semibold leading-snug pr-4">I'm happy with the free version and don't need more features</span>
+<input class="custom-radio shrink-0" name="reason" type="checkbox" value="happy_free">
+</label>
+<!-- Option 4 -->
+<label class="flex items-center justify-between p-5 rounded-3xl border border-[#333333] bg-[#1a1a1a] cursor-pointer hover:bg-[#222222] transition-colors">
+<span class="text-base font-semibold leading-snug pr-4">I only use the app occasionally</span>
+<input class="custom-radio shrink-0" name="reason" type="checkbox" value="occasionally">
+</label>
+<!-- Option 5 -->
+<label class="flex items-center justify-between p-5 rounded-3xl border border-[#333333] bg-[#1a1a1a] cursor-pointer hover:bg-[#222222] transition-colors">
+<span class="text-base font-semibold leading-snug pr-4">I'm worried about my privacy or data usage</span>
+<input class="custom-radio shrink-0" name="reason" type="checkbox" value="privacy">
+</label>
+<!-- Option 6 -->
+<label class="flex items-center justify-between p-5 rounded-3xl border border-[#333333] bg-[#1a1a1a] cursor-pointer hover:bg-[#222222] transition-colors">
+<span class="text-base font-semibold leading-snug pr-4">I need a trial period before deciding on PRO</span>
+<input class="custom-radio shrink-0" name="reason" type="checkbox" value="trial">
+</label>
+<!-- Option 7 -->
+<label class="flex items-center justify-between p-5 rounded-3xl border border-[#333333] bg-[#1a1a1a] cursor-pointer hover:bg-[#222222] transition-colors">
+<span class="text-base font-semibold leading-snug pr-4">I use another app that offers these features for free</span>
+<input class="custom-radio shrink-0" name="reason" type="checkbox" value="other_app">
+</label>
+</form>
+</main>
+<!-- END: Options List -->
+<!-- BEGIN: Bottom Action Area -->
+<footer class="fixed bottom-0 w-full px-6 py-6 bg-gradient-to-t from-[#121212] via-[#121212] to-transparent pointer-events-none" data-purpose="bottom-action">
+<div class="pointer-events-auto">
+<button class="w-full bg-white text-black text-xl font-bold py-4 rounded-[2rem] shadow-lg hover:bg-gray-100 transition-colors focus:outline-none focus:ring-4 focus:ring-gray-500" type="button">
+        Continue
+      </button>
+</div>
+</footer>
+<!-- END: Bottom Action Area -->
+<script src="../js/animations.js"></script>
+</body></html>

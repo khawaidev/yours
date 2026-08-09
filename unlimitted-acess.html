@@ -1,0 +1,171 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Premium Access</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>body {
+    font-family: "Plus Jakarta Sans", sans-serif;
+    background-color: #131313;
+    color: #fff;
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column
+    }
+.bg-image {
+    background-image: url(https://lh3.googleusercontent.com/aida-public/AB6AXuCrxlZcPzHUIlExFkfEL6pcXV2FC19g0FiJFDrvVLamZrg0S5QHEWm1BhLTHEQ_hKA8I4T-CYYhWRZRw0IiYayFYGh6X6s5vKQnFcn26KF5CZd905s_fTRkLKU5zvGRO4YPFAyRaptU5tK8bGnAmRz2kJlbwjYvDLE_D_grxtQA-ZpIy4mV-LXbmuiZNceGq5XdEVBUUsaLIKyUK9qy7zetlgsqjNzGO4EklEKZoiq2M5lqV32U-h29XA);
+    background-size: cover;
+    background-position: center top;
+    background-repeat: no-repeat;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: -1
+    }
+.bg-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(19, 19, 19, 0.8) 50%, rgba(19, 19, 19, 1) 100%);
+    z-index: -1
+    }
+.feature-list-icon {
+    color: #ff5c35
+    }
+.card-highlight {
+    background-color: rgba(168, 143, 62, 0.9);
+    border: 2px solid #e2c04a
+    }
+.card-normal {
+    background-color: rgba(39, 39, 39, 0.8);
+    border: 2px solid #e2c04a
+    }
+.badge-primary {
+    background-color: #ff5c35;
+    color: white
+    }</style>
+</head>
+<body class="relative flex flex-col justify-end p-6 pb-8"><!-- BEGIN: Custom skeleton loader (mirrors page layout) -->
+<div id="page-skeleton" style="position:fixed;inset:0;z-index:9999;background:#0e0e0e;display:flex;flex-direction:column;align-items:center">
+<div style="width:100%;max-width:28rem;padding:0 1.5rem 2rem;display:flex;flex-direction:column;justify-content:flex-end;flex-grow:1">
+<!-- Close button -->
+<div style="position:absolute;top:3rem;right:1.5rem"><div class="skeleton-block" style="width:2.5rem;height:2.5rem;border-radius:9999px"></div></div>
+<!-- Title -->
+<div class="skeleton-block" style="height:2.75rem;width:17rem;border-radius:.75rem;margin:0 auto .75rem"></div>
+<div class="skeleton-block" style="height:2.75rem;width:13rem;border-radius:.75rem;margin:0 auto 2rem"></div>
+<!-- Feature rows -->
+<div style="display:flex;flex-direction:column;gap:1rem;margin-bottom:2rem;padding:0 1rem">
+<div style="display:flex;align-items:center;gap:1rem"><div class="skeleton-block" style="width:1.5rem;height:1.5rem;border-radius:9999px;flex-shrink:0"></div><div class="skeleton-block" style="height:1.25rem;width:13rem;border-radius:.375rem"></div></div>
+<div style="display:flex;align-items:center;gap:1rem"><div class="skeleton-block" style="width:1.5rem;height:1.5rem;border-radius:9999px;flex-shrink:0"></div><div class="skeleton-block" style="height:1.25rem;width:11rem;border-radius:.375rem"></div></div>
+<div style="display:flex;align-items:center;gap:1rem"><div class="skeleton-block" style="width:1.5rem;height:1.5rem;border-radius:9999px;flex-shrink:0"></div><div class="skeleton-block" style="height:1.25rem;width:12rem;border-radius:.375rem"></div></div>
+<div style="display:flex;align-items:center;gap:1rem"><div class="skeleton-block" style="width:1.5rem;height:1.5rem;border-radius:9999px;flex-shrink:0"></div><div class="skeleton-block" style="height:1.25rem;width:10rem;border-radius:.375rem"></div></div>
+<div style="display:flex;align-items:center;gap:1rem"><div class="skeleton-block" style="width:1.5rem;height:1.5rem;border-radius:9999px;flex-shrink:0"></div><div class="skeleton-block" style="height:1.25rem;width:11.5rem;border-radius:.375rem"></div></div>
+<div style="display:flex;align-items:center;gap:1rem"><div class="skeleton-block" style="width:1.5rem;height:1.5rem;border-radius:9999px;flex-shrink:0"></div><div class="skeleton-block" style="height:1.25rem;width:9rem;border-radius:.375rem"></div></div>
+</div>
+<!-- Plan cards -->
+<div class="skeleton-block" style="height:6rem;width:100%;border-radius:1.5rem;margin-bottom:1rem"></div>
+<div class="skeleton-block" style="height:4.5rem;width:100%;border-radius:1.5rem;margin-bottom:1.5rem"></div>
+<!-- Fine print + CTA -->
+<div class="skeleton-block" style="height:.75rem;width:14rem;border-radius:9999px;margin:0 auto 1.5rem"></div>
+<div class="skeleton-block" style="height:3.5rem;width:100%;border-radius:9999px"></div>
+</div>
+</div>
+<!-- END: Custom skeleton loader -->
+<div aria-hidden="true" class="absolute bottom-0 left-0 right-0 h-1/2 z-0" style="background: linear-gradient(to top, rgba(19, 19, 19, 0.9) 0%, rgba(19, 19, 19, 0.4) 100%); backdrop-filter: blur(16px);"></div>
+<div aria-hidden="true" class="bg-image" style="background-image: url(&quot;https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/ChatGPT%20Image%20Aug%207%2C%202026%2C%2008_21_20%20PM.png&quot;); background-size: contain; background-position: center top; background-repeat: no-repeat; background-color: rgb(19, 19, 19);"></div>
+<div aria-hidden="true" class="bg-overlay" style="background: linear-gradient(rgba(0, 0, 0, 0.4) 0%, rgba(19, 19, 19, 0.8) 40%, rgb(19, 19, 19) 100%);"></div>
+<!-- BEGIN: Header -->
+<header class="absolute top-12 right-6">
+<button aria-label="Close" class="bg-white text-black rounded-full p-2 w-10 h-10 flex items-center justify-center font-bold text-xl shadow-md">
+<svg fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="3" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+<line x1="18" x2="6" y1="6" y2="18"></line>
+<line x1="6" x2="18" y1="6" y2="18"></line>
+</svg>
+</button>
+</header>
+<!-- END: Header -->
+<!-- BEGIN: Main Content -->
+<main class="w-full max-w-md mx-auto space-y-8 z-10 flex flex-col">
+<div class="text-center px-4">
+<h1 class="text-4xl font-extrabold leading-tight tracking-tight shadow-sm text-white mb-2" style="text-shadow: rgba(0, 0, 0, 0.5) 0px 4px 10px;">
+        Get unlimited<br>access
+      </h1>
+</div>
+<ul class="space-y-3 px-8 text-lg font-bold text-white shadow-sm" style="text-shadow: 0px 2px 5px rgba(0,0,0,0.5);">
+<li class="flex items-center space-x-3">
+<svg class="feature-list-icon w-6 h-6 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="4" viewBox="0 0 24 24">
+<path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span class="">Unlimited photos &amp; voice</span>
+</li>
+<li class="flex items-center space-x-3">
+<svg class="feature-list-icon w-6 h-6 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="4" viewBox="0 0 24 24">
+<path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span class="">3 custom photos daily</span>
+</li>
+<li class="flex items-center space-x-3">
+<svg class="feature-list-icon w-6 h-6 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="4" viewBox="0 0 24 24">
+<path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span class="">Deeper connections</span>
+</li>
+<li class="flex items-center space-x-3">
+<svg class="feature-list-icon w-6 h-6 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="4" viewBox="0 0 24 24">
+<path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span class="">Short videos</span>
+</li>
+<li class="flex items-center space-x-3">
+<svg class="feature-list-icon w-6 h-6 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="4" viewBox="0 0 24 24">
+<path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span class="">2x smarter AI</span>
+</li>
+<li class="flex items-center space-x-3">
+<svg class="feature-list-icon w-6 h-6 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="4" viewBox="0 0 24 24">
+<path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span class="">2x memory</span>
+</li>
+</ul>
+<section class="space-y-4">
+<!-- Annual Plan Card -->
+<div class="relative rounded-3xl p-5 shadow-lg" style="background-color: rgb(255, 92, 53); border: 2px solid rgb(255, 92, 53);">
+<div class="absolute -top-3 right-6 badge-primary text-xs font-black px-3 py-1 rounded-full uppercase tracking-wider">
+          73% OFF
+        </div>
+<div class="flex justify-between items-center mb-1">
+<h2 class="text-xl font-bold text-white">Boosts all features</h2>
+<span class="text-white font-medium">₹130.77/week</span>
+</div>
+<p class="text-white/80 text-sm">Annual ₹6,800.00</p>
+</div>
+<!-- Monthly Plan Card -->
+<div class="card-normal rounded-3xl p-5 flex justify-between items-center shadow-lg" style="border-color: rgb(255, 92, 53);">
+<h2 class="text-lg font-medium text-white">Monthly ₹1,950.00</h2>
+<span class="text-white/80 font-medium text-sm">₹487.50/week</span>
+</div>
+</section>
+<div class="text-center text-xs text-gray-400 mt-2 mb-4">
+      Auto-renewal. Cancel anytime through Google play
+    </div>
+<button class="w-full bg-white text-black font-bold text-xl py-4 rounded-full shadow-lg hover:bg-gray-100 transition-colors">
+      Continue
+    </button>
+</main>
+<!-- END: Main Content -->
+
+
+
+
+
+
+<script src="js/animations.js"></script>
+</body></html>

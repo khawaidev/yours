@@ -1,0 +1,344 @@
+<!DOCTYPE html><html class="dark" lang="en" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Blush - Create Account</title>
+<!-- Font -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Icons -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<!-- Supabase browser client (anon key is public by design; keep the service role key server-side only) -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script data-purpose="tailwind-config">
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Plus Jakarta Sans', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              DEFAULT: '#ff5c35',
+              dark: '#e04a29',
+              light: '#ff7b5a',
+            },
+            surface: {
+              DEFAULT: '#131313',
+              dim: '#131313',
+              bright: '#393939',
+              container: '#1e1e1e',
+              'container-lowest': '#0e0e0e',
+              'container-low': '#1c1b1b',
+              'container-high': '#2b2a2a',
+              'container-highest': '#363535',
+            },
+            text: {
+              DEFAULT: '#ffffff',
+              muted: '#a3a3a3',
+            }
+          }
+        }
+      }
+    }
+  </script>
+<style data-purpose="custom-styles">
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: #0e0e0e;
+      color: #ffffff;
+    }
+    
+    .bg-image-overlay {
+      background: linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.6) 40%, rgba(0,0,0,0.95) 100%);
+    }
+
+    .text-gradient {
+      background: linear-gradient(90deg, #ff4d8d 0%, #ff5c35 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* ---- Entrance animations ---- */
+    @keyframes riseIn {
+      from { opacity: 0; transform: translateY(26px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .reveal { opacity: 0; }
+    .reveal.in {
+      animation: riseIn 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+      animation-delay: var(--d, 0ms);
+    }
+    .slide-in { animation: riseIn 0.45s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+    /* ---- Skeleton shimmer ---- */
+    .skeleton-block {
+      position: relative;
+      overflow: hidden;
+      background: #1c1b1b;
+      border-radius: 0.75rem;
+    }
+    .skeleton-block::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.07), transparent);
+      transform: translateX(-100%);
+      animation: shimmer 1.5s infinite;
+    }
+    @keyframes shimmer { 100% { transform: translateX(100%); } }
+
+    /* ---- Button spinner ---- */
+    .spinner {
+      width: 18px;
+      height: 18px;
+      border: 2px solid rgba(0,0,0,0.2);
+      border-top-color: #000;
+      border-radius: 9999px;
+      animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ---- Background slow zoom ---- */
+    @keyframes slowZoom {
+      from { transform: scale(1.08); }
+      to   { transform: scale(1); }
+    }
+    .bg-zoom { animation: slowZoom 1.6s ease-out both; }
+  </style>
+</head>
+<body class="antialiased min-h-screen flex flex-col items-center justify-center relative overflow-hidden">
+<!-- BEGIN: Skeleton Loading Screen -->
+<div id="skeleton-screen" class="absolute inset-0 z-30 bg-[#0e0e0e] flex flex-col items-center transition-opacity duration-500 ease-out">
+<div class="w-full max-w-md px-6 py-12 flex flex-col flex-grow justify-end">
+<div class="flex justify-center mb-8">
+<div class="skeleton-block w-16 h-16 rounded-2xl"></div>
+</div>
+<div class="flex flex-col items-center gap-3 mb-8">
+<div class="skeleton-block h-9 w-56 rounded-lg"></div>
+<div class="skeleton-block h-9 w-64 rounded-lg"></div>
+<div class="skeleton-block h-4 w-72 rounded-full mt-2"></div>
+<div class="skeleton-block h-4 w-48 rounded-full"></div>
+</div>
+<div class="flex flex-col gap-3 pb-8">
+<div class="skeleton-block h-14 w-full rounded-full"></div>
+<div class="skeleton-block h-14 w-full rounded-full"></div>
+</div>
+</div>
+</div>
+<!-- END: Skeleton Loading Screen -->
+<!-- BEGIN: Background -->
+<div class="absolute inset-0 z-0 h-full">
+<img alt="Background" class="w-full h-full object-cover opacity-80 mix-blend-overlay bg-zoom" src="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/IMG_20260807_032009.png">
+<div class="absolute inset-0 bg-image-overlay"></div>
+</div>
+<!-- END: Background -->
+<!-- BEGIN: Main Content -->
+<main id="auth-content" class="relative z-10 flex flex-col h-full w-full max-w-md px-6 py-12 flex-grow justify-end">
+<!-- Top Section: Logo -->
+<div class="flex justify-center mt-12 reveal" style="--d: 0ms">
+<div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#c3244c] via-[#f02a53] to-[#ff3e86] flex items-center justify-center shadow-lg shadow-[#f02a53]/30">
+<svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path></svg>
+</div>
+</div>
+<!-- Bottom Section: Copy & Actions -->
+<div class="pb-8 text-center flex flex-col gap-6">
+<!-- Copy -->
+<div class="flex flex-col gap-3">
+<h1 class="reveal text-4xl font-extrabold leading-tight tracking-tight drop-shadow-md" style="--d: 80ms">
+<span class="block text-white">Create an account</span>
+<span class="block" style="background: linear-gradient(to right bottom, rgb(195, 36, 76), rgb(240, 42, 83), rgb(255, 62, 134)) text; -webkit-text-fill-color: transparent;">join Yours today</span>
+</h1>
+<p class="reveal text-white/90 text-sm font-medium px-4" style="--d: 160ms">
+Your AI companions are ready to meet you and create something special
+</p>
+</div>
+<!-- Action Buttons -->
+<div class="flex flex-col gap-3 mt-4 w-full">
+<div id="auth-methods" class="flex flex-col gap-3">
+<button id="google-btn" onclick="handleGoogle()" class="reveal w-full bg-white text-black hover:bg-gray-100 font-bold py-3.5 px-6 rounded-full flex items-center justify-center gap-3 transition-colors duration-200" style="--d: 260ms">
+<i class="fa-brands fa-google text-lg"></i>
+<span id="google-label">Continue with Google</span>
+</button>
+<button id="email-btn" onclick="showEmailForm()" class="reveal w-full bg-white text-black hover:bg-gray-100 font-bold py-3.5 px-6 rounded-full flex items-center justify-center gap-3 transition-colors duration-200" style="--d: 340ms">
+<i class="fa-regular fa-envelope text-lg"></i>
+<span id="email-label">Continue with Email</span>
+</button>
+<p id="auth-error" class="hidden text-red-400 text-sm font-medium"></p>
+</div>
+<!-- Email Sign In Form -->
+<div id="email-form" class="hidden w-full flex flex-col gap-3">
+<form id="email-form-el" class="flex flex-col gap-3" novalidate="" onsubmit="handleEmailSubmit(event)">
+<input id="email-input" type="email" autocomplete="email" required="" placeholder="you@example.com" class="w-full bg-white/10 border border-white/20 text-white placeholder-white/40 font-medium py-3.5 px-6 rounded-full outline-none focus:border-brand focus:bg-white/15 transition-colors duration-200">
+<button id="email-submit" type="submit" class="w-full bg-white text-black hover:bg-gray-100 font-bold py-3.5 px-6 rounded-full flex items-center justify-center gap-3 transition-colors duration-200">
+<span id="email-submit-label">Send magic link</span>
+</button>
+</form>
+<button onclick="backToMethods()" class="text-white/60 hover:text-white text-sm font-medium transition-colors duration-200">← Back to options</button>
+</div>
+<!-- Email Sent State -->
+<div id="email-sent" class="hidden flex flex-col items-center gap-4 text-center">
+<div class="w-16 h-16 rounded-full bg-white/10 flex items-center justify-center text-3xl">📬</div>
+<p class="text-white/90 font-semibold">Check your inbox</p>
+<p class="text-white/50 text-sm">We sent a magic link to <span id="sent-email" class="text-white/80 font-medium"></span>. Tap it to sign in.</p>
+<button onclick="backToMethods()" class="text-white/60 hover:text-white text-sm font-medium transition-colors duration-200">← Back</button>
+</div>
+</div>
+</div>
+</main>
+<!-- END: Main Content -->
+
+<script>
+  (function () {
+    // Where the user lands after signing in.
+    // NOTE: this exact URL must be whitelisted in Supabase → Authentication → URL Configuration → Redirect URLs.
+    var REDIRECT_PAGE = 'feed.html';
+
+    // From backend/.env — the anon key is safe to ship to browsers (RLS protects the data).
+    var SUPABASE_URL = 'https://dgbxcakkqrgrapwsvrol.supabase.co';
+    var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRnYnhjYWtrcXJncmFwd3N2cm9sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYxOTM0NDksImV4cCI6MjEwMTc2OTQ0OX0.v2gOgC28bfXXVjRVki1lL0ulgCHVloUAv1eF5HVSzuk';
+
+    var supabase = null;
+    try {
+      if (window.supabase) {
+        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      }
+    } catch (err) {
+      supabase = null;
+    }
+
+    function redirectHome() {
+      window.location.href = new URL(REDIRECT_PAGE, window.location.href).href;
+    }
+
+    // Restore an existing session (returning from Google OAuth or a magic link).
+    if (supabase) {
+      supabase.auth.getSession().then(function (res) {
+        if (res.data.session) redirectHome();
+      });
+      supabase.auth.onAuthStateChange(function (event) {
+        if (event === 'SIGNED_IN') redirectHome();
+      });
+    }
+
+    // ---- Skeleton → staggered content reveal ----
+    document.addEventListener('DOMContentLoaded', function () {
+      setTimeout(function () {
+        var skeleton = document.getElementById('skeleton-screen');
+        if (skeleton) {
+          skeleton.classList.add('opacity-0', 'pointer-events-none');
+          setTimeout(function () { skeleton.remove(); }, 600);
+        }
+        document.querySelectorAll('.reveal').forEach(function (el) {
+          el.classList.add('in');
+        });
+      }, 1100);
+    });
+
+    // ---- UI helpers ----
+    function showError(msg) {
+      var el = document.getElementById('auth-error');
+      el.textContent = msg;
+      el.classList.remove('hidden');
+    }
+    function clearError() {
+      document.getElementById('auth-error').classList.add('hidden');
+    }
+    function setLoading(btn, label, text) {
+      btn.disabled = true;
+      btn.classList.add('opacity-70', 'cursor-wait', 'pointer-events-none');
+      if (!btn.querySelector('.spinner')) {
+        var sp = document.createElement('span');
+        sp.className = 'spinner';
+        btn.prepend(sp);
+      }
+      label.textContent = text;
+    }
+    function unsetLoading(btn, label, text) {
+      btn.disabled = false;
+      btn.classList.remove('opacity-70', 'cursor-wait', 'pointer-events-none');
+      var sp = btn.querySelector('.spinner');
+      if (sp) sp.remove();
+      label.textContent = text;
+    }
+    function animateIn(el) {
+      el.classList.remove('slide-in');
+      void el.offsetWidth; // restart the animation
+      el.classList.add('slide-in');
+    }
+
+    // ---- Continue with Google ----
+    window.handleGoogle = async function () {
+      clearError();
+      if (!supabase) {
+        showError('Authentication is not configured yet. Check your connection and try again.');
+        return;
+      }
+      var btn = document.getElementById('google-btn');
+      var label = document.getElementById('google-label');
+      setLoading(btn, label, 'Redirecting…');
+      var res = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: { redirectTo: new URL(REDIRECT_PAGE, window.location.href).href },
+      });
+      if (res.error) {
+        unsetLoading(btn, label, 'Continue with Google');
+        showError(res.error.message);
+      }
+    };
+
+    // ---- Continue with Email (magic link) ----
+    window.showEmailForm = function () {
+      clearError();
+      document.getElementById('auth-methods').classList.add('hidden');
+      var form = document.getElementById('email-form');
+      form.classList.remove('hidden');
+      animateIn(form);
+      document.getElementById('email-input').focus();
+    };
+    window.backToMethods = function () {
+      clearError();
+      document.getElementById('email-sent').classList.add('hidden');
+      document.getElementById('email-form').classList.add('hidden');
+      var methods = document.getElementById('auth-methods');
+      methods.classList.remove('hidden');
+      animateIn(methods);
+    };
+    window.handleEmailSubmit = async function (e) {
+      e.preventDefault();
+      clearError();
+      if (!supabase) {
+        showError('Authentication is not configured yet. Check your connection and try again.');
+        return;
+      }
+      var input = document.getElementById('email-input');
+      var email = input.value.trim();
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        showError('Please enter a valid email address.');
+        return;
+      }
+      var btn = document.getElementById('email-submit');
+      var label = document.getElementById('email-submit-label');
+      setLoading(btn, label, 'Sending…');
+      var res = await supabase.auth.signInWithOtp({
+        email: email,
+        options: { emailRedirectTo: new URL(REDIRECT_PAGE, window.location.href).href },
+      });
+      if (res.error) {
+        unsetLoading(btn, label, 'Send magic link');
+        showError(res.error.message);
+        return;
+      }
+      document.getElementById('email-form').classList.add('hidden');
+      document.getElementById('sent-email').textContent = email;
+      var sent = document.getElementById('email-sent');
+      sent.classList.remove('hidden');
+      animateIn(sent);
+    };
+  })();
+</script>
+</body></html>

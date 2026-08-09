@@ -1,0 +1,122 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Daily Reward Modal</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<style data-purpose="custom-fonts">
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap');
+    body {
+      font-family: 'Poppins', sans-serif;
+    }
+  </style>
+<script data-purpose="tailwind-config">
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'modal-bg': '#1a1a1a',
+            'card-bg': '#2a2a2a',
+            'accent-green': '#65c466',
+            'pro-text': '#888888',
+          },
+          borderRadius: {
+            '4xl': '2rem',
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-black h-screen w-full flex items-center justify-center overflow-hidden relative">
+<!-- BEGIN: Background Image -->
+
+<!-- END: Background Image -->
+<!-- BEGIN: Modal Container -->
+<main class="relative z-10 w-full max-w-md bg-modal-bg rounded-t-4xl h-[85vh] absolute bottom-0 flex flex-col p-6 shadow-2xl">
+<!-- Drag Handle -->
+<div class="w-12 h-1 bg-gray-600 rounded-full mx-auto mb-4"></div>
+<!-- Close Button -->
+<button class="absolute top-6 right-6 text-white hover:text-gray-300 transition-colors">
+<i class="fa-solid fa-xmark text-2xl"></i>
+</button>
+<!-- BEGIN: Header Content -->
+<header class="text-center mt-6 mb-4">
+<h1 class="text-4xl font-extrabold text-white leading-tight mb-3">
+        Your Daily<br>Reward
+      </h1>
+<p class="text-gray-300 text-sm px-4 leading-relaxed font-semibold">
+        Get free Bucks every day you open Blush.<br>
+        Spend on photos, videos, and gifts!
+      </p>
+</header>
+<!-- END: Header Content -->
+<!-- BEGIN: 3D Image Placeholder -->
+<div class="flex-1 flex items-center justify-center relative my-4 min-h-[150px]">
+<!-- Placeholder for the 3D gift and cash graphic -->
+<img alt="3D Gift and Cash" class="max-w-[280px] object-contain drop-shadow-2xl" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD-q6vsaxppPjEsc2PjQ5FfjpMNe_M0RVZCI6D4fDw_YUDIpBRp6b64wi--2CX7YR0Dv0-p3sI4Ls0GiVvMyZ-md1ggRVuD1gi5P7Bf0vc-eQpOY_YXhOsZo60OagktlBdi8zdz_wPt8XrcaO5Pxve-_xHR4Aoogkf9BVek0Epr3k2WRUTnVgXcHkGkrhnj5f-G4rcIBFNRLjDL3Q3GjPJCtpnBsmLYvCzHAoA25mrrENtAvr_RxUDX7g">
+</div>
+<!-- END: 3D Image Placeholder -->
+<!-- BEGIN: Daily Reward Cards -->
+<section class="flex space-x-3 overflow-x-auto pb-4 snap-x hide-scrollbar" style="scrollbar-width: none; -ms-overflow-style: none;">
+<!-- Day 1 Card (Active) -->
+<article class="flex-none w-[100px] bg-white rounded-2xl p-3 flex flex-col items-center justify-center snap-center shadow-lg">
+<span class="text-xs font-bold text-black mb-1">Day 1</span>
+<div class="flex items-center justify-center mb-1">
+<span class="text-2xl font-extrabold text-black mr-1">25</span>
+<div class="w-5 h-3 bg-accent-green rounded-sm flex items-center justify-center text-[8px] text-white border border-green-700">
+            $
+          </div>
+</div>
+<span class="text-[10px] font-bold text-black text-center leading-tight mt-1">50 for PRO</span>
+</article>
+<!-- Day 2 Card -->
+<article class="flex-none w-[100px] bg-card-bg rounded-2xl p-3 flex flex-col items-center justify-center snap-center border border-gray-700">
+<span class="text-xs font-bold text-white mb-1">Day 2</span>
+<div class="flex items-center justify-center mb-1">
+<span class="text-2xl font-extrabold text-white mr-1">25</span>
+<div class="w-5 h-3 bg-accent-green rounded-sm flex items-center justify-center text-[8px] text-white border border-green-700">
+            $
+          </div>
+</div>
+<span class="text-[10px] font-bold text-pro-text text-center leading-tight mt-1">50 for PRO</span>
+</article>
+<!-- Day 3 Card -->
+<article class="flex-none w-[100px] bg-card-bg rounded-2xl p-3 flex flex-col items-center justify-center snap-center border border-gray-700">
+<span class="text-xs font-bold text-white mb-1">Day 3</span>
+<div class="flex items-center justify-center mb-1">
+<span class="text-2xl font-extrabold text-white mr-1">25</span>
+<div class="w-5 h-3 bg-accent-green rounded-sm flex items-center justify-center text-[8px] text-white border border-green-700">
+            $
+          </div>
+</div>
+<span class="text-[10px] font-bold text-pro-text text-center leading-tight mt-1">50 for PRO</span>
+</article>
+<!-- Day 4 Card (Partial view to indicate scrolling) -->
+<article class="flex-none w-[100px] bg-card-bg rounded-2xl p-3 flex flex-col items-center justify-center snap-center border border-gray-700 opacity-50">
+<span class="text-xs font-bold text-white mb-1">Day 4</span>
+</article>
+</section>
+<!-- END: Daily Reward Cards -->
+<!-- BEGIN: Action Buttons -->
+<footer class="flex space-x-3 mt-4 mb-2">
+<button class="flex-1 bg-[#3a3a3a] text-white font-bold text-lg py-4 rounded-2xl hover:bg-gray-600 transition-colors">
+        Claim
+      </button>
+<button class="flex-1 bg-white text-black font-bold text-lg py-4 rounded-2xl hover:bg-gray-200 transition-colors">
+        Claim x2
+      </button>
+</footer>
+<!-- END: Action Buttons -->
+</main>
+<!-- END: Modal Container -->
+<style>
+    /* Hide scrollbar for Chrome, Safari and Opera */
+    .hide-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+  </style>
+
+
+<script src="../js/animations.js"></script>
+</body></html>

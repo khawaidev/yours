@@ -1,0 +1,141 @@
+<!DOCTYPE html><html lang="en" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Character Profile</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<style data-purpose="custom-styles">
+        body {
+            background-color: #000; /* For mobile device feel outside safe area */
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #app-container {
+            width: 100%;
+            height: 100%;
+            max-width: 430px; /* Max width for mobile feel */
+            max-height: 932px; /* iPhone 14 Pro Max height approx */
+            position: relative;
+            background-color: #1a1a1a;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .bg-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 0;
+        }
+
+        .gradient-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 50%;
+            background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 100%);
+            z-index: 1;
+        }
+
+        .content-layer {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            padding: 20px;
+        }
+
+        /* Custom Font for Logo (Approximation) */
+        .brand-logo {
+            font-family: 'Arial Black', Gadget, sans-serif;
+            background: -webkit-linear-gradient(#ff6b6b, #ff4757);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 28px;
+            font-weight: 900;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            letter-spacing: -1px;
+        }
+
+        .bottom-nav-bg {
+            background: rgba(40, 40, 40, 0.85);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        .nav-item-active {
+            background-color: rgba(255, 255, 255, 0.15);
+            border-radius: 9999px;
+        }
+    </style>
+</head>
+<body>
+<!-- BEGIN: AppContainer -->
+<div id="app-container">
+<!-- Background Image -->
+<img alt="Brandy in office" class="bg-image" src="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/IMG_20260807_032009.png">
+<!-- Gradient Overlay for text readability -->
+<div class="gradient-overlay"></div>
+<!-- Content Layer -->
+<div class="content-layer">
+<!-- BEGIN: TopHeader -->
+<header class="flex justify-between items-center pt-4">
+<!-- Logo -->
+<div class="brand-logo">Yours</div>
+<!-- Right Controls -->
+<div class="flex items-center space-x-3">
+<!-- Currency -->
+<div class="bg-black/40 backdrop-blur-md rounded-full px-3 py-1.5 flex items-center space-x-2">
+<i class="fa-solid fa-money-bill-1 text-green-400 text-sm"></i>
+<span class="text-white font-bold text-sm">50</span>
+</div>
+<!-- Settings/Filter Icon -->
+<button class="bg-black/40 backdrop-blur-md rounded-full w-10 h-10 flex items-center justify-center text-white relative">
+<i class="fa-solid fa-sliders text-lg"></i>
+<span class="absolute top-2 right-2 w-2.5 h-2.5 bg-orange-500 rounded-full border-2 border-transparent"></span>
+</button>
+</div>
+</header>
+<!-- END: TopHeader -->
+<!-- Spacer to push content to bottom -->
+<div class="flex-grow"></div>
+<!-- BEGIN: ProfileInfo -->
+<main class="pb-24"><div class="mb-4"><h1 class="text-white text-3xl font-extrabold shadow-sm drop-shadow-md">Brandy, 56</h1><p class="text-white/90 text-sm leading-snug drop-shadow-sm px-1 mt-1">Marketing exec who believes the best things in life come with experience 😉</p></div><div class="flex items-center space-x-4"><img alt="Brandy Avatar" class="w-16 h-16 rounded-full border-2 border-white/20 shadow-lg object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAki33uQl_aGSoN9936hLWBG_jJUu5Jl6rHI0nuGqsWVXS1THqxS8T_jzy95drEx3O9djHQnlwB9u2oF2nkok0M-dLrsAEQVjXYgOSknS39aR_prfdQ17wt0htJnHbk153-R5cRhU1oTaRIp2hWwWDbFL4pOuXba3xTMmzpYubJocNdm4Ab7TwauZrqPCMV4LhhzGgpz4_kepKD-6jn-61UVdmoG9CcOuADSmobOr6QsvJeKFGmaBhivQ"><div class="flex-grow flex items-center bg-white/10 backdrop-blur-md rounded-full p-1 space-x-1"><button class="flex-grow flex items-center justify-center space-x-2 py-3 px-4 rounded-full text-white font-bold text-sm" style="background: linear-gradient(to right bottom, rgb(195, 36, 76), rgb(240, 42, 83), rgb(255, 62, 134));"><i class="fa-solid fa-fire"></i><span class="">Start chat</span></button><div class="w-px h-8 bg-white/20"></div><button class="w-12 h-12 flex items-center justify-center rounded-full text-white" style="background: linear-gradient(to right bottom, rgb(195, 36, 76), rgb(240, 42, 83), rgb(255, 62, 134));"><i class="fa-solid fa-heart text-xl"></i></button></div></div></main>
+<!-- END: ProfileInfo -->
+</div>
+<!-- BEGIN: Bottom Navigation (icon-only pill) -->
+<nav class="absolute bottom-4 left-4 right-4 z-20 flex items-center justify-between bg-[#252525]/95 backdrop-blur-lg rounded-[32px] px-2 py-2 shadow-[0_-5px_20px_rgba(0,0,0,0.5)]">
+<a href="feed.html" class="flex-1 flex items-center justify-center py-2 rounded-[24px] bg-[#3A3A3A] transition-all cursor-pointer" title="Feed">
+<img src="https://i.ibb.co/hR2htXpk/football-card.png" alt="Feed" class="w-6 h-6 object-contain">
+</a>
+<a href="Discover.html" class="flex-1 flex items-center justify-center py-2 rounded-[24px] transition-all opacity-60 hover:opacity-100 cursor-pointer" title="Discover">
+<img src="https://i.ibb.co/Zp5ZML9X/browser.png" alt="Discover" class="w-6 h-6 object-contain">
+</a>
+<a href="chat.html" class="flex-1 flex items-center justify-center py-2 rounded-[24px] transition-all opacity-60 hover:opacity-100 cursor-pointer" title="Chat">
+<img src="https://i.ibb.co/k2yRYWGk/ai-technology.png" alt="Chat" class="w-6 h-6 object-contain">
+</a>
+<a href="user-profile.html" class="flex-1 flex items-center justify-center py-2 rounded-[24px] transition-all opacity-60 hover:opacity-100 cursor-pointer" title="Profile">
+<img src="https://i.ibb.co/kVrCvk98/user-1.png" alt="Profile" class="w-6 h-6 object-contain">
+</a>
+</nav>
+<!-- END: Bottom Navigation -->
+</div>
+<!-- END: AppContainer -->
+
+
+
+
+<script src="js/animations.js"></script>
+</body></html>

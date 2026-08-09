@@ -1,0 +1,205 @@
+<!DOCTYPE html><html class="dark" lang="en" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Profile - Blush</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&amp;family=Plus+Jakarta+Sans:ital,wght@0,500;0,600;0,700;0,800;1,800&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-fixed": "#291800",
+                        "on-primary": "#621100",
+                        "on-tertiary-container": "#3f2700",
+                        "on-tertiary-fixed-variant": "#633f00",
+                        "secondary-fixed": "#ffd8e8",
+                        "error-container": "#93000a",
+                        "on-tertiary": "#452b00",
+                        "on-primary-fixed": "#3d0700",
+                        "on-secondary-fixed": "#3d0027",
+                        "surface": "#131313",
+                        "inverse-surface": "#e5e2e1",
+                        "secondary-container": "#bd0183",
+                        "surface-variant": "#353534",
+                        "on-error": "#690005",
+                        "tertiary-container": "#c5861c",
+                        "tertiary": "#ffb951",
+                        "on-surface": "#e5e2e1",
+                        "on-secondary-fixed-variant": "#8a005e",
+                        "surface-bright": "#393939",
+                        "on-secondary-container": "#ffd5e6",
+                        "outline-variant": "#5b413a",
+                        "inverse-primary": "#b52701",
+                        "secondary-fixed-dim": "#ffafd5",
+                        "error": "#ffb4ab",
+                        "on-surface-variant": "#e3beb6",
+                        "surface-container-lowest": "#0e0e0e",
+                        "outline": "#aa8982",
+                        "on-primary-container": "#5a0e00",
+                        "secondary": "#ffafd5",
+                        "on-background": "#e5e2e1",
+                        "on-error-container": "#ffdad6",
+                        "surface-dim": "#131313",
+                        "surface-container-high": "#2a2a2a",
+                        "on-primary-fixed-variant": "#8a1c00",
+                        "tertiary-fixed-dim": "#ffb951",
+                        "surface-container-highest": "#353534",
+                        "tertiary-fixed": "#ffddb3",
+                        "primary": "#ffb4a3",
+                        "surface-container-low": "#1c1b1b",
+                        "on-secondary": "#620042",
+                        "primary-container": "#ff5c35",
+                        "inverse-on-surface": "#313030",
+                        "surface-container": "#201f1f",
+                        "background": "#131313",
+                        "primary-fixed": "#ffdad2",
+                        "primary-fixed-dim": "#ffb4a3",
+                        "surface-tint": "#ffb4a3"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "unit": "8px",
+                        "container-margin": "24px",
+                        "stack-sm": "8px",
+                        "section-gap": "48px",
+                        "stack-lg": "32px",
+                        "stack-md": "16px",
+                        "gutter": "16px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Be Vietnam Pro"],
+                        "headline-lg-mobile": ["Plus Jakarta Sans"],
+                        "headline-xl": ["Plus Jakarta Sans"],
+                        "label-sm": ["Plus Jakarta Sans"],
+                        "body-md": ["Be Vietnam Pro"],
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "label-md": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "headline-lg-mobile": ["28px", { "lineHeight": "36px", "fontWeight": "700" }],
+                        "headline-xl": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "fontWeight": "500" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+                        "label-md": ["14px", { "lineHeight": "20px", "fontWeight": "600" }]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom styles for animations and specific visual tweaks */
+        .glass-panel {
+            background: rgba(32, 31, 31, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(227, 190, 182, 0.1);
+        }
+        .text-glow {
+            text-shadow: 0 0 10px rgba(255, 180, 163, 0.5);
+        }
+        .icon-glow {
+            filter: drop-shadow(0 0 8px rgba(255, 175, 213, 0.6));
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md antialiased pb-[120px] min-h-screen flex flex-col md:hidden selection:bg-primary-container selection:text-on-primary-container">
+<!-- Top App Bar (Semantic Shell - Re-used concept for consistency) -->
+<header class="docked full-width top-0 bg-transparent flex justify-center items-center w-full pt-gutter sticky z-40"><div class="flex flex-col w-full px-container-margin gap-4">
+    <div class="flex items-center justify-between w-full py-2 relative">
+        <span class="text-2xl font-headline-xl tracking-tighter bg-gradient-to-r from-primary via-secondary to-tertiary bg-clip-text text-transparent italic">Yours</span>
+        <div class="flex items-center gap-1 bg-surface-container-high px-3 py-1 rounded-full border border-outline-variant/20">
+            <span class="material-symbols-outlined text-primary text-body-md">account_balance_wallet</span>
+            <span class="font-label-md text-on-surface">1,250</span>
+        </div>
+    </div>
+    <div class="flex items-center justify-between w-full pb-2">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full overflow-hidden border border-outline-variant/30 bg-surface-container flex items-center justify-center text-xl">
+                🐯
+            </div>
+            <div class="flex flex-col items-start">
+                <span class="font-label-md text-on-surface leading-none">Tyga</span>
+                <span class="text-[10px] uppercase tracking-widest text-on-surface-variant leading-none mt-1">FREE user</span>
+            </div>
+        </div>
+    </div>
+</div></header>
+<main class="flex-1 px-container-margin flex flex-col gap-stack-lg pt-stack-sm">
+<!-- Profile Header Segment -->
+
+<!-- Promotional Banner -->
+<section class="relative rounded-xl overflow-hidden shadow-[0_8px_32px_rgba(255,92,53,0.2)] group cursor-pointer active:scale-[0.98] transition-transform duration-300">
+<!-- Background Gradient -->
+<div class="absolute inset-0 bg-gradient-to-br from-primary-container to-secondary-container opacity-90 group-hover:opacity-100 transition-opacity duration-300"></div>
+<!-- Animated decorative element (simulated via CSS gradient overlay for subtle movement) -->
+<div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-white/20 via-transparent to-transparent opacity-50 mix-blend-overlay"></div>
+<div class="relative z-10 flex flex-col gap-stack-md p-4 gap-2">
+<div class="flex justify-between items-start">
+<div class="flex flex-col gap-1">
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile text-on-primary text-glow">Get PRO plan</h2>
+<p class="font-body-md text-body-md text-on-primary/90">Access exclusive tools &amp; features.</p>
+</div>
+</div>
+<button class="self-start mt-stack-sm bg-surface text-on-surface font-label-md text-label-md px-6 py-3 rounded-full flex items-center gap-2 shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 group-hover:bg-white group-hover:text-black">
+                    Upgrade
+                    <span class="material-symbols-outlined text-primary-container font-variation-settings: 'FILL' 1; icon-glow" data-icon="local_fire_department" data-weight="fill">local_fire_department</span>
+</button>
+</div>
+</section>
+<!-- Menu List -->
+<section class="flex flex-col gap-stack-sm bg-surface-container rounded-xl p-2 border border-outline-variant/20 shadow-lg">
+<button class="w-full flex items-center justify-between p-4 rounded-lg hover:bg-surface-container-high transition-colors active:scale-[0.99]">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-surface-variant flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined font-variation-settings: 'FILL' 0;" data-icon="settings">settings</span>
+</div>
+<span class="font-body-lg text-body-lg text-on-surface">Settings</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="chevron_right">chevron_right</span>
+</button>
+<div class="h-[1px] w-[calc(100%-32px)] mx-auto bg-outline-variant/20"></div>
+<button class="w-full flex items-center justify-between p-4 rounded-lg hover:bg-surface-container-high transition-colors active:scale-[0.99]">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-surface-variant flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined font-variation-settings: 'FILL' 0;" data-icon="account_balance_wallet">account_balance_wallet</span>
+</div>
+<span class="font-body-lg text-body-lg text-on-surface">Wallet</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="chevron_right">chevron_right</span>
+</button>
+</section>
+</main>
+<!-- BottomNavBar (Semantic Shell) -->
+
+
+
+<nav class="fixed bottom-4 left-4 right-4 z-50 flex items-center justify-between bg-[#252525]/95 backdrop-blur-lg rounded-[32px] px-2 py-2 shadow-[0_-5px_20px_rgba(0,0,0,0.5)]">
+<a href="feed.html" class="flex-1 flex items-center justify-center py-2 rounded-[24px] transition-all opacity-60 hover:opacity-100 cursor-pointer" title="Feed">
+<img src="https://i.ibb.co/hR2htXpk/football-card.png" alt="Feed" class="w-6 h-6 object-contain">
+</a>
+<a href="Discover.html" class="flex-1 flex items-center justify-center py-2 rounded-[24px] transition-all opacity-60 hover:opacity-100 cursor-pointer" title="Discover">
+<img src="https://i.ibb.co/Zp5ZML9X/browser.png" alt="Discover" class="w-6 h-6 object-contain">
+</a>
+<a href="chat.html" class="flex-1 flex items-center justify-center py-2 rounded-[24px] transition-all opacity-60 hover:opacity-100 cursor-pointer" title="Chat">
+<img src="https://i.ibb.co/k2yRYWGk/ai-technology.png" alt="Chat" class="w-6 h-6 object-contain">
+</a>
+<a href="user-profile.html" class="flex-1 flex items-center justify-center py-2 rounded-[24px] bg-[#3A3A3A] transition-all cursor-pointer" title="Profile">
+<img src="https://i.ibb.co/kVrCvk98/user-1.png" alt="Profile" class="w-6 h-6 object-contain">
+</a>
+</nav>
+
+<script src="js/animations.js"></script>
+</body></html>

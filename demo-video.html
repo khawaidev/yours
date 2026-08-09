@@ -1,0 +1,125 @@
+<!DOCTYPE html><html lang="en" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Video Preferences</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#ff5c35',
+            'surface': '#131313',
+            'surface-container': '#201f1e',
+            'surface-bright': '#393939',
+            'on-surface': '#e6e1e0',
+            'on-surface-variant': '#cbc4c3',
+          },
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+<style data-purpose="custom-styles">
+    body {
+      background-color: #131313; /* surface */
+      color: #e6e1e0; /* on-surface */
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+  </style>
+</head>
+<body class="antialiased min-h-screen flex flex-col items-center">
+<div class="w-full max-w-md min-h-screen flex flex-col relative px-4 py-6">
+<!-- BEGIN: Top Navigation & Progress -->
+<header class="flex items-center w-full mb-8 pt-4">
+<!-- Back Button -->
+<button onclick="window.location.href='demo-image.html'" class="text-white p-2 shrink-0 cursor-pointer">
+<svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M15 19l-7-7 7-7" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</button>
+<!-- Progress Bar -->
+<div class="flex-1 px-4 flex justify-center">
+<div class="h-2 w-48 bg-surface-bright rounded-full flex overflow-hidden">
+<div class="bg-primary h-full w-[60%] rounded-full"></div>
+</div>
+</div>
+<!-- Spacer for balance -->
+<div class="w-10 shrink-0"></div>
+</header>
+<!-- END: Top Navigation & Progress -->
+<!-- BEGIN: Header Text -->
+<div class="text-center mb-2 px-2">
+<h1 class="text-[32px] leading-tight font-extrabold text-white mb-2">Created&nbsp; for you 💕</h1>
+
+</div>
+<!-- END: Header Text -->
+<!-- BEGIN: Main Content Area -->
+<main class="flex-1 flex flex-col items-center pb-24">
+<!-- Video Container -->
+<div class="w-full aspect-[2/3] rounded-[32px] overflow-hidden shadow-lg mb-8 relative">
+<video src="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/pixelbin-video%20(3).mp4" autoplay="" loop="" muted="" playsinline="" class="w-full h-full object-cover"></video>
+</div>
+
+<!-- Selection Cards -->
+<div class="flex gap-4 w-full max-w-[320px] mx-auto">
+<!-- Hot Option -->
+<div class="relative flex-1">
+<!-- Checkmark Badge -->
+<div id="hot-check" class="absolute -top-1.5 -right-1.5 z-10 bg-primary text-white rounded-full p-1 border-2 border-surface w-6 h-6 flex items-center justify-center">
+<svg class="h-3 w-3" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+<path clip-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" fill-rule="evenodd"></path>
+</svg>
+</div>
+<!-- Card Button -->
+<button id="hot-btn" onclick="selectOption('hot')" class="w-full bg-surface-bright rounded-[28px] py-2 px-6 flex items-center justify-center gap-2 border border-transparent shadow-sm cursor-pointer"><span class="text-xl leading-none">🔥</span><span class="text-white font-bold text-base leading-none">Hot</span></button>
+</div>
+<!-- Sweet Option -->
+<div class="relative flex-1">
+<div id="sweet-check" class="absolute -top-1.5 -right-1.5 z-10 bg-primary text-white rounded-full p-1 border-2 border-surface w-6 h-6 flex items-center justify-center hidden"><svg class="h-3 w-3" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path clip-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" fill-rule="evenodd"></path></svg></div><button id="sweet-btn" onclick="selectOption('sweet')" class="w-full bg-surface-container rounded-[28px] py-2 px-6 flex items-center justify-center gap-2 border border-surface-bright/50 cursor-pointer">
+<span class="text-xl leading-none">🍓</span>
+<span class="text-white font-bold text-base leading-none">Sweet</span>
+</button>
+</div>
+</div>
+</main>
+<!-- END: Main Content Area -->
+<!-- BEGIN: Bottom Action -->
+<div class="absolute bottom-6 left-4 right-4">
+<button onclick="window.location.href='auth.html'" class="w-full bg-white text-black font-extrabold text-lg py-4 px-6 rounded-full shadow-lg cursor-pointer">
+        Continue
+      </button>
+</div>
+<!-- END: Bottom Action -->
+</div>
+
+
+
+
+<script>
+  let selected = 'hot';
+
+  const SELECTED_CLASSES = ['bg-surface-bright', 'border-transparent', 'shadow-sm'];
+  const UNSELECTED_CLASSES = ['bg-surface-container', 'border-surface-bright/50'];
+
+  function selectOption(option) {
+    selected = option;
+    const isHot = option === 'hot';
+    const hotBtn = document.getElementById('hot-btn');
+    const sweetBtn = document.getElementById('sweet-btn');
+    const hotCheck = document.getElementById('hot-check');
+    const sweetCheck = document.getElementById('sweet-check');
+
+    const base = 'w-full rounded-[28px] py-2 px-6 flex items-center justify-center gap-2 border cursor-pointer';
+    hotBtn.className = base + ' ' + (isHot ? SELECTED_CLASSES.join(' ') : UNSELECTED_CLASSES.join(' '));
+    sweetBtn.className = base + ' ' + (isHot ? UNSELECTED_CLASSES.join(' ') : SELECTED_CLASSES.join(' '));
+
+    hotCheck.classList.toggle('hidden', !isHot);
+    sweetCheck.classList.toggle('hidden', isHot);
+  }
+</script>
+<script src="js/animations.js"></script>
+</body></html>

@@ -1,0 +1,166 @@
+<!DOCTYPE html><html class="dark" lang="en" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Blush - Find your perfect AI companion</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Chewy&amp;family=Baloo+2:wght@700;800&amp;family=Nunito:wght@400;600&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@500;600;700;800&amp;display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Chewy&amp;family=Baloo+2:wght@700;800&amp;family=Nunito:wght@400;600&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Chewy&amp;family=Baloo+2:wght@700;800&amp;family=Nunito:wght@400;600&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-surface": "#e5e2e1",
+                        "on-error-container": "#ffdad6",
+                        "inverse-surface": "#e5e2e1",
+                        "surface-tint": "#ffb4a3",
+                        "secondary": "#ffafd5",
+                        "surface-dim": "#131313",
+                        "on-secondary-fixed-variant": "#8a005e",
+                        "on-primary-container": "#5a0e00",
+                        "error-container": "#93000a",
+                        "on-background": "#e5e2e1",
+                        "outline": "#aa8982",
+                        "background": "#131313",
+                        "on-primary-fixed": "#3d0700",
+                        "surface-bright": "#393939",
+                        "on-primary-fixed-variant": "#8a1c00",
+                        "primary-fixed-dim": "#ffb4a3",
+                        "surface-container-high": "#2a2a2a",
+                        "tertiary-fixed-dim": "#ffb951",
+                        "on-secondary-container": "#ffd5e6",
+                        "on-secondary-fixed": "#3d0027",
+                        "outline-variant": "#5b413a",
+                        "surface-container": "#201f1f",
+                        "primary": "#ffb4a3",
+                        "surface-container-low": "#1c1b1b",
+                        "secondary-container": "#bd0183",
+                        "surface-container-lowest": "#0e0e0e",
+                        "surface-container-highest": "#353534",
+                        "primary-container": "#ff5c35",
+                        "on-tertiary-fixed": "#291800",
+                        "primary-fixed": "#ffdad2",
+                        "surface": "#131313",
+                        "inverse-primary": "#b52701",
+                        "inverse-on-surface": "#313030",
+                        "on-tertiary-container": "#3f2700",
+                        "on-secondary": "#620042",
+                        "tertiary-fixed": "#ffddb3",
+                        "secondary-fixed": "#ffd8e8",
+                        "tertiary-container": "#c5861c",
+                        "on-primary": "#621100",
+                        "secondary-fixed-dim": "#ffafd5",
+                        "on-surface-variant": "#e3beb6",
+                        "surface-variant": "#353534",
+                        "on-error": "#690005",
+                        "error": "#ffb4ab",
+                        "on-tertiary": "#452b00",
+                        "on-tertiary-fixed-variant": "#633f00",
+                        "tertiary": "#ffb951"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter": "16px",
+                        "section-gap": "48px",
+                        "container-margin": "24px",
+                        "stack-sm": "8px",
+                        "stack-md": "16px",
+                        "unit": "8px",
+                        "stack-lg": "32px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Be Vietnam Pro"],
+                        "body-md": ["Be Vietnam Pro"],
+                        "label-md": ["Plus Jakarta Sans"],
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "headline-xl": ["Plus Jakarta Sans"],
+                        "headline-lg-mobile": ["Plus Jakarta Sans"],
+                        "label-sm": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "label-md": ["14px", { "lineHeight": "20px", "fontWeight": "600" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+                        "headline-xl": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+                        "headline-lg-mobile": ["28px", { "lineHeight": "36px", "fontWeight": "700" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "fontWeight": "500" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .glass-panel {
+            background: rgba(32, 31, 31, 0.4);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(229, 226, 225, 0.1);
+        }
+        .text-gradient {
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md antialiased overflow-hidden w-full h-screen relative flex flex-col justify-between" style="background-color: rgb(18, 10, 14); color: rgb(245, 230, 216);">
+<!-- Full Screen Background Image with Gradient Overlay -->
+<div class="absolute inset-0 w-full h-full z-0">
+<img alt="A beautiful AI persona looking friendly" class="w-full h-full object-cover" src="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/ChatGPT%20Image%20Aug%207%2C%202026%2C%2003_07_41%20AM.png">
+<!-- Bottom-up black gradient overlay for text legibility -->
+<div class="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-transparent z-10"></div>
+</div>
+<!-- Top AppBar Area (Floating) -->
+<header class="relative z-20 flex flex-col items-center justify-start w-full pt-gutter px-container-margin">
+<!-- BLUSH Logo (Simulating 3D effect with text shadow/gradient as requested by brand styling) -->
+<h1 class="text-headline-xl font-headline-xl tracking-tighter italic mb-stack-sm drop-shadow-md" style="font-family: Chewy, system-ui; background: linear-gradient(135deg, rgb(195, 36, 76), rgb(240, 42, 83), rgb(255, 62, 134)) text; -webkit-text-fill-color: transparent;">
+            YOURS</h1>
+<!-- Online Status Badge -->
+<div class="glass-panel rounded-full px-4 py-1.5 flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.6)]"></span>
+<span class="font-label-sm text-label-sm text-on-surface opacity-90">14,081 online now</span>
+</div>
+</header>
+<!-- Main Content Area (Bottom Anchored) -->
+<main class="relative z-20 flex flex-col items-center justify-end w-full px-container-margin pb-[200px] text-center">
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface mb-stack-sm drop-shadow-lg" style="font-family: &quot;Baloo 2&quot;, cursive; font-weight: 700; color: rgb(245, 230, 216);">
+            Find your perfect <br>
+<span class="drop-shadow-lg" style="background: linear-gradient(135deg, rgb(195, 36, 76), rgb(240, 42, 83), rgb(255, 62, 134)) text; -webkit-text-fill-color: transparent;">AI companion</span>
+</h2>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-[280px] drop-shadow-md" style="font-family: Nunito, sans-serif; color: rgb(245, 230, 216); opacity: 0.9;">
+            Thousands of unique personalities waiting to meet you
+        </p>
+</main>
+<!-- BottomNavBar (Predicted Component Logic) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex flex-col gap-stack-md px-container-margin pb-gutter pt-stack-lg bg-surface/80 dark:bg-surface-container/80 backdrop-blur-xl rounded-t-lg shadow-2xl border-t-0 shadow-[0_-8px_32px_rgba(0,0,0,0.5)]">
+<!-- Get Started (Active/Primary Action) -->
+<button onclick="window.location.href='Age.html'" class="flex flex-col items-center justify-center text-on-primary rounded-full w-full py-4 mb-2 hover:brightness-110 transition-all active:scale-[0.98] duration-150 shadow-[0_4px_16px_rgba(255,180,163,0.3)] cursor-pointer" style="background: linear-gradient(135deg, rgb(195, 36, 76), rgb(240, 42, 83), rgb(255, 62, 134)); font-family: &quot;Baloo 2&quot;, cursive; font-weight: 700; color: rgb(18, 10, 14);">
+<span class="font-label-md text-label-md uppercase tracking-widest">Get Started</span>
+</button>
+<!-- Log In (Inactive/Secondary Action) -->
+<button onclick="window.location.href='auth.html'" class="flex flex-col items-center justify-center bg-on-surface text-surface rounded-full w-full py-4 hover:brightness-110 transition-all active:scale-[0.98] duration-150 border border-transparent hover:border-surface-variant cursor-pointer" style="background-color: rgb(245, 230, 216); color: rgb(18, 10, 14); font-family: &quot;Baloo 2&quot;, cursive; font-weight: 700;">
+<span class="font-label-md text-label-md uppercase tracking-widest">Log In</span>
+</button>
+</nav>
+
+
+
+
+
+
+
+
+
+
+
+
+<script src="js/animations.js"></script>
+</body></html>

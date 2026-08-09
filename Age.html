@@ -1,0 +1,77 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Blush Onboarding - Age Selection</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<style data-purpose="custom-styles">
+    /* Hide scrollbar for the picker to match the design */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;  /* IE and Edge */
+      scrollbar-width: none;  /* Firefox */
+    }
+  </style>
+</head>
+<body class="bg-[#18181a] text-white font-sans antialiased h-screen flex flex-col items-center pt-8 pb-10 px-6">
+<!-- BEGIN: Top Navigation & Progress -->
+<header class="w-full max-w-md flex items-center justify-between mb-8 relative">
+<!-- Back Button -->
+<button onclick="window.location.href='Greetings.html'" aria-label="Go back" class="p-2 -ml-2 text-white hover:text-gray-300 transition-colors z-10 cursor-pointer">
+<svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M15 19l-7-7 7-7" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</button>
+<!-- Progress Bar Container -->
+<div class="absolute left-0 right-0 flex justify-center pointer-events-none">
+<div class="w-48 h-1.5 bg-[#333333] rounded-full overflow-hidden flex">
+<!-- Active Progress -->
+<div class="w-1/5 bg-[#ff5a5f] h-full rounded-full"></div>
+</div>
+</div>
+</header>
+<!-- END: Top Navigation & Progress -->
+<!-- BEGIN: Main Content Area -->
+<main class="flex-1 w-full max-w-md flex flex-col">
+<!-- Header Text -->
+<div class="text-center mb-16">
+<h1 class="text-3xl font-extrabold tracking-tight mb-2 text-[#f5f5f5]">How old are you?</h1>
+<p class="text-sm text-gray-300 font-medium tracking-wide">You must be 18+ to use Blush</p>
+</div>
+<!-- Age Picker Container -->
+<div class="relative flex-1 flex flex-col justify-center items-center overflow-hidden mb-8">
+<!-- Fading edges for the scroll effect -->
+<div class="absolute top-0 left-0 right-0 h-16 bg-gradient-to-b from-[#18181a] to-transparent z-10 pointer-events-none"></div>
+<div class="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-[#18181a] to-transparent z-10 pointer-events-none"></div>
+<!-- Scrollable List (Simulated) -->
+<div class="h-64 overflow-y-scroll no-scrollbar w-full flex flex-col items-center py-20 snap-y snap-mandatory">
+<div class="h-12 w-full flex items-center justify-center snap-center text-[#4a4a4d] font-semibold text-lg">
+          24
+        </div>
+<div class="h-12 w-full flex items-center justify-center snap-center text-[#6e6e73] font-semibold text-xl">
+          25
+        </div>
+<!-- Selected Item -->
+<div class="h-16 w-full flex items-center justify-center snap-center text-[#ffffff] font-bold text-xl bg-[#1e1e20] border border-[#333333] rounded-2xl relative z-20 my-1 shadow-sm">
+          26
+        </div>
+<div class="h-12 w-full flex items-center justify-center snap-center text-[#6e6e73] font-semibold text-xl">
+          27
+        </div>
+<div class="h-12 w-full flex items-center justify-center snap-center text-[#4a4a4d] font-semibold text-lg">
+          28
+        </div>
+</div>
+</div>
+</main>
+<!-- END: Main Content Area -->
+<!-- BEGIN: Footer Actions -->
+<footer class="w-full max-w-md mt-auto">
+<button onclick="window.location.href='name.html'" class="w-full bg-white text-black font-bold text-lg py-4 rounded-3xl hover:bg-gray-100 transition-colors active:scale-[0.98] cursor-pointer">
+      Continue
+    </button>
+</footer>
+<!-- END: Footer Actions -->
+<script src="js/animations.js"></script>
+</body></html>

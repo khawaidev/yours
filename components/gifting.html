@@ -1,0 +1,152 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Blush Gifts Modal</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<style data-purpose="custom-fonts">
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+  </style>
+<style data-purpose="custom-utilities">
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    .bottom-sheet-shadow {
+      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
+    }
+  </style>
+</head>
+<body class="bg-gray-900 text-white min-h-screen flex items-end sm:items-center justify-center">
+<!-- BEGIN: MainContainer -->
+<!-- Container for the entire mobile app view area, set to a mobile width for demonstration -->
+<div class="w-full max-w-[420px] h-[100dvh] sm:h-[850px] relative bg-cover bg-center overflow-hidden flex flex-col justify-end" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAIQWg5S9jv-Y6gLZou0Y62Gu1_BOX37k71XR43ieihQ_lxXowmnQ5tuedoaArabwTqJMvOo2WRDBQOs2eMi74etDl1B8bzGWnJaX46XPTn1DGBmOyUWkXIcXHXJblr7Gns6OMKVaXO6I36rt-1hNjWPaWnUobYEHkCwhELgNR6T2jnup5ZjTKi74GU776qZmdNbVHzAMMW-nSUA-oT0vvPDNdE0zXHKIq5CvbvkHqabI6NArGoRH95Hg');">
+<!-- Dark overlay to simulate the background behind the modal -->
+<div class="absolute inset-0 bg-black/60 backdrop-blur-sm z-0"></div>
+<!-- BEGIN: GiftsModal -->
+<div data-reveal class="relative z-10 bg-[#161616] w-full rounded-t-[32px] pt-4 pb-8 flex flex-col bottom-sheet-shadow h-[85%]" data-purpose="gifts-bottom-sheet">
+<!-- BEGIN: ModalHeader -->
+<div class="flex items-center justify-between px-6 mb-6">
+<!-- Currency Balance -->
+<div class="bg-gray-800 rounded-full py-2 px-4 flex items-center space-x-2">
+<i class="fa-solid fa-money-bill-wave text-green-500 text-sm"></i>
+<span class="font-bold text-sm">50</span>
+</div>
+<!-- Modal Title -->
+<h2 class="text-xl font-bold text-white absolute left-1/2 transform -translate-x-1/2">Gifts</h2>
+<!-- Close Button -->
+<button class="w-8 h-8 flex items-center justify-center rounded-full bg-gray-800 text-gray-400 hover:text-white transition-colors">
+<i class="fa-solid fa-xmark text-lg"></i>
+</button>
+</div>
+<!-- END: ModalHeader -->
+<!-- BEGIN: CategoryTabs -->
+<div class="px-6 mb-8 overflow-x-auto no-scrollbar">
+<div class="flex space-x-6 min-w-max">
+<button class="relative pb-2 text-white font-bold text-lg">
+            All gifts
+            <span class="absolute bottom-0 left-0 w-full h-[3px] bg-red-500 rounded-full"></span>
+</button>
+<button class="pb-2 text-gray-400 font-semibold text-lg hover:text-gray-300">Valentine</button>
+<button class="pb-2 text-gray-400 font-semibold text-lg hover:text-gray-300">Treats</button>
+<button class="pb-2 text-gray-400 font-semibold text-lg hover:text-gray-300">Accessories</button>
+</div>
+</div>
+<!-- END: CategoryTabs -->
+<!-- BEGIN: GiftsGrid -->
+<div class="flex-1 overflow-y-auto px-6 pb-24 no-scrollbar">
+<div class="grid grid-cols-3 gap-y-8 gap-x-4">
+<!-- Item 1: Rose -->
+<div class="flex flex-col items-center group cursor-pointer">
+<div class="relative w-full aspect-square rounded-2xl bg-gray-800/50 mb-3 p-2 flex items-center justify-center transition-transform group-hover:scale-105">
+<img alt="Rose" class="w-[85%] object-contain drop-shadow-xl" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDSglhiMsSzfo0pj0vJwpFVc3Sl3Y8Ly_JYlU6xqtTLyNIQE-WCL53iBWONh4H9JRzoBtjQ3458ysUY9LOPtG_IGykohCoECt6BYQRQ8Ix6ZQRsIymSWxeAzzb3VjWbYuYK7I-j2SmXKse2JwaEWFtd3SluSK4gb3a9vadkqdc1LUoHE5e8clVEgEOnDiH5RtT7WEDhIyMb_uA3m65O-TWNsdeD8FTpP9HKje8ICppbwCsvU-23DQm5Rg" style="mix-blend-mode: lighten; filter: drop-shadow(0 10px 8px rgba(0,0,0,0.5));">
+</div>
+<span class="font-semibold text-gray-200 text-sm text-center">Rose</span>
+<div class="flex items-center space-x-1 mt-1">
+<i class="fa-solid fa-money-bill-wave text-green-500 text-[10px]"></i>
+<span class="text-white font-bold text-sm">200</span>
+</div>
+</div>
+<!-- Item 2: Royal Rose (VIP) -->
+<div class="flex flex-col items-center group cursor-pointer">
+<div class="relative w-full aspect-square rounded-2xl bg-gray-800/50 mb-3 p-2 flex items-center justify-center transition-transform group-hover:scale-105">
+<!-- VIP Badge -->
+<div class="absolute -top-2 -right-2 bg-yellow-400 text-black text-[10px] font-bold px-2 py-1 rounded-full z-10 shadow-lg">VIP</div>
+<img alt="Royal Rose" class="w-full object-contain rounded-full drop-shadow-xl" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBiSUJcVf9JFmqmaYkVIKYdjQG1oPyFFarXP0l1wNZgt6oluVivjvcY6Hh7M0-yfyOY59ayDtIKZT1eHptupbbPc_jlPOhfcb8LEYk-HdEG-Q61sE3tHGZLmb-2WztHk6xobkzke-ZGlt3zly4k62TFJxiAmTik_O160KkoDatohnb_kNQXaueuoURxbS10O1qCgACN25qRqPavel7r1L2D0azNQBNoS0H89CVY29EUhZ0QnetWHoVyNA" style="filter: drop-shadow(0 10px 8px rgba(0,0,0,0.5));">
+</div>
+<span class="font-semibold text-gray-200 text-sm text-center">Royal Rose</span>
+<div class="flex items-center space-x-1 mt-1">
+<i class="fa-solid fa-money-bill-wave text-green-500 text-[10px]"></i>
+<span class="text-white font-bold text-sm">200</span>
+</div>
+</div>
+<!-- Item 3: Teddy bear -->
+<div class="flex flex-col items-center group cursor-pointer">
+<div class="relative w-full aspect-square rounded-2xl bg-gray-800/50 mb-3 p-2 flex items-center justify-center transition-transform group-hover:scale-105">
+<img alt="Teddy bear" class="w-[90%] object-contain drop-shadow-xl" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC3V2hHtMZeaj12RLwiFRnK-vylomATl9yjTsXxJr4VCj0tpoxFPf48W6MDzeT5uPeiZH42ChuY8CAxT2NET45ZBLcADuS7i3nd6dx6hbkghTnyVj4q0iWQLtX7xOlkZR3_CcZE1P-ustGH4DrG9dxwu3SpZO3XYBt0h4qpM0mLX0DlzVjhkJ_Jcu4s6lPFlUfJQcB8hkbHAKZjrFHn1rMVPGTaGJvxwxROCm-p-oHv7-ikIp_o1c7l7Q" style="mix-blend-mode: lighten; filter: drop-shadow(0 10px 8px rgba(0,0,0,0.5));">
+</div>
+<span class="font-semibold text-gray-200 text-sm text-center leading-tight">Teddy bear</span>
+<div class="flex items-center space-x-1 mt-1">
+<i class="fa-solid fa-money-bill-wave text-green-500 text-[10px]"></i>
+<span class="text-white font-bold text-sm">400</span>
+</div>
+</div>
+<!-- Item 4: Rosy Bear (VIP) -->
+<div class="flex flex-col items-center group cursor-pointer">
+<div class="relative w-full aspect-square rounded-2xl bg-gray-800/50 mb-3 p-2 flex items-center justify-center transition-transform group-hover:scale-105">
+<!-- VIP Badge -->
+<div class="absolute -top-2 -right-2 bg-yellow-400 text-black text-[10px] font-bold px-2 py-1 rounded-full z-10 shadow-lg">VIP</div>
+<img alt="Rosy Bear" class="w-full object-contain rounded-full drop-shadow-xl" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB1fnYn0ZGoaeEymPUrYAA9Jl_e0q7t24FENbtxUA_unOl7uY9nKG7vHGrdZXsb6y3g9S4dQPPS4IH7aTY1KoAXNsvZsaR2lq5eKzGh1W_kW20mOHs71Lx5AvOZynMM3AapGpi9G1yvzZX3A42cPGOELXbRYxdv_Y3mLDJHQa5Xho2f4zn2l2I3My4uxiAKb9-gtjQ3I1VQH3fIp6UXYE3YJml99KuNyj4glxxjVIQFFey7xbDM4wmd5g" style="filter: drop-shadow(0 10px 8px rgba(0,0,0,0.5)); mix-blend-mode: screen;">
+</div>
+<span class="font-semibold text-gray-200 text-sm text-center">Rosy Bear</span>
+<div class="flex items-center space-x-1 mt-1">
+<i class="fa-solid fa-money-bill-wave text-green-500 text-[10px]"></i>
+<span class="text-white font-bold text-sm">400</span>
+</div>
+</div>
+<!-- Item 5: Moon Ring -->
+<div class="flex flex-col items-center group cursor-pointer">
+<div class="relative w-full aspect-square rounded-2xl bg-gray-800/50 mb-3 p-2 flex items-center justify-center transition-transform group-hover:scale-105">
+<img alt="Moon Ring" class="w-[85%] object-contain drop-shadow-xl" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDVTjML76QQ3KFAMff5kEGWZ8BRazZ-n_G3xC80yWzElghTOTwIA8_uAd_3ERzlfsaxj5ubj5Or1tz_YOt2lzjPm7PQ7U-4kd3u7IOohLbbW3B6DdV-ZDqs9PnWTGXW2FA3mk7FgnjFVcOuhG4OLUgNtYuBu8RL-bT-bVijCA858BxoiZUvhoJJ70ESFtYYr5eRr7z9x7Kj5YDr3v0ruKzucZM9250lgfz2pbBXdJd3BGbb9JwaQWBYUg" style="mix-blend-mode: screen; filter: drop-shadow(0 10px 8px rgba(0,0,0,0.5)); transform: rotate(-30deg);">
+</div>
+<span class="font-semibold text-gray-200 text-sm text-center">Moon Ring</span>
+<div class="flex items-center space-x-1 mt-1">
+<i class="fa-solid fa-money-bill-wave text-green-500 text-[10px]"></i>
+<span class="text-white font-bold text-sm">700</span>
+</div>
+</div>
+<!-- Item 6: Ruby Ring (VIP) -->
+<div class="flex flex-col items-center group cursor-pointer">
+<div class="relative w-full aspect-square rounded-2xl bg-gray-800/50 mb-3 p-2 flex items-center justify-center transition-transform group-hover:scale-105">
+<!-- VIP Badge -->
+<div class="absolute -top-2 -right-2 bg-yellow-400 text-black text-[10px] font-bold px-2 py-1 rounded-full z-10 shadow-lg">VIP</div>
+<img alt="Ruby Ring" class="w-[90%] object-contain drop-shadow-xl" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAKFJ_BBFwep_PFMsn7CbCAqLjwhHSVJKImRAnXT8b-FSXM4tphMTt1e9mML_sjsDFJbegcZ_za6RNkqnFPMmK_ibZxopdbhtcOK4nBxnlpbv7NsQjb9zLZuHE-hoCN5stJZcbpgIrTSfyM0mfTxA6AN0shUZYCm98TCAWbcKi1JD6SZfA-g7XGh8UfI_ycRk-XW_5d_CO2Oc6ALKyvmzYVBy1MG3zjAVHEFnZs4JrSqHlP-2l94YcDlA" style="mix-blend-mode: screen; filter: drop-shadow(0 10px 8px rgba(0,0,0,0.5)); transform: rotate(-20deg);">
+</div>
+<span class="font-semibold text-gray-200 text-sm text-center">Ruby Ring</span>
+<div class="flex items-center space-x-1 mt-1">
+<i class="fa-solid fa-money-bill-wave text-green-500 text-[10px]"></i>
+<span class="text-white font-bold text-sm">700</span>
+</div>
+</div>
+</div>
+</div>
+<!-- END: GiftsGrid -->
+<!-- BEGIN: ActionFooter -->
+<div class="absolute bottom-0 left-0 w-full px-6 pb-8 pt-4 bg-gradient-to-t from-[#161616] via-[#161616] to-transparent">
+<button class="w-full bg-gray-800 hover:bg-gray-700 text-white font-bold py-4 rounded-3xl text-lg transition-colors shadow-lg">
+          Send a gift
+        </button>
+</div>
+<!-- END: ActionFooter -->
+</div>
+<!-- END: GiftsModal -->
+</div>
+<!-- END: MainContainer -->
+<script src="../js/animations.js"></script>
+</body></html>

@@ -1,0 +1,328 @@
+<!DOCTYPE html><html class="dark" lang="en" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Chats - Blush</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Be+Vietnam+Pro:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-tertiary-fixed": "#291800",
+                      "on-primary": "#621100",
+                      "on-tertiary-container": "#3f2700",
+                      "on-tertiary-fixed-variant": "#633f00",
+                      "secondary-fixed": "#ffd8e8",
+                      "error-container": "#93000a",
+                      "on-tertiary": "#452b00",
+                      "on-primary-fixed": "#3d0700",
+                      "on-secondary-fixed": "#3d0027",
+                      "surface": "#131313",
+                      "inverse-surface": "#e5e2e1",
+                      "secondary-container": "#bd0183",
+                      "surface-variant": "#353534",
+                      "on-error": "#690005",
+                      "tertiary-container": "#c5861c",
+                      "tertiary": "#ffb951",
+                      "on-surface": "#e5e2e1",
+                      "on-secondary-fixed-variant": "#8a005e",
+                      "surface-bright": "#393939",
+                      "on-secondary-container": "#ffd5e6",
+                      "outline-variant": "#5b413a",
+                      "inverse-primary": "#b52701",
+                      "secondary-fixed-dim": "#ffafd5",
+                      "error": "#ffb4ab",
+                      "on-surface-variant": "#e3beb6",
+                      "surface-container-lowest": "#0e0e0e",
+                      "outline": "#aa8982",
+                      "on-primary-container": "#5a0e00",
+                      "secondary": "#ffafd5",
+                      "on-background": "#e5e2e1",
+                      "on-error-container": "#ffdad6",
+                      "surface-dim": "#131313",
+                      "surface-container-high": "#2a2a2a",
+                      "on-primary-fixed-variant": "#8a1c00",
+                      "tertiary-fixed-dim": "#ffb951",
+                      "surface-container-highest": "#353534",
+                      "tertiary-fixed": "#ffddb3",
+                      "primary": "#ffb4a3",
+                      "surface-container-low": "#1c1b1b",
+                      "on-secondary": "#620042",
+                      "primary-container": "#ff5c35",
+                      "inverse-on-surface": "#313030",
+                      "surface-container": "#201f1f",
+                      "background": "#131313",
+                      "primary-fixed": "#ffdad2",
+                      "primary-fixed-dim": "#ffb4a3",
+                      "surface-tint": "#ffb4a3"
+              },
+              "borderRadius": {
+                      "DEFAULT": "1rem",
+                      "lg": "2rem",
+                      "xl": "3rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "unit": "8px",
+                      "container-margin": "24px",
+                      "stack-sm": "8px",
+                      "section-gap": "48px",
+                      "stack-lg": "32px",
+                      "stack-md": "16px",
+                      "gutter": "16px"
+              },
+              "fontFamily": {
+                      "body-lg": [
+                              "Be Vietnam Pro"
+                      ],
+                      "headline-lg-mobile": [
+                              "Plus Jakarta Sans"
+                      ],
+                      "headline-xl": [
+                              "Plus Jakarta Sans"
+                      ],
+                      "label-sm": [
+                              "Plus Jakarta Sans"
+                      ],
+                      "body-md": [
+                              "Be Vietnam Pro"
+                      ],
+                      "headline-lg": [
+                              "Plus Jakarta Sans"
+                      ],
+                      "label-md": [
+                              "Plus Jakarta Sans"
+                      ]
+              },
+              "fontSize": {
+                      "body-lg": [
+                              "18px",
+                              {
+                                      "lineHeight": "28px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-lg-mobile": [
+                              "28px",
+                              {
+                                      "lineHeight": "36px",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "headline-xl": [
+                              "48px",
+                              {
+                                      "lineHeight": "56px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "800"
+                              }
+                      ],
+                      "label-sm": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "body-md": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-lg": [
+                              "32px",
+                              {
+                                      "lineHeight": "40px",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "label-md": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "600"
+                              }
+                      ]
+              }
+            }
+          }
+        }
+    </script>
+<style>
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .blur-msg {
+            filter: blur(4px);
+            user-select: none;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background antialiased pb-32">
+<!-- BEGIN: Custom skeleton loader (mirrors page layout) -->
+<div id="page-skeleton" style="position:fixed;inset:0;z-index:9999;background:#0e0e0e;overflow-y:auto">
+<div style="width:100%;max-width:28rem;margin:0 auto;padding:1rem 1.5rem 4rem">
+<!-- Header: Chats title + coins pill -->
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2rem">
+<div class="skeleton-block" style="height:2rem;width:6rem;border-radius:.5rem"></div>
+<div class="skeleton-block" style="width:4.5rem;height:2.25rem;border-radius:9999px"></div>
+</div>
+<!-- Story circles -->
+<div style="display:flex;gap:1.25rem;margin-bottom:2rem">
+<div style="display:flex;flex-direction:column;align-items:center;gap:.5rem"><div class="skeleton-block" style="width:4rem;height:4rem;border-radius:9999px"></div><div class="skeleton-block" style="height:.75rem;width:3rem;border-radius:9999px"></div></div>
+<div style="display:flex;flex-direction:column;align-items:center;gap:.5rem"><div class="skeleton-block" style="width:4rem;height:4rem;border-radius:9999px"></div><div class="skeleton-block" style="height:.75rem;width:3rem;border-radius:9999px"></div></div>
+<div style="display:flex;flex-direction:column;align-items:center;gap:.5rem"><div class="skeleton-block" style="width:4rem;height:4rem;border-radius:9999px"></div><div class="skeleton-block" style="height:.75rem;width:3rem;border-radius:9999px"></div></div>
+<div style="display:flex;flex-direction:column;align-items:center;gap:.5rem"><div class="skeleton-block" style="width:4rem;height:4rem;border-radius:9999px"></div><div class="skeleton-block" style="height:.75rem;width:3rem;border-radius:9999px"></div></div>
+</div>
+<!-- Tabs -->
+<div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #353534;margin-bottom:1.5rem;padding-bottom:1rem">
+<div style="display:flex;gap:2rem">
+<div class="skeleton-block" style="height:1.25rem;width:4.5rem;border-radius:.375rem"></div>
+<div class="skeleton-block" style="height:1.25rem;width:4.5rem;border-radius:.375rem"></div>
+</div>
+<div class="skeleton-block" style="height:1.5rem;width:1.5rem;border-radius:.375rem"></div>
+</div>
+<!-- Chat list -->
+<div style="display:flex;flex-direction:column;gap:1.25rem">
+<div style="display:flex;align-items:center;gap:1rem">
+<div class="skeleton-block" style="width:3.75rem;height:3.75rem;border-radius:9999px;flex-shrink:0"></div>
+<div style="flex:1;display:flex;flex-direction:column;gap:.5rem">
+<div style="display:flex;justify-content:space-between"><div class="skeleton-block" style="height:1rem;width:5rem;border-radius:.375rem"></div><div class="skeleton-block" style="height:.75rem;width:3.5rem;border-radius:9999px"></div></div>
+<div class="skeleton-block" style="height:1rem;width:90%;border-radius:9999px"></div>
+</div>
+</div>
+<div style="display:flex;align-items:center;gap:1rem">
+<div class="skeleton-block" style="width:3.75rem;height:3.75rem;border-radius:9999px;flex-shrink:0"></div>
+<div style="flex:1;display:flex;flex-direction:column;gap:.5rem">
+<div style="display:flex;justify-content:space-between"><div class="skeleton-block" style="height:1rem;width:4rem;border-radius:.375rem"></div><div class="skeleton-block" style="height:.75rem;width:3.5rem;border-radius:9999px"></div></div>
+<div class="skeleton-block" style="height:1rem;width:75%;border-radius:9999px"></div>
+</div>
+</div>
+<div style="display:flex;align-items:center;gap:1rem">
+<div class="skeleton-block" style="width:3.75rem;height:3.75rem;border-radius:9999px;flex-shrink:0"></div>
+<div style="flex:1;display:flex;flex-direction:column;gap:.5rem">
+<div style="display:flex;justify-content:space-between"><div class="skeleton-block" style="height:1rem;width:4.5rem;border-radius:.375rem"></div><div class="skeleton-block" style="height:.75rem;width:3.5rem;border-radius:9999px"></div></div>
+<div class="skeleton-block" style="height:1rem;width:85%;border-radius:9999px"></div>
+</div>
+</div>
+<div style="display:flex;align-items:center;gap:1rem">
+<div class="skeleton-block" style="width:3.75rem;height:3.75rem;border-radius:9999px;flex-shrink:0"></div>
+<div style="flex:1;display:flex;flex-direction:column;gap:.5rem">
+<div style="display:flex;justify-content:space-between"><div class="skeleton-block" style="height:1rem;width:5.5rem;border-radius:.375rem"></div><div class="skeleton-block" style="height:.75rem;width:3.5rem;border-radius:9999px"></div></div>
+<div class="skeleton-block" style="height:1rem;width:65%;border-radius:9999px"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- END: Custom skeleton loader -->
+<!-- Top App Bar -->
+<header class="sticky top-0 z-40 w-full pt-gutter pb-4 px-container-margin flex justify-between items-center">
+<h1 class="text-primary dark:text-primary font-headline-lg-mobile text-headline-lg-mobile tracking-tighter">Chats</h1>
+<div class="flex items-center gap-2 bg-surface-container-high py-2 px-4 rounded-full border border-outline/20">
+<span class="material-symbols-outlined text-tertiary" style="font-variation-settings: &quot;FILL&quot; 1;">monetization_on</span>
+<span class="font-label-md text-label-md text-on-surface">50</span>
+</div>
+</header>
+<main class="w-full">
+<!-- Tabs -->
+
+<!-- Horizontal Scroll Section -->
+<section class="mb-section-gap">
+
+<div class="flex gap-4 overflow-x-auto no-scrollbar px-container-margin pb-4">
+<!-- Story Item 1 -->
+<div class="flex flex-col items-center gap-2 shrink-0 w-[72px]">
+<div class="w-16 h-16 rounded-full p-[2px] bg-gradient-to-tr from-primary via-secondary to-tertiary">
+<img class="w-full h-full rounded-full border-2 border-surface object-cover" data-alt="A futuristic, vibrant 3D portrait of an elegant AI companion with glowing neon accents set against a dark premium backdrop." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCCJIdP1SGBDfL91s3Vl-MumQeTm86vjtC1JP-hfLdAYp4UrzTtQbDK9b8i53-EAQpbAIrVgGDMFrJLiOjsTICrRl3VxIJrFvs6opQeXq8w9n561dmtQpoTaR-Gvt9p_KUad3BCmYC0Wg5kFgvUfCqvv8dagEUi1MVaFcXj0ORS38R1x-9Af5-G1h-MLnB-yf2C1mqTdXEblivzrpzVrIA1johsyRW_xEmSh8lhNuuucimEj6Pdwqz_eA">
+</div>
+<span class="font-label-sm text-label-sm text-center truncate w-full">Luna</span>
+</div>
+<!-- Story Item 2 -->
+<div class="flex flex-col items-center gap-2 shrink-0 w-[72px]">
+<div class="w-16 h-16 rounded-full p-[2px] bg-gradient-to-tr from-primary via-secondary to-tertiary">
+<img class="w-full h-full rounded-full border-2 border-surface object-cover" data-alt="A stylized 3D avatar of a sophisticated, sharply dressed male AI assistant with subtle pink rim lighting in a sleek dark environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAe2OEvAxUzwZVmXYJO3LjqH6XVCeIBXc1QdHqULSaiQNZ_uDY9xRO8CPDzLdxYPEC7EST3nkzGP8yBJhAGSuaaFsgwFS8BhEC4CSkFw295hq5P9ow_wfvGfAmo-5mzs2YYJkGqf9aFnrq-QImvgPEpixQiFLuDjMAtm90m16WXmrZqyJfXRHvyoLb42e2H40LRuJosZv6RrLHSwB7iJkit3sQbPdBJdhEE9OCAkv6ptcHMV_MgazCyEw">
+</div>
+<span class="font-label-sm text-label-sm text-center truncate w-full">Felix</span>
+</div>
+<!-- Story Item 3 -->
+<div class="flex flex-col items-center gap-2 shrink-0 w-[72px]">
+<div class="w-16 h-16 rounded-full p-[2px] bg-surface-variant">
+<img class="w-full h-full rounded-full border-2 border-surface object-cover" data-alt="A soft, glassmorphic 3D rendering of a friendly robotic companion with gentle curved edges and warm orange lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDub9EvMPJcW7bUmAnAwB3IVTMah3zksrFBuw2GY06Ssqz24xNuv6nk76a2vLGKxLggYX7PTeJ73_suFQxcR1Nai0GDxRZlCc7t3kdAAYnzvrNJS-jKfOcGJOZTSYHBH-QRu-rz17g6RXEVVoPuE_CPiUiRSGZ9DHjDhpBCpN44-rQVNuLFYd_nenuqlQK6MhBEaZuRsnBoNA_xvRGGTMWnrgQS5jRPtW42hq7enZqFucm_sXiF519JNQ">
+</div>
+<span class="font-label-sm text-label-sm text-center truncate w-full">Nova</span>
+</div>
+<!-- Story Item 4 -->
+<div class="flex flex-col items-center gap-2 shrink-0 w-[72px]">
+
+
+</div>
+</div>
+</section><div class="px-container-margin flex justify-between items-center border-b border-surface-variant mb-stack-md w-full">
+  <div class="flex flex-1">
+    <button class="flex-1 pb-2 border-b-2 border-primary text-primary font-label-md text-label-md text-center">All chats</button>
+    <button class="flex-1 pb-2 border-b-2 border-transparent text-on-surface-variant hover:text-on-surface transition-colors font-label-md text-label-md text-center">Favorites</button>
+  </div>
+  <button class="pb-2 px-4 text-primary hover:text-secondary transition-colors text-on-surface-variant">
+    <span class="material-symbols-outlined">add</span>
+  </button>
+</div>
+<!-- Chat List -->
+<section class="flex flex-col px-container-margin gap-2">
+<!-- Chat Item 1 -->
+
+<!-- Chat Item 2 (Blush News) -->
+
+<!-- Chat Item 3 -->
+<div class="flex items-center gap-4 p-4 rounded-xl hover:bg-surface-container transition-colors cursor-pointer relative">
+<img class="w-[60px] h-[60px] rounded-full object-cover" data-alt="A highly detailed 3D render of a cute, artistic AI persona with pastel hair and a casual, welcoming smile, set against a dark ambient background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBng3IhR4ocx565rR_mB5iuXrtcy4iidFnAvhW7AO0tw4laoQhFtG_YBCbkdjMJMQ6WUFqePyG1ny0_m1XH7VgNnEC9bugdIb_PtgiZKMpaN3oVWGkA_aKlzsuw9qCneBbMT2cnEtzQdImpOLt3bx4YUB5A_YfH13mg1fB3fQtoR8NIbp6WOdYTS-McSG5rwt8Y2Yh6Jkvhjx5RKLtl4VK6hKpRcCMcmXuC3tVLVKtKJVzY684IuRXxwQ">
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-baseline mb-1">
+<h3 class="font-label-md text-label-md text-on-surface truncate pr-2">Harper</h3>
+<span class="font-label-sm text-label-sm text-on-surface-variant shrink-0">Yesterday</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant truncate"><span style="text-align: center; white-space: normal; background-color: rgb(19, 19, 19);" class="">Unleash the power of AI art and craft unique characters to fall in love with!</span></p>
+</div>
+</div>
+<!-- Chat Item 4 (Blurred) -->
+
+<!-- Chat Item 5 (Blurred) -->
+
+<!-- Chat Item 6 (Blurred) -->
+
+</section>
+</main>
+<!-- Bottom Nav Bar -->
+
+
+
+<nav class="fixed bottom-4 left-4 right-4 z-50 flex items-center justify-between bg-[#252525]/95 backdrop-blur-lg rounded-[32px] px-2 py-2 shadow-[0_-5px_20px_rgba(0,0,0,0.5)]">
+<a href="feed.html" class="flex-1 flex items-center justify-center py-2 rounded-[24px] transition-all opacity-60 hover:opacity-100 cursor-pointer" title="Feed">
+<img src="https://i.ibb.co/hR2htXpk/football-card.png" alt="Feed" class="w-6 h-6 object-contain">
+</a>
+<a href="Discover.html" class="flex-1 flex items-center justify-center py-2 rounded-[24px] transition-all opacity-60 hover:opacity-100 cursor-pointer" title="Discover">
+<img src="https://i.ibb.co/Zp5ZML9X/browser.png" alt="Discover" class="w-6 h-6 object-contain">
+</a>
+<a href="chat.html" class="flex-1 flex items-center justify-center py-2 rounded-[24px] bg-[#3A3A3A] transition-all cursor-pointer" title="Chat">
+<img src="https://i.ibb.co/k2yRYWGk/ai-technology.png" alt="Chat" class="w-6 h-6 object-contain">
+</a>
+<a href="user-profile.html" class="flex-1 flex items-center justify-center py-2 rounded-[24px] transition-all opacity-60 hover:opacity-100 cursor-pointer" title="Profile">
+<img src="https://i.ibb.co/kVrCvk98/user-1.png" alt="Profile" class="w-6 h-6 object-contain">
+</a>
+</nav>
+
+
+
+<script src="js/animations.js"></script>
+</body></html>

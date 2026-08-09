@@ -1,0 +1,282 @@
+<!DOCTYPE html><html class="dark" lang="en" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>What's your style?</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Be+Vietnam+Pro:wght@400&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+                "on-primary-container": "#5a0e00",
+                "secondary-fixed-dim": "#ffafd5",
+                "secondary-container": "#bd0183",
+                "on-surface-variant": "#e3beb6",
+                "primary-container": "#ff5c35",
+                "surface-container-high": "#2a2a2a",
+                "surface-dim": "#131313",
+                "surface-variant": "#353534",
+                "on-primary-fixed-variant": "#8a1c00",
+                "on-tertiary": "#452b00",
+                "on-secondary-fixed": "#3d0027",
+                "on-error": "#690005",
+                "primary-fixed-dim": "#ffb4a3",
+                "on-primary-fixed": "#3d0700",
+                "surface-tint": "#ffb4a3",
+                "surface": "#131313",
+                "primary": "#ffb4a3",
+                "surface-container": "#201f1f",
+                "tertiary": "#ffb951",
+                "primary-fixed": "#ffdad2",
+                "surface-bright": "#393939",
+                "outline-variant": "#5b413a",
+                "tertiary-container": "#c5861c",
+                "outline": "#aa8982",
+                "on-tertiary-fixed": "#291800",
+                "error-container": "#93000a",
+                "on-secondary-container": "#ffd5e6",
+                "surface-container-highest": "#353534",
+                "tertiary-fixed": "#ffddb3",
+                "on-secondary-fixed-variant": "#8a005e",
+                "inverse-surface": "#e5e2e1",
+                "on-background": "#e5e2e1",
+                "on-tertiary-fixed-variant": "#633f00",
+                "surface-container-lowest": "#0e0e0e",
+                "secondary": "#ffafd5",
+                "secondary-fixed": "#ffd8e8",
+                "on-surface": "#e5e2e1",
+                "error": "#ffb4ab",
+                "on-error-container": "#ffdad6",
+                "inverse-on-surface": "#313030",
+                "tertiary-fixed-dim": "#ffb951",
+                "on-primary": "#621100",
+                "on-secondary": "#620042",
+                "surface-container-low": "#1c1b1b",
+                "on-tertiary-container": "#3f2700",
+                "background": "#131313",
+                "inverse-primary": "#b52701"
+        },
+        "borderRadius": {
+                "DEFAULT": "1rem",
+                "lg": "2rem",
+                "xl": "3rem",
+                "full": "9999px"
+        },
+        "spacing": {
+                "stack-lg": "32px",
+                "unit": "8px",
+                "container-margin": "24px",
+                "section-gap": "48px",
+                "stack-md": "16px",
+                "gutter": "16px",
+                "stack-sm": "8px"
+        },
+        "fontFamily": {
+                "body-md": [
+                        "Be Vietnam Pro"
+                ],
+                "headline-lg": [
+                        "Plus Jakarta Sans"
+                ],
+                "body-lg": [
+                        "Be Vietnam Pro"
+                ],
+                "headline-lg-mobile": [
+                        "Plus Jakarta Sans"
+                ],
+                "label-sm": [
+                        "Plus Jakarta Sans"
+                ],
+                "label-md": [
+                        "Plus Jakarta Sans"
+                ],
+                "headline-xl": [
+                        "Plus Jakarta Sans"
+                ]
+        },
+        "fontSize": {
+                "body-md": [
+                        "16px",
+                        {
+                                "lineHeight": "24px",
+                                "fontWeight": "400"
+                        }
+                ],
+                "headline-lg": [
+                        "32px",
+                        {
+                                "lineHeight": "40px",
+                                "letterSpacing": "-0.01em",
+                                "fontWeight": "700"
+                        }
+                ],
+                "body-lg": [
+                        "18px",
+                        {
+                                "lineHeight": "28px",
+                                "fontWeight": "400"
+                        }
+                ],
+                "headline-lg-mobile": [
+                        "28px",
+                        {
+                                "lineHeight": "36px",
+                                "fontWeight": "700"
+                        }
+                ],
+                "label-sm": [
+                        "12px",
+                        {
+                                "lineHeight": "16px",
+                                "fontWeight": "500"
+                        }
+                ],
+                "label-md": [
+                        "14px",
+                        {
+                                "lineHeight": "20px",
+                                "fontWeight": "600"
+                        }
+                ],
+                "headline-xl": [
+                        "48px",
+                        {
+                                "lineHeight": "56px",
+                                "letterSpacing": "-0.02em",
+                                "fontWeight": "800"
+                        }
+                ]
+        }
+},
+    },
+  }
+</script>
+<style data-purpose="custom-styles">
+    body {
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    .card-overlay {
+      background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 40%);
+    }
+    
+    .carousel-container {
+      scroll-snap-type: x mandatory;
+      scroll-behavior: smooth;
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    .carousel-container::-webkit-scrollbar {
+      display: none;
+    }
+    .carousel-item {
+      scroll-snap-align: center;
+      flex: 0 0 85%;
+      margin: 0 1%;
+      transition: transform 0.3s ease, filter 0.3s ease;
+    }
+    
+    /* Blurred inactive state handling via JS since purely CSS scrolling state is complex */
+    .carousel-item.inactive {
+      filter: blur(4px) brightness(0.6);
+      transform: scale(0.95);
+    }
+    
+    /* padding to center the first and last items */
+    .carousel-padding {
+      flex: 0 0 calc(7.5% - 1%); /* 7.5% minus the item margin */
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col bg-background text-on-background pb-container-margin pt-12 overflow-hidden selection:bg-primary selection:text-on-primary">
+<!-- BEGIN: Top Navigation & Progress -->
+<header class="flex items-center justify-between mb-stack-lg px-container-margin" data-purpose="top-navigation">
+<!-- Back Button -->
+<button onclick="window.location.href='age-interest.html'" aria-label="Go back" class="p-2 -ml-2 text-on-surface hover:opacity-80 transition-opacity cursor-pointer">
+<svg fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" width="24">
+<path d="M15 18l-6-6 6-6"></path>
+</svg>
+</button>
+<!-- Progress Bar -->
+<div class="flex-1 mx-8 max-w-[160px]" data-purpose="progress-bar">
+<div class="h-1.5 w-full bg-surface-variant rounded-full overflow-hidden flex">
+<div class="h-full bg-primary-container w-1/2 rounded-full"></div>
+</div>
+</div>
+<!-- Spacer for flex alignment -->
+<div class="w-8"></div>
+</header>
+<!-- END: Top Navigation & Progress -->
+<!-- BEGIN: Main Content Area -->
+<main class="flex-1 flex flex-col w-full" data-purpose="main-content">
+<!-- Header Text -->
+<div class="text-center mb-stack-lg px-container-margin" data-purpose="header-text">
+<h1 class="font-headline-lg-mobile text-on-surface mb-stack-sm">What's your style?</h1>
+<p class="font-body-md text-on-surface-variant">Choose your preferred look</p>
+</div>
+<!-- Swipe Carousel -->
+<div class="w-full flex-1 relative flex flex-col justify-center" data-purpose="style-carousel">
+<div class="carousel-container flex overflow-x-auto w-full h-[60vh] min-h-[400px] max-h-[500px]" id="carousel">
+<!-- Left Padding -->
+<div class="carousel-padding shrink-0"></div>
+<!-- Realistic Option Card -->
+<div class="carousel-item relative rounded-xl overflow-hidden shadow-lg active-card" data-purpose="realistic-card">
+<img alt="Realistic style preview" class="absolute inset-0 w-full h-full object-cover" src="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/download%20(4).jpg">
+<!-- Gradient Overlay and Label -->
+<div class="absolute inset-x-0 bottom-0 h-1/2 card-overlay flex flex-col justify-end pb-8 px-6 z-10">
+<span class="text-center font-headline-lg text-white tracking-wide">Realistic</span>
+</div>
+</div>
+<!-- Anime Option Card -->
+<div class="carousel-item relative rounded-xl overflow-hidden shadow-lg inactive" data-purpose="anime-card">
+<img alt="Anime style preview" class="absolute inset-0 w-full h-full object-cover" src="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/ChatGPT%20Image%20Aug%208%2C%202026%2C%2012_56_47%20AM.png">
+<!-- Gradient Overlay and Label -->
+<div class="absolute inset-x-0 bottom-0 h-1/2 card-overlay flex flex-col justify-end pb-8 px-6 z-10">
+<span class="text-center font-headline-lg text-white tracking-wide">Anime</span>
+</div>
+</div>
+<!-- Right Padding -->
+<div class="carousel-padding shrink-0"></div>
+</div>
+</div>
+</main>
+<!-- END: Main Content Area -->
+<!-- Bottom Action -->
+<div class="mt-auto px-container-margin pt-stack-md w-full" data-purpose="bottom-action">
+<button onclick="window.location.href='eye-interest.html'" class="w-full bg-white text-black font-label-md py-4 rounded-full hover:bg-gray-100 transition-colors active:scale-95 duration-200 cursor-pointer">
+    Continue
+  </button>
+</div>
+<script>
+  // Simple intersection observer to handle active/inactive blur states in carousel
+  document.addEventListener('DOMContentLoaded', () => {
+    const carousel = document.getElementById('carousel');
+    const items = document.querySelectorAll('.carousel-item');
+    
+    const observerOptions = {
+      root: carousel,
+      rootMargin: '0px',
+      threshold: 0.6 // Card needs to be mostly visible to be active
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.remove('inactive');
+          entry.target.classList.add('active-card');
+        } else {
+          entry.target.classList.add('inactive');
+          entry.target.classList.remove('active-card');
+        }
+      });
+    }, observerOptions);
+
+    items.forEach(item => observer.observe(item));
+  });
+</script>
+
+
+<script src="js/animations.js"></script>
+</body></html>

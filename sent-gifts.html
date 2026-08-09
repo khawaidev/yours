@@ -1,0 +1,87 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Elsa's Gifts - Empty State</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<style data-purpose="custom-fonts">
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+  </style>
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'blush-bg': '#121212',
+            'blush-text': '#FFFFFF',
+            'blush-subtext': '#B3B3B3',
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-blush-bg text-blush-text min-h-screen flex flex-col items-center justify-start overflow-hidden w-full max-w-md mx-auto relative font-sans antialiased h-[100dvh]">
+<!-- BEGIN: Top Navigation Bar -->
+<!-- Top navigation bar with back button and title -->
+<header class="w-full flex items-center justify-center p-4 relative h-14 shrink-0 z-10" data-purpose="top-navigation">
+<!-- Back Button -->
+<button aria-label="Go back" class="absolute left-4 p-2 text-white hover:opacity-80 transition-opacity">
+<svg fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="3" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+<path d="m15 18-6-6 6-6"></path>
+</svg>
+</button>
+<!-- Title -->
+<h1 class="text-[19px] font-extrabold tracking-tight">Elsa's gifts</h1>
+</header>
+<!-- END: Top Navigation Bar -->
+<!-- BEGIN: Main Content Area -->
+<main class="flex-1 w-full flex flex-col items-center justify-center px-6 pb-20 relative z-0" data-purpose="main-content">
+<!-- BEGIN: Image Stack -->
+<!-- Decorative stack of images showing character variants -->
+<div class="relative w-64 h-48 mb-8" data-purpose="image-stack">
+<!-- Back Image (Left) -->
+<div class="absolute left-0 top-1/2 -translate-y-1/2 -rotate-12 w-[110px] h-[130px] rounded-[1.25rem] overflow-hidden shadow-lg border border-[#2a2a2a]">
+<img alt="Character variant 1" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC1EMeBIlqP0l1UFQsdD4QtxqWEbMzAg7HxswUO3kPzIp00XIb78RnBRM6BBDI_3ol1x510nFsm8WgeHMQxbmxPEmk0FxEB-7070GKrHq0l-N84P4TJ_r8psIsoU-Xx_MCqY1vfb0C0WrEnEK3tjBsjC24ynrj5fKswmDzCxKTv3eflNBDKeJ3MwDpDwO4bhHp-WBqfhSKFx4kiUnqWqrvtdKWeiEaDZQbvsq9QCH3rLkAstHErkE94pQ">
+</div>
+<!-- Middle Image -->
+<div class="absolute left-[22%] top-1/2 -translate-y-[55%] -rotate-6 w-[120px] h-[140px] rounded-[1.25rem] overflow-hidden shadow-xl border border-[#2a2a2a] z-10">
+<img alt="Character variant 2" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBPPxG50FSOePIVWUcQY8Vyj7PoMVatRAgM5uDiSfblPNXKk5F9z2nTjcJUtgQCyJhY0AKpj_hxIPSlT_JR85iXj12lKc1O5s0oJo16KFHnj3ZAM96-MG1k-N7KTD92_2zW1-ju4A-DX4h-l_tYaZMLW171elA_DJy2M0Jd4eCeSBjm0qT-VWAXLArogdcj4S4PJsPezDRThbpEloWwqLQnF5eeS2bqOCwIpps2eiCpU2Fnquo12Fpelg">
+</div>
+<!-- Front Image (Right) -->
+<div class="absolute right-0 top-1/2 -translate-y-1/2 rotate-6 w-[140px] h-[160px] rounded-[1.5rem] overflow-hidden shadow-2xl border border-[#2a2a2a] z-20">
+<img alt="Character variant 3" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCFtuujlCNkbhSrKsZ29mZRoQjbzQzyNymQAyjtV8umo_HE2nGe0uQgPaCKmbs4tHvmXGHJUZbhP9hIis6pHRnwrjp6gfHGva8C19WeZKGc25YuABTGmlnTKtg0fgVPTSNVYT2c0SxXXTySL4tQkZOny9TUp-BPq2uCJU0nkvyNv5EVXchlIECsMefUsptKD6fGLANWa5SuCWe_882ZE7onpJIWUqw0AR1vfsDbazmoRLJ8UsLrc9T0bw">
+</div>
+</div>
+<!-- END: Image Stack -->
+<!-- BEGIN: Text Content -->
+<!-- Headline and descriptive text -->
+<div class="text-center mb-10 flex flex-col items-center max-w-[280px]" data-purpose="text-content">
+<h2 class="text-[22px] font-extrabold mb-3 tracking-tight">Nothing here yet</h2>
+<p class="text-[15px] leading-snug text-blush-text font-normal">
+        You haven't sent anything to your match yet.<br>
+        Send a gift in chat and it will appear here.
+      </p>
+</div>
+<!-- END: Text Content -->
+<!-- BEGIN: Call to Action -->
+<!-- Primary button to initiate sending a gift -->
+<button class="bg-white text-black font-bold text-[17px] py-[14px] px-8 rounded-full flex items-center justify-center gap-2 hover:bg-gray-100 transition-colors w-auto active:scale-95 duration-100 shadow-[0_4px_14px_0_rgba(255,255,255,0.1)]" data-purpose="cta-button">
+<svg fill="currentColor" height="22" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewBox="0 0 24 24" width="22" xmlns="http://www.w3.org/2000/svg">
+<rect height="4" rx="1" width="18" x="3" y="8"></rect>
+<path d="M12 8v13"></path>
+<path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"></path>
+<path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5"></path>
+</svg>
+      Send a gift
+    </button>
+<!-- END: Call to Action -->
+</main>
+<!-- END: Main Content Area -->
+<script src="js/animations.js"></script>
+</body></html>

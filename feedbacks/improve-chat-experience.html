@@ -1,0 +1,135 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Improve Chat Experience</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<style data-purpose="custom-fonts">
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #1a1a1a;
+      color: #ffffff;
+    }
+  </style>
+<script data-purpose="tailwind-config">
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              dark: '#1a1a1a',
+              card: '#222222',
+              border: '#333333',
+              accent: '#ff5c39',
+              text: {
+                main: '#ffffff',
+                muted: '#a0a0a0'
+              }
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-brand-dark min-h-screen flex flex-col items-center pt-8 pb-24 px-4 sm:px-6 relative">
+<!-- BEGIN: Top Navigation -->
+<header class="w-full max-w-md flex items-center justify-between mb-8 z-10 relative">
+<button aria-label="Go back" class="p-2 -ml-2 text-brand-text-main hover:opacity-80 transition-opacity">
+<svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M15.75 19.5L8.25 12l7.5-7.5" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</button>
+<!-- Progress Bar -->
+<div class="flex-1 mx-4 max-w-[200px] h-2 bg-brand-border rounded-full overflow-hidden">
+<div class="h-full bg-brand-accent rounded-full w-[60%]"></div>
+</div>
+<button aria-label="Close" class="p-2 -mr-2 text-brand-text-main hover:opacity-80 transition-opacity">
+<svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</button>
+</header>
+<!-- END: Top Navigation -->
+<!-- BEGIN: Main Content -->
+<main class="w-full max-w-md flex flex-col items-center w-full z-10 relative pb-20">
+<!-- Header Text -->
+<div class="text-center mb-8 w-full px-2">
+<h1 class="text-[32px] leading-tight font-extrabold mb-3 tracking-tight">How can we improve<br>your chat experience?</h1>
+<p class="text-brand-text-muted text-sm font-medium">Pick as many as you like</p>
+</div>
+<!-- Options List -->
+<div class="w-full flex flex-col gap-3">
+<!-- Option 1 -->
+<label class="flex items-center justify-between p-5 rounded-3xl border-2 border-brand-border bg-[#1f1f1f] cursor-pointer hover:border-gray-500 transition-colors">
+<span class="text-base font-semibold leading-snug max-w-[85%] pr-4">Better memory of previous sessions</span>
+<div class="relative flex items-center justify-center w-7 h-7 rounded-full border-2 border-brand-border">
+<input class="opacity-0 absolute w-full h-full cursor-pointer peer" type="checkbox">
+<div class="w-3.5 h-3.5 rounded-full bg-transparent peer-checked:bg-brand-text-main transition-colors"></div>
+</div>
+</label>
+<!-- Option 2 -->
+<label class="flex items-center justify-between p-5 rounded-3xl border-2 border-brand-border bg-[#1f1f1f] cursor-pointer hover:border-gray-500 transition-colors">
+<span class="text-base font-semibold leading-snug max-w-[85%] pr-4">A library with various scenarios to role-play</span>
+<div class="relative flex items-center justify-center w-7 h-7 rounded-full border-2 border-brand-border">
+<input class="opacity-0 absolute w-full h-full cursor-pointer peer" type="checkbox">
+<div class="w-3.5 h-3.5 rounded-full bg-transparent peer-checked:bg-brand-text-main transition-colors"></div>
+</div>
+</label>
+<!-- Option 3 -->
+<label class="flex items-center justify-between p-5 rounded-3xl border-2 border-brand-border bg-[#1f1f1f] cursor-pointer hover:border-gray-500 transition-colors">
+<span class="text-base font-semibold leading-snug max-w-[85%] pr-4">More photos during role-play</span>
+<div class="relative flex items-center justify-center w-7 h-7 rounded-full border-2 border-brand-border">
+<input class="opacity-0 absolute w-full h-full cursor-pointer peer" type="checkbox">
+<div class="w-3.5 h-3.5 rounded-full bg-transparent peer-checked:bg-brand-text-main transition-colors"></div>
+</div>
+</label>
+<!-- Option 4 -->
+<label class="flex items-center justify-between p-5 rounded-3xl border-2 border-brand-border bg-[#1f1f1f] cursor-pointer hover:border-gray-500 transition-colors">
+<span class="text-base font-semibold leading-snug max-w-[85%] pr-4">Initiate role-playing scenes based on the characters' personalities</span>
+<div class="relative flex items-center justify-center w-7 h-7 rounded-full border-2 border-brand-border">
+<input class="opacity-0 absolute w-full h-full cursor-pointer peer" type="checkbox">
+<div class="w-3.5 h-3.5 rounded-full bg-transparent peer-checked:bg-brand-text-main transition-colors"></div>
+</div>
+</label>
+<!-- Option 5 -->
+<label class="flex items-center justify-between p-5 rounded-3xl border-2 border-brand-border bg-[#1f1f1f] cursor-pointer hover:border-gray-500 transition-colors">
+<span class="text-base font-semibold leading-snug max-w-[85%] pr-4">Initiate role-playing scenes based on my preferences</span>
+<div class="relative flex items-center justify-center w-7 h-7 rounded-full border-2 border-brand-border">
+<input class="opacity-0 absolute w-full h-full cursor-pointer peer" type="checkbox">
+<div class="w-3.5 h-3.5 rounded-full bg-transparent peer-checked:bg-brand-text-main transition-colors"></div>
+</div>
+</label>
+<!-- Option 6 -->
+<label class="flex items-center justify-between p-5 rounded-3xl border-2 border-brand-border bg-[#1f1f1f] cursor-pointer hover:border-gray-500 transition-colors">
+<span class="text-base font-semibold leading-snug max-w-[85%] pr-4">An option to choose role-play type on the spot (kinky, romantic, submissive, etc...)</span>
+<div class="relative flex items-center justify-center w-7 h-7 rounded-full border-2 border-brand-border">
+<input class="opacity-0 absolute w-full h-full cursor-pointer peer" type="checkbox">
+<div class="w-3.5 h-3.5 rounded-full bg-transparent peer-checked:bg-brand-text-main transition-colors"></div>
+</div>
+</label>
+<!-- Option 7 -->
+<label class="flex items-center justify-between p-5 rounded-3xl border-2 border-brand-border bg-[#1f1f1f] cursor-pointer hover:border-gray-500 transition-colors mb-24">
+<span class="text-base font-semibold leading-snug max-w-[85%] pr-4">Audio messages</span>
+<div class="relative flex items-center justify-center w-7 h-7 rounded-full border-2 border-brand-border">
+<input class="opacity-0 absolute w-full h-full cursor-pointer peer" type="checkbox">
+<div class="w-3.5 h-3.5 rounded-full bg-transparent peer-checked:bg-brand-text-main transition-colors"></div>
+</div>
+</label>
+</div>
+</main>
+<!-- END: Main Content -->
+<!-- BEGIN: Bottom Action Area -->
+<div class="fixed bottom-0 left-0 w-full p-4 flex justify-center z-50 bg-gradient-to-t from-brand-dark via-brand-dark/90 to-transparent pb-8">
+<div class="w-full max-w-md">
+<button class="w-full bg-white text-black py-4 rounded-full font-bold text-lg hover:bg-gray-200 transition-colors active:scale-[0.98]">
+        Continue
+      </button>
+</div>
+</div>
+<!-- END: Bottom Action Area -->
+<script src="../js/animations.js"></script>
+</body></html>

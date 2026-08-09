@@ -1,0 +1,264 @@
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>What personality do you vibe with?</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@500;600;700;800&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "inverse-on-surface": "#313030",
+                        "on-tertiary-fixed": "#291800",
+                        "surface-tint": "#ffb4a3",
+                        "surface": "#131313",
+                        "surface-container-highest": "#353534",
+                        "tertiary": "#ffb951",
+                        "primary": "#ffb4a3",
+                        "surface-bright": "#393939",
+                        "on-surface-variant": "#e3beb6",
+                        "outline-variant": "#5b413a",
+                        "on-tertiary-container": "#3f2700",
+                        "primary-fixed": "#ffdad2",
+                        "secondary": "#ffafd5",
+                        "tertiary-container": "#c5861c",
+                        "surface-container-high": "#2a2a2a",
+                        "background": "#131313",
+                        "on-error": "#690005",
+                        "on-secondary-fixed": "#3d0027",
+                        "surface-container-low": "#1c1b1b",
+                        "on-secondary": "#620042",
+                        "primary-container": "#ff5c35",
+                        "on-primary-container": "#5a0e00",
+                        "secondary-fixed-dim": "#ffafd5",
+                        "on-surface": "#e5e2e1",
+                        "error": "#ffb4ab",
+                        "tertiary-fixed-dim": "#ffb951",
+                        "on-primary-fixed-variant": "#8a1c00",
+                        "on-error-container": "#ffdad6",
+                        "on-tertiary-fixed-variant": "#633f00",
+                        "surface-container": "#201f1f",
+                        "error-container": "#93000a",
+                        "surface-dim": "#131313",
+                        "on-secondary-container": "#ffd5e6",
+                        "secondary-fixed": "#ffd8e8",
+                        "outline": "#aa8982",
+                        "inverse-surface": "#e5e2e1",
+                        "tertiary-fixed": "#ffddb3",
+                        "secondary-container": "#bd0183",
+                        "on-primary-fixed": "#3d0700",
+                        "on-background": "#e5e2e1",
+                        "on-tertiary": "#452b00",
+                        "on-primary": "#621100",
+                        "surface-variant": "#353534",
+                        "surface-container-lowest": "#0e0e0e",
+                        "primary-fixed-dim": "#ffb4a3",
+                        "on-secondary-fixed-variant": "#8a005e",
+                        "inverse-primary": "#b52701"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter": "16px",
+                        "container-margin": "24px",
+                        "unit": "8px",
+                        "section-gap": "48px",
+                        "stack-sm": "8px",
+                        "stack-lg": "32px",
+                        "stack-md": "16px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Be Vietnam Pro"],
+                        "label-md": ["Plus Jakarta Sans"],
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "body-lg": ["Be Vietnam Pro"],
+                        "label-sm": ["Plus Jakarta Sans"],
+                        "headline-lg-mobile": ["Plus Jakarta Sans"],
+                        "headline-xl": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "label-md": ["14px", { "lineHeight": "20px", "fontWeight": "600" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "fontWeight": "500" }],
+                        "headline-lg-mobile": ["28px", { "lineHeight": "36px", "fontWeight": "700" }],
+                        "headline-xl": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "800" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style type="text/tailwindcss">
+        @layer utilities {
+            .glass-panel {
+                @apply bg-surface/80 backdrop-blur-xl border border-white/5;
+            }
+            .glass-card-active {
+                @apply bg-surface-container-highest/90 border-primary/50 shadow-[0_0_20px_rgba(255,180,163,0.1)];
+            }
+            .gradient-text {
+                @apply bg-gradient-to-r from-primary via-secondary to-tertiary bg-clip-text text-transparent;
+            }
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background min-h-screen flex flex-col font-body-md antialiased selection:bg-primary selection:text-on-primary">
+<!-- Top Navigation Area (Transactional/Linear Intent - Suppressing main Nav Shell, keeping simple top bar) -->
+<header class="w-full pt-12 pb-4 px-container-margin flex items-center justify-between z-50">
+<button onclick="window.location.href='explore-interest.html'" class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-on-surface hover:bg-surface-container-high transition-colors cursor-pointer">
+<span class="material-symbols-outlined" data-icon="arrow_back">arrow_back</span>
+</button>
+<!-- Progress Bar -->
+<div class="flex-1 max-w-[200px] h-1.5 bg-surface-container-highest rounded-full mx-6 overflow-hidden">
+<div class="h-full bg-primary w-1/3 rounded-full relative"></div>
+</div>
+<!-- Placeholder to balance the layout -->
+<div class="w-10 h-10"></div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-1 px-container-margin pb-32 flex flex-col max-w-2xl mx-auto w-full">
+<!-- Header Section -->
+<div class="text-center mb-section-gap pt-gutter">
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile md:font-headline-lg md:text-headline-lg text-on-background mb-stack-sm tracking-tight">
+                What personality do you vibe with?
+            </h1>
+<p class="font-body-md text-body-md text-on-surface-variant">
+                Each character has a unique personality
+            </p>
+</div>
+<!-- Options List -->
+<div class="flex flex-col gap-stack-md">
+<!-- Option 1: The Sweetheart -->
+<label class="relative flex items-center p-gutter rounded-xl glass-panel cursor-pointer hover:bg-surface-container transition-all duration-300 group">
+<input class="peer sr-only" name="personality" type="radio">
+<div class="flex items-center justify-center w-12 h-12 rounded-full bg-surface-container-high text-2xl mr-gutter group-hover:scale-110 transition-transform duration-300">
+                    🥰
+                </div>
+<div class="flex-1">
+<h3 class="font-label-md text-label-md text-on-surface mb-1">The Sweetheart</h3>
+<p class="font-body-md text-sm text-on-surface-variant leading-tight">Caring, romantic, wants to make you smile</p>
+</div>
+<div class="w-6 h-6 rounded-full border-2 border-outline-variant peer-checked:border-primary peer-checked:bg-primary flex items-center justify-center transition-colors ml-4">
+<span class="material-symbols-outlined text-[16px] text-on-primary opacity-0 peer-checked:opacity-100 transition-opacity" data-icon="check" data-weight="fill" style="font-variation-settings: 'FILL' 1;">check</span>
+</div>
+</label>
+<!-- Option 2: The Tease -->
+<label class="relative flex items-center p-gutter rounded-xl glass-panel cursor-pointer hover:bg-surface-container transition-all duration-300 group">
+<input class="peer sr-only" name="personality" type="radio">
+<div class="flex items-center justify-center w-12 h-12 rounded-full bg-surface-container-high text-2xl mr-gutter group-hover:scale-110 transition-transform duration-300">
+                    😏
+                </div>
+<div class="flex-1">
+<h3 class="font-label-md text-label-md text-on-surface mb-1">The Tease</h3>
+<p class="font-body-md text-sm text-on-surface-variant leading-tight">Playful, flirty, keeps you guessing</p>
+</div>
+<div class="w-6 h-6 rounded-full border-2 border-outline-variant peer-checked:border-primary peer-checked:bg-primary flex items-center justify-center transition-colors ml-4">
+<span class="material-symbols-outlined text-[16px] text-on-primary opacity-0 peer-checked:opacity-100 transition-opacity" data-icon="check" data-weight="fill" style="font-variation-settings: 'FILL' 1;">check</span>
+</div>
+</label>
+<!-- Option 3: The Dominant (Pre-selected) -->
+<label class="relative flex items-center p-gutter rounded-xl glass-card-active cursor-pointer transition-all duration-300 group">
+<input checked="" class="peer sr-only" name="personality" type="radio">
+<!-- Active background glow indicator -->
+
+<div class="flex items-center justify-center w-12 h-12 rounded-full bg-surface-container-highest text-2xl mr-gutter scale-110 relative z-10">
+                    👑
+                </div>
+<div class="flex-1 relative z-10">
+<h3 class="font-label-md text-label-md text-on-surface mb-1">The Dominant</h3>
+<p class="font-body-md text-sm text-on-surface-variant leading-tight">Takes control, knows what she wants</p>
+</div>
+<div class="w-6 h-6 rounded-full border-2 border-primary bg-primary flex items-center justify-center transition-colors ml-4 relative z-10">
+<span class="material-symbols-outlined text-[16px] text-on-primary opacity-100 transition-opacity" data-icon="check" data-weight="fill" style="font-variation-settings: 'FILL' 1;">check</span>
+</div>
+</label>
+<!-- Option 4: The Submissive -->
+<label class="relative flex items-center p-gutter rounded-xl glass-panel cursor-pointer hover:bg-surface-container transition-all duration-300 group">
+<input class="peer sr-only" name="personality" type="radio">
+<div class="flex items-center justify-center w-12 h-12 rounded-full bg-surface-container-high text-2xl mr-gutter group-hover:scale-110 transition-transform duration-300">
+                    🥺
+                </div>
+<div class="flex-1">
+<h3 class="font-label-md text-label-md text-on-surface mb-1">The Submissive</h3>
+<p class="font-body-md text-sm text-on-surface-variant leading-tight">Eager to please, follows your lead</p>
+</div>
+<div class="w-6 h-6 rounded-full border-2 border-outline-variant peer-checked:border-primary peer-checked:bg-primary flex items-center justify-center transition-colors ml-4">
+<span class="material-symbols-outlined text-[16px] text-on-primary opacity-0 peer-checked:opacity-100 transition-opacity" data-icon="check" data-weight="fill" style="font-variation-settings: 'FILL' 1;">check</span>
+</div>
+</label>
+<!-- Option 5: The Mysterious -->
+<label class="relative flex items-center p-gutter rounded-xl glass-panel cursor-pointer hover:bg-surface-container transition-all duration-300 group">
+<input class="peer sr-only" name="personality" type="radio">
+<div class="flex items-center justify-center w-12 h-12 rounded-full bg-surface-container-high text-2xl mr-gutter group-hover:scale-110 transition-transform duration-300">
+                    🌙
+                </div>
+<div class="flex-1">
+<h3 class="font-label-md text-label-md text-on-surface mb-1">The Mysterious</h3>
+<p class="font-body-md text-sm text-on-surface-variant leading-tight">Deep, intense, full of secrets</p>
+</div>
+<div class="w-6 h-6 rounded-full border-2 border-outline-variant peer-checked:border-primary peer-checked:bg-primary flex items-center justify-center transition-colors ml-4">
+<span class="material-symbols-outlined text-[16px] text-on-primary opacity-0 peer-checked:opacity-100 transition-opacity" data-icon="check" data-weight="fill" style="font-variation-settings: 'FILL' 1;">check</span>
+</div>
+</label>
+</div>
+</main>
+<!-- Floating Action Area (Bottom Pinned Continue Button) -->
+<div class="fixed bottom-0 left-0 w-full p-container-margin from-background via-background/90 to-transparent z-40 pb-[max(24px,env(safe-area-inset-bottom))] bg-background">
+<button onclick="window.location.href='analyse.html'" class="w-full max-w-2xl mx-auto block bg-primary text-on-primary font-label-md text-label-md py-4 rounded-full hover:brightness-110 active:scale-[0.98] transition-all duration-200 cursor-pointer">Continue</button>
+</div>
+<!-- Script for interactive highlighting logic -->
+<script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const radioButtons = document.querySelectorAll('input[type="radio"][name="personality"]');
+            
+            radioButtons.forEach(radio => {
+                radio.addEventListener('change', (e) => {
+                    // Reset all labels
+                    document.querySelectorAll('label').forEach(label => {
+                        label.className = 'relative flex items-center p-gutter rounded-xl glass-panel cursor-pointer hover:bg-surface-container transition-all duration-300 group';
+                        
+                        // Remove active background element if it exists
+                        const activeBg = label.querySelector('.absolute.inset-0.bg-gradient-to-r');
+                        if (activeBg) activeBg.remove();
+                        
+                        // Reset emoji container
+                        const emojiContainer = label.querySelector('.flex.items-center.justify-center.w-12.h-12');
+                        emojiContainer.className = 'flex items-center justify-center w-12 h-12 rounded-full bg-surface-container-high text-2xl mr-gutter group-hover:scale-110 transition-transform duration-300';
+                    });
+
+                    // Style the checked label
+                    if (e.target.checked) {
+                        const activeLabel = e.target.closest('label');
+                        activeLabel.className = 'relative flex items-center p-gutter rounded-xl glass-card-active cursor-pointer transition-all duration-300 group';
+                        
+                        // Add active background element
+                        const activeBg = document.createElement('div');
+                        activeBg.className = 'absolute inset-0 bg-gradient-to-r from-primary/5 to-transparent rounded-xl opacity-100 pointer-events-none';
+                        activeLabel.insertBefore(activeBg, activeLabel.firstChild.nextSibling);
+                        
+                        // Style active emoji container
+                        const activeEmoji = activeLabel.querySelector('.flex.items-center.justify-center.w-12.h-12');
+                        activeEmoji.className = 'flex items-center justify-center w-12 h-12 rounded-full bg-surface-container-highest text-2xl mr-gutter scale-110 relative z-10 shadow-[0_0_15px_rgba(255,180,163,0.2)]';
+                    }
+                });
+            });
+        });
+    </script>
+
+
+<script src="js/animations.js"></script>
+</body></html>

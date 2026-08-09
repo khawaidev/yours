@@ -1,0 +1,261 @@
+<!DOCTYPE html><html class="dark" lang="en" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Blush Satisfaction Survey</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Be+Vietnam+Pro:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary-fixed": "#ffd8e8",
+                        "inverse-primary": "#b52701",
+                        "surface-container-lowest": "#0e0e0e",
+                        "outline-variant": "#5b413a",
+                        "error-container": "#93000a",
+                        "inverse-surface": "#e5e2e1",
+                        "secondary-fixed-dim": "#ffafd5",
+                        "inverse-on-surface": "#313030",
+                        "on-secondary": "#620042",
+                        "on-primary": "#621100",
+                        "tertiary-fixed-dim": "#ffb951",
+                        "on-tertiary-container": "#3f2700",
+                        "on-surface-variant": "#e3beb6",
+                        "primary-container": "#ff5c35",
+                        "surface-container-highest": "#353534",
+                        "surface-tint": "#ffb4a3",
+                        "secondary-container": "#bd0183",
+                        "surface-bright": "#393939",
+                        "on-secondary-fixed": "#3d0027",
+                        "surface-container-low": "#1c1b1b",
+                        "on-error": "#690005",
+                        "surface-dim": "#131313",
+                        "error": "#ffb4ab",
+                        "secondary": "#ffafd5",
+                        "primary": "#ffb4a3",
+                        "on-tertiary": "#452b00",
+                        "on-tertiary-fixed-variant": "#633f00",
+                        "on-background": "#e5e2e1",
+                        "on-primary-fixed-variant": "#8a1c00",
+                        "on-primary-container": "#5a0e00",
+                        "on-secondary-container": "#ffd5e6",
+                        "surface-container-high": "#2a2a2a",
+                        "primary-fixed": "#ffdad2",
+                        "surface-variant": "#353534",
+                        "tertiary": "#ffb951",
+                        "outline": "#aa8982",
+                        "on-surface": "#e5e2e1",
+                        "tertiary-fixed": "#ffddb3",
+                        "on-tertiary-fixed": "#291800",
+                        "tertiary-container": "#c5861c",
+                        "on-primary-fixed": "#3d0700",
+                        "on-error-container": "#ffdad6",
+                        "background": "#131313",
+                        "surface-container": "#201f1f",
+                        "primary-fixed-dim": "#ffb4a3",
+                        "surface": "#131313",
+                        "on-secondary-fixed-variant": "#8a005e"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "section-gap": "48px",
+                        "stack-sm": "8px",
+                        "unit": "8px",
+                        "stack-md": "16px",
+                        "container-margin": "24px",
+                        "gutter": "16px",
+                        "stack-lg": "32px"
+                    },
+                    "fontFamily": {
+                        "label-md": ["Plus Jakarta Sans"],
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "body-md": ["Be Vietnam Pro"],
+                        "label-sm": ["Plus Jakarta Sans"],
+                        "headline-xl": ["Plus Jakarta Sans"],
+                        "headline-lg-mobile": ["Plus Jakarta Sans"],
+                        "body-lg": ["Be Vietnam Pro"]
+                    },
+                    "fontSize": {
+                        "label-md": ["14px", { "lineHeight": "20px", "fontWeight": "600" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "fontWeight": "500" }],
+                        "headline-xl": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+                        "headline-lg-mobile": ["28px", { "lineHeight": "36px", "fontWeight": "700" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: #131313;
+            color: #e5e2e1;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Custom Slider Styling */
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 24px;
+            width: 24px;
+            border-radius: 50%;
+            background: #ffffff;
+            cursor: pointer;
+            margin-top: -10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+            border: 2px solid #ffffff;
+        }
+
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 4px;
+            cursor: pointer;
+            background: #353534; /* surface-variant */
+            border-radius: 2px;
+        }
+
+        input[type=range]:focus {
+            outline: none;
+        }
+        
+        /* Focus state for thumb */
+        input[type=range]:focus::-webkit-slider-thumb {
+            box-shadow: 0 0 0 4px rgba(255, 92, 53, 0.2); /* primary-container with opacity */
+        }
+
+        /* Top Progress Bar */
+        .progress-bar-container {
+            width: 100%;
+            height: 4px;
+            background-color: #353534; /* surface-variant */
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 100;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            width: 55%;
+            background: linear-gradient(90deg, #ff5c35, #ffb4a3); /* primary-container to primary */
+            border-radius: 0 2px 2px 0;
+            transition: width 0.3s ease;
+        }
+
+        /* Glow effect for the central circle */
+        .glow-circle {
+            box-shadow: 0 0 80px 20px rgba(255, 92, 53, 0.2);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface antialiased font-body-md">
+<!-- Progress Bar -->
+<div class="progress-bar-container">
+<div class="progress-bar-fill" style="background: rgb(229, 226, 225); width: 55%;"></div>
+</div>
+<!-- Main Container -->
+<main class="flex flex-col h-full w-full max-w-md mx-auto px-container-margin pt-stack-lg pb-container-margin relative">
+<!-- Top App Bar -->
+<header class="flex justify-between items-center w-full mt-4 mb-stack-lg z-10">
+<button aria-label="Go back" class="text-on-surface hover:opacity-80 transition-opacity p-2 -ml-2 rounded-full active:scale-95">
+<span class="material-symbols-outlined" style="font-variation-settings: &quot;FILL&quot; 0;">arrow_back</span>
+</button>
+<button aria-label="Close" class="text-on-surface hover:opacity-80 transition-opacity p-2 -mr-2 rounded-full active:scale-95">
+<span class="material-symbols-outlined" style="font-variation-settings: &quot;FILL&quot; 0;">close</span>
+</button>
+</header>
+<!-- Header Content -->
+<div class="text-center mb-stack-lg z-10">
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface mb-2 px-4">How happy are you with Blush?</h1>
+</div>
+<!-- Central Visual & Rating Display -->
+<div class="flex-grow flex flex-col items-center justify-center relative z-10 w-full mb-section-gap">
+<!-- Animated SVG Background (as requested in style guide for animations, though not explicitly an animation placeholder here, using it for the central glowing element) -->
+<div class="relative w-48 h-48 flex items-center justify-center mb-8">
+<!-- Outer Glow -->
+
+<!-- Main Colored Circle representing 'Neutral' -->
+<div class="absolute inset-4 rounded-full bg-on-surface transition-all duration-300 transform hover:scale-105"></div>
+</div>
+<!-- Rating Label -->
+<div class="text-center transition-all duration-300" id="rating-text-container">
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface mb-1">Neutral</h2>
+<p class="font-body-md text-body-md text-on-surface">It's okay, could be better</p>
+</div>
+</div>
+<!-- Slider Control -->
+<div class="w-full mt-auto mb-section-gap px-4 z-10">
+<div class="relative w-full mb-4">
+<input aria-label="Satisfaction level" class="w-full accent-on-surface" id="satisfaction-slider" max="100" min="0" type="range" value="50" style="accent-color: rgb(255, 92, 53);">
+</div>
+<div class="flex justify-between w-full font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">
+<span class="text-on-surface">Unsatisfied</span>
+<span class="text-on-surface">Satisfied</span>
+</div>
+</div>
+<!-- Call to Action Button -->
+<div class="w-full z-10 mt-auto">
+<button class="w-full py-4 rounded-full bg-on-surface text-surface font-label-md text-label-md hover:opacity-80 active:scale-95 transition-all duration-300">Continue</button>
+</div>
+</main>
+<script>
+        // Simple script to update text based on slider (optional interaction enhancement)
+        const slider = document.getElementById('satisfaction-slider');
+        const textContainer = document.getElementById('rating-text-container');
+        const circle = document.querySelector('.glow-circle');
+        const titleText = textContainer.querySelector('h2');
+        const descText = textContainer.querySelector('p');
+
+        slider.addEventListener('input', (e) => {
+            const val = parseInt(e.target.value);
+            
+            // Adjust colors and text based on value
+            if(val < 33) {
+                titleText.textContent = "Unsatisfied";
+                descText.textContent = "Not great, needs improvement";
+                titleText.className = "font-headline-lg-mobile text-headline-lg-mobile text-error mb-1";
+                circle.style.backgroundColor = "#ffb4ab"; // error color
+                circle.style.boxShadow = "0 0 80px 20px rgba(255, 180, 171, 0.2)";
+            } else if (val < 66) {
+                titleText.textContent = "Neutral";
+                descText.textContent = "It's okay, could be better";
+                titleText.className = "font-headline-lg-mobile text-headline-lg-mobile text-primary mb-1";
+                circle.style.backgroundColor = "#ff5c35"; // primary-container
+                circle.style.boxShadow = "0 0 80px 20px rgba(255, 92, 53, 0.2)";
+            } else {
+                titleText.textContent = "Satisfied";
+                descText.textContent = "I'm really enjoying it!";
+                titleText.className = "font-headline-lg-mobile text-headline-lg-mobile text-tertiary mb-1";
+                circle.style.backgroundColor = "#ffb951"; // tertiary
+                circle.style.boxShadow = "0 0 80px 20px rgba(255, 185, 81, 0.2)";
+            }
+        });
+    </script>
+
+
+
+
+<script src="../js/animations.js"></script>
+</body></html>

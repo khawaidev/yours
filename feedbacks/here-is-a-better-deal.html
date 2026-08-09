@@ -1,0 +1,130 @@
+<!DOCTYPE html><html lang="en" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Blush - Better Deal Offer</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<style data-purpose="custom-fonts">
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800;900&display=swap');
+    body {
+      font-family: 'Poppins', sans-serif;
+    }
+  </style>
+<style data-purpose="custom-gradients">
+    .bg-blush-gradient {
+      background: linear-gradient(135deg, #FF6B6B 0%, #D43396 100%);
+    }
+    .text-blush-gradient {
+      background: linear-gradient(135deg, #FF6B6B 0%, #D43396 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .btn-gradient {
+      background: linear-gradient(90deg, #FF512F 0%, #F09819 100%);
+    }
+  </style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800;900&amp;display=swap" data-snapdom="injected-import"></head>
+<body class="bg-gray-900 text-white min-h-screen relative overflow-hidden flex flex-col justify-between">
+<!-- BEGIN: Background Image -->
+<!-- Blurred background image simulating the app context -->
+<div class="absolute inset-0 z-0">
+<div class="w-full h-full bg-cover bg-center scale-110 backdrop-blur-sm" style="background-image: url(&quot;https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/ChatGPT%20Image%20Aug%207%2C%202026%2C%2003_07_41%20AM.png&quot;); background-attachment: fixed; filter: blur(6px); background-size: cover; background-position: center center;"></div>
+<div class="absolute inset-0 bg-black/60 backdrop-blur-sm" style="background-image: url(&quot;https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/ChatGPT%20Image%20Aug%207%2C%202026%2C%2003_07_41%20AM.png&quot;); background-attachment: fixed; filter: blur(6px); background-size: cover; background-position: center center;"></div>
+</div>
+<!-- END: Background Image -->
+<!-- BEGIN: Main Content Container -->
+<main class="relative z-10 flex-1 flex flex-col items-center justify-start pt-16 px-6 pb-8 w-full max-w-md mx-auto">
+<!-- Close Button -->
+<button aria-label="Close" class="absolute top-12 right-6 p-2 text-white/80 hover:text-white">
+<svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</button>
+<!-- BEGIN: Header Section -->
+<header class="flex flex-col items-center w-full mt-6 mb-8">
+<!-- 3D Logo Placeholder (Using Text with style for now) -->
+<div class="text-5xl font-black italic tracking-tighter text-white drop-shadow-lg mb-6 relative">
+<span class="text-blush-gradient absolute -inset-1 blur-sm opacity-50">BLUSH</span>
+<span class="relative bg-gradient-to-br from-orange-400 via-pink-500 to-purple-600 bg-clip-text text-transparent drop-shadow-md">BLUSH</span>
+</div>
+<h1 class="text-4xl md:text-5xl font-extrabold text-center leading-tight tracking-tight mb-4 drop-shadow-sm">
+        Wait — here's a<br>better deal
+      </h1>
+<p class="text-lg font-semibold text-white/90">This offer expires in</p>
+</header>
+<!-- END: Header Section -->
+<!-- BEGIN: Countdown Timer -->
+<section aria-label="Countdown Timer" class="flex items-center justify-center space-x-2 mb-10">
+<!-- Hours -->
+<div class="flex flex-col items-center">
+<div class="bg-white/30 backdrop-blur-md rounded-2xl w-20 h-20 flex items-center justify-center border border-white/20 shadow-inner">
+<span class="text-3xl font-bold">23</span>
+</div>
+<span class="text-sm font-semibold mt-2 text-white/80">hrs</span>
+</div>
+<span class="text-2xl font-bold text-white/50 -mt-6">:</span>
+<!-- Minutes -->
+<div class="flex flex-col items-center">
+<div class="bg-white/30 backdrop-blur-md rounded-2xl w-20 h-20 flex items-center justify-center border border-white/20 shadow-inner">
+<span class="text-3xl font-bold">53</span>
+</div>
+<span class="text-sm font-semibold mt-2 text-white/80">min</span>
+</div>
+<span class="text-2xl font-bold text-white/50 -mt-6">:</span>
+<!-- Seconds -->
+<div class="flex flex-col items-center">
+<div class="bg-white/30 backdrop-blur-md rounded-2xl w-20 h-20 flex items-center justify-center border border-white/20 shadow-inner">
+<span class="text-3xl font-bold">21</span>
+</div>
+<span class="text-sm font-semibold mt-2 text-white/80">sec</span>
+</div>
+</section>
+<!-- END: Countdown Timer -->
+<!-- BEGIN: Discount Badge -->
+<div class="w-full mb-8">
+<div class="bg-gradient-to-r from-orange-500 to-pink-500 rounded-3xl py-5 px-8 flex items-center justify-center shadow-lg transform transition hover:scale-105 active:scale-95 cursor-pointer">
+<span class="text-4xl md:text-5xl font-black text-white drop-shadow-md tracking-wide">20% off</span>
+</div>
+</div>
+<!-- END: Discount Badge -->
+<!-- BEGIN: Pricing Card -->
+<div class="w-full bg-black/40 backdrop-blur-sm rounded-3xl border border-white/30 p-5 mb-8 flex justify-between items-center cursor-pointer hover:bg-black/50 transition">
+<div class="flex flex-col">
+<span class="font-bold text-lg text-white drop-shadow-sm">Boosts all features</span>
+<div class="flex items-center space-x-2 mt-1">
+<span class="text-sm text-white/80">Annual ₹6,320.00</span>
+<span class="text-sm text-white/50 line-through">₹7,900.00</span>
+</div>
+</div>
+<div class="text-right">
+<span class="font-semibold text-white drop-shadow-sm">₹121.54/week</span>
+</div>
+</div>
+<!-- END: Pricing Card -->
+</main>
+<!-- END: Main Content Container -->
+<!-- BEGIN: Footer / Action Section -->
+<footer class="relative z-10 w-full px-6 pb-10 flex flex-col items-center max-w-md mx-auto">
+<!-- CTA Button -->
+<button class="w-full bg-[#FF5722] hover:bg-[#F4511E] text-white font-bold py-5 rounded-full text-lg shadow-lg mb-4 transform transition hover:scale-105 active:scale-95">
+      Claim your offer
+    </button>
+<!-- Legal Text -->
+<p class="text-xs text-white/60 text-center mb-4">
+      Auto-renewal. Cancel anytime through Google play
+    </p>
+<!-- Links -->
+<div class="flex space-x-6 text-xs text-white/60">
+<a class="hover:text-white transition" href="#">Terms of Use</a>
+<a class="hover:text-white transition" href="#">Privacy Policy</a>
+<a class="hover:text-white transition" href="#">Restore</a>
+</div>
+</footer>
+<!-- END: Footer / Action Section -->
+
+
+
+
+
+
+<script src="../js/animations.js"></script>
+</body></html>

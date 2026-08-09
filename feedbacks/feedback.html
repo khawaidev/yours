@@ -1,0 +1,232 @@
+<!DOCTYPE html><html class="dark" lang="en" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Feedback Survey</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-tertiary-fixed": "#291800",
+                      "on-primary": "#621100",
+                      "on-tertiary-container": "#3f2700",
+                      "on-tertiary-fixed-variant": "#633f00",
+                      "secondary-fixed": "#ffd8e8",
+                      "error-container": "#93000a",
+                      "on-tertiary": "#452b00",
+                      "on-primary-fixed": "#3d0700",
+                      "on-secondary-fixed": "#3d0027",
+                      "surface": "#131313",
+                      "inverse-surface": "#e5e2e1",
+                      "secondary-container": "#bd0183",
+                      "surface-variant": "#353534",
+                      "on-error": "#690005",
+                      "tertiary-container": "#c5861c",
+                      "tertiary": "#ffb951",
+                      "on-surface": "#e5e2e1",
+                      "on-secondary-fixed-variant": "#8a005e",
+                      "surface-bright": "#393939",
+                      "on-secondary-container": "#ffd5e6",
+                      "outline-variant": "#5b413a",
+                      "inverse-primary": "#b52701",
+                      "secondary-fixed-dim": "#ffafd5",
+                      "error": "#ffb4ab",
+                      "on-surface-variant": "#e3beb6",
+                      "surface-container-lowest": "#0e0e0e",
+                      "outline": "#aa8982",
+                      "on-primary-container": "#5a0e00",
+                      "secondary": "#ffafd5",
+                      "on-background": "#e5e2e1",
+                      "on-error-container": "#ffdad6",
+                      "surface-dim": "#131313",
+                      "surface-container-high": "#2a2a2a",
+                      "on-primary-fixed-variant": "#8a1c00",
+                      "tertiary-fixed-dim": "#ffb951",
+                      "surface-container-highest": "#353534",
+                      "tertiary-fixed": "#ffddb3",
+                      "primary": "#ffb4a3",
+                      "surface-container-low": "#1c1b1b",
+                      "on-secondary": "#620042",
+                      "primary-container": "#ff5c35",
+                      "inverse-on-surface": "#313030",
+                      "surface-container": "#201f1f",
+                      "background": "#131313",
+                      "primary-fixed": "#ffdad2",
+                      "primary-fixed-dim": "#ffb4a3",
+                      "surface-tint": "#ffb4a3"
+              },
+              "borderRadius": {
+                      "DEFAULT": "1rem",
+                      "lg": "2rem",
+                      "xl": "3rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "unit": "8px",
+                      "container-margin": "24px",
+                      "stack-sm": "8px",
+                      "section-gap": "48px",
+                      "stack-lg": "32px",
+                      "stack-md": "16px",
+                      "gutter": "16px"
+              },
+              "fontFamily": {
+                      "body-lg": [
+                              "Be Vietnam Pro"
+                      ],
+                      "headline-lg-mobile": [
+                              "Plus Jakarta Sans"
+                      ],
+                      "headline-xl": [
+                              "Plus Jakarta Sans"
+                      ],
+                      "label-sm": [
+                              "Plus Jakarta Sans"
+                      ],
+                      "body-md": [
+                              "Be Vietnam Pro"
+                      ],
+                      "headline-lg": [
+                              "Plus Jakarta Sans"
+                      ],
+                      "label-md": [
+                              "Plus Jakarta Sans"
+                      ]
+              },
+              "fontSize": {
+                      "body-lg": [
+                              "18px",
+                              {
+                                      "lineHeight": "28px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-lg-mobile": [
+                              "28px",
+                              {
+                                      "lineHeight": "36px",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "headline-xl": [
+                              "48px",
+                              {
+                                      "lineHeight": "56px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "800"
+                              }
+                      ],
+                      "label-sm": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "body-md": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-lg": [
+                              "32px",
+                              {
+                                      "lineHeight": "40px",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "label-md": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "600"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+      </script>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@500;600;700;800&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface h-screen flex flex-col font-body-md overflow-hidden relative selection:bg-primary-container selection:text-on-primary-container">
+<!-- Ambient Glow Background -->
+
+<!-- Top Bar -->
+<header class="relative z-10 w-full pt-gutter px-container-margin pb-stack-sm flex items-center justify-between">
+<button aria-label="Close" class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center hover:bg-surface-container-high transition-colors hover:opacity-80 transition-opacity">
+<span class="material-symbols-outlined text-on-surface-variant text-[24px]">close</span>
+</button>
+<div class="flex-1 px-container-margin">
+<!-- Progress Bar -->
+<div class="h-1 w-full bg-surface-container-high rounded-full overflow-hidden">
+<div class="h-full from-primary to-secondary w-1/5 rounded-full shadow-[0_0_12px_rgba(255,180,163,0.6)] bg-primary"></div>
+</div>
+</div>
+<div class="w-10 h-10"></div> <!-- Spacer for balance -->
+</header>
+<!-- Main Content -->
+<main class="relative z-10 flex-1 flex flex-col items-center justify-center px-container-margin md:px-section-gap text-center max-w-2xl mx-auto w-full pb-section-gap">
+<!-- 3D Logo / Hero Image Area -->
+<div class="w-48 h-48 md:w-64 md:h-64 mb-stack-lg relative perspective-[1000px] animate-float">
+<!-- Placeholder for a 3D glassmorphic logo -->
+
+<!-- Abstract text logo backup if image fails -->
+<div class="absolute inset-0 flex items-center justify-center bg-surface-container-lowest rounded-full border border-surface-variant/30 backdrop-blur-xl shadow-[0_0_40px_rgba(255,92,53,0.1)] -z-10 hidden">
+<h1 class="text-headline-xl font-headline-xl tracking-tighter bg-gradient-to-r from-primary via-secondary to-tertiary bg-clip-text text-transparent italic">BLUSH</h1>
+</div>
+</div>
+<!-- Typography -->
+<div class="flex flex-col gap-stack-md animate-fade-in-up">
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile md:font-headline-lg md:text-headline-lg text-on-surface text-balance">
+                Give us feedback for a chance to win <span class="text-transparent bg-clip-text from-primary to-secondary text-primary">100</span></h1>
+<p class="font-body-md text-body-md text-on-surface max-w-md mx-auto text-balance">
+                Help us improve Blush with a quick 5-minute survey, and win 1 of 3 Amazon gift cards.
+            </p>
+</div>
+</main>
+<!-- Bottom Fixed Action Area -->
+<div class="relative z-20 w-full p-container-margin md:pb-stack-lg pb-section-gap from-background via-background to-transparent flex justify-center">
+<button class="w-full md:w-auto md:min-w-[320px] py-4 px-8 rounded-full from-primary-container to-secondary-container text-on-primary font-label-md text-label-md uppercase tracking-widest hover:brightness-110 active:scale-95 transition-all duration-200 group flex items-center justify-center gap-2" style="background-color: white; color: black;">
+            Start now
+            <span class="material-symbols-outlined text-[18px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</button>
+</div>
+<style>
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotateX(5deg) rotateY(0deg); }
+            50% { transform: translateY(-15px) rotateX(10deg) rotateY(5deg); }
+        }
+        .animate-float {
+            animation: float 6s ease-in-out infinite;
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in-up {
+            animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+    </style>
+
+
+
+
+
+
+
+
+<script src="../js/animations.js"></script>
+</body></html>

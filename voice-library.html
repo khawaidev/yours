@@ -1,0 +1,356 @@
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Voice Library</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&amp;family=Be+Vietnam+Pro:wght@400;500&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-tertiary-container": "#3f2700",
+                      "outline": "#aa8982",
+                      "tertiary": "#ffb951",
+                      "on-secondary-fixed-variant": "#8a005e",
+                      "on-surface-variant": "#e3beb6",
+                      "on-error-container": "#ffdad6",
+                      "on-secondary": "#620042",
+                      "inverse-surface": "#e5e2e1",
+                      "on-primary-container": "#5a0e00",
+                      "on-tertiary": "#452b00",
+                      "on-secondary-container": "#ffd5e6",
+                      "secondary-fixed": "#ffd8e8",
+                      "secondary": "#ffafd5",
+                      "on-primary": "#621100",
+                      "on-primary-fixed": "#3d0700",
+                      "inverse-on-surface": "#313030",
+                      "surface": "#131313",
+                      "primary-fixed-dim": "#ffb4a3",
+                      "tertiary-fixed": "#ffddb3",
+                      "surface-bright": "#393939",
+                      "on-tertiary-fixed": "#291800",
+                      "surface-container-high": "#2a2a2a",
+                      "primary-fixed": "#ffdad2",
+                      "secondary-fixed-dim": "#ffafd5",
+                      "inverse-primary": "#b52701",
+                      "surface-container": "#201f1f",
+                      "surface-container-highest": "#353534",
+                      "surface-dim": "#131313",
+                      "surface-tint": "#ffb4a3",
+                      "error-container": "#93000a",
+                      "on-surface": "#e5e2e1",
+                      "surface-container-low": "#1c1b1b",
+                      "on-error": "#690005",
+                      "error": "#ffb4ab",
+                      "tertiary-container": "#c5861c",
+                      "on-background": "#e5e2e1",
+                      "surface-variant": "#353534",
+                      "on-primary-fixed-variant": "#8a1c00",
+                      "outline-variant": "#5b413a",
+                      "tertiary-fixed-dim": "#ffb951",
+                      "primary-container": "#ff5c35",
+                      "surface-container-lowest": "#0e0e0e",
+                      "background": "#131313",
+                      "on-tertiary-fixed-variant": "#633f00",
+                      "secondary-container": "#bd0183",
+                      "primary": "#ffb4a3",
+                      "on-secondary-fixed": "#3d0027"
+              },
+              "borderRadius": {
+                      "DEFAULT": "1rem",
+                      "lg": "2rem",
+                      "xl": "3rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "unit": "8px",
+                      "stack-lg": "32px",
+                      "stack-sm": "8px",
+                      "container-margin": "24px",
+                      "section-gap": "48px",
+                      "gutter": "16px",
+                      "stack-md": "16px"
+              },
+              "fontFamily": {
+                      "headline-lg": [
+                              "Plus Jakarta Sans"
+                      ],
+                      "label-sm": [
+                              "Plus Jakarta Sans"
+                      ],
+                      "label-md": [
+                              "Plus Jakarta Sans"
+                      ],
+                      "body-lg": [
+                              "Be Vietnam Pro"
+                      ],
+                      "body-md": [
+                              "Be Vietnam Pro"
+                      ],
+                      "headline-xl": [
+                              "Plus Jakarta Sans"
+                      ],
+                      "headline-lg-mobile": [
+                              "Plus Jakarta Sans"
+                      ]
+              },
+              "fontSize": {
+                      "headline-lg": [
+                              "32px",
+                              {
+                                      "lineHeight": "40px",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "label-sm": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "label-md": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "body-lg": [
+                              "18px",
+                              {
+                                      "lineHeight": "28px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "body-md": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-xl": [
+                              "48px",
+                              {
+                                      "lineHeight": "56px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "800"
+                              }
+                      ],
+                      "headline-lg-mobile": [
+                              "28px",
+                              {
+                                      "lineHeight": "36px",
+                                      "fontWeight": "700"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+    </script>
+<style>
+        /* Custom scrollbar to match theme */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: theme('colors.surface-variant');
+            border-radius: theme('borderRadius.full');
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: theme('colors.surface-bright');
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background font-body-md min-h-screen flex flex-col antialiased selection:bg-primary-container selection:text-on-primary-container">
+<!-- TopAppBar -->
+<header class="bg-background dark:bg-background docked full-width top-0 bg-background sticky z-50 flat no shadows">
+<div class="flex justify-between items-center px-container-margin h-16 w-full">
+<button class="hover:bg-surface-container-high rounded-full p-2 transition-colors duration-200 text-white">
+<span class="material-symbols-outlined" data-icon="arrow_back_ios">arrow_back_ios</span>
+</button>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile font-bold tracking-tight text-white">Voice Library</h1>
+<button class="hover:bg-surface-container-high rounded-full p-2 transition-colors duration-200 text-white">
+<span class="material-symbols-outlined" data-icon="more_horiz">more_horiz</span>
+</button>
+</div>
+</header>
+<main class="flex-grow flex flex-col pb-32">
+<!-- Filter Chips Section -->
+<section class="px-container-margin py-stack-md overflow-x-auto whitespace-nowrap hide-scrollbar flex gap-unit">
+<button class="bg-surface-variant text-on-surface border border-outline/20 font-label-md text-label-md px-4 py-2 rounded-full hover:bg-surface-container-high transition-colors">
+                All
+            </button>
+<button class="bg-surface-container text-on-surface border border-outline/20 font-label-md text-label-md px-4 py-2 rounded-full flex items-center gap-1 hover:bg-surface-container-high transition-colors">
+                Gender
+                <span class="material-symbols-outlined text-[16px]" data-icon="keyboard_arrow_down">keyboard_arrow_down</span>
+</button>
+<button class="bg-surface-container text-on-surface border border-outline/20 font-label-md text-label-md px-4 py-2 rounded-full flex items-center gap-1 hover:bg-surface-container-high transition-colors">
+                Age
+                <span class="material-symbols-outlined text-[16px]" data-icon="keyboard_arrow_down">keyboard_arrow_down</span>
+</button>
+<button class="bg-surface-container text-on-surface border border-outline/20 font-label-md text-label-md px-4 py-2 rounded-full flex items-center gap-1 hover:bg-surface-container-high transition-colors">
+                Accent
+                <span class="material-symbols-outlined text-[16px]" data-icon="keyboard_arrow_down">keyboard_arrow_down</span>
+</button>
+</section>
+<!-- Voice List -->
+<section class="px-container-margin flex-grow">
+<h2 class="font-headline-lg-mobile text-[22px] font-bold mb-stack-md text-on-surface">Top voices</h2>
+<div class="flex flex-col gap-unit">
+<!-- Voice Item: Smooth -->
+<label class="flex items-center justify-between p-4 bg-surface rounded-DEFAULT border border-outline/10 hover:bg-surface-container-high cursor-pointer transition-colors group">
+<div class="flex items-center gap-4">
+<button class="w-10 h-10 rounded-full bg-gradient-to-br from-[#ff7a55] to-[#ff5c35] flex items-center justify-center text-white shadow-[0_0_15px_rgba(255,92,53,0.3)] hover:scale-105 transition-transform">
+<span class="material-symbols-outlined" data-icon="play_arrow" data-weight="fill" style="font-variation-settings: &quot;FILL&quot; 1;">play_arrow</span>
+</button>
+<div>
+<p class="font-label-md text-label-md text-on-surface font-bold">Smooth</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">African American accent</p>
+</div>
+</div>
+<div class="w-6 h-6 rounded-full border-2 border-outline/30 flex items-center justify-center group-hover:border-primary/50 transition-colors">
+<input class="hidden peer" name="voice_selection" type="radio">
+<div class="w-3 h-3 rounded-full bg-primary scale-0 peer-checked:scale-100 transition-transform"></div>
+</div>
+</label>
+<!-- Voice Item: Opulent -->
+<label class="flex items-center justify-between p-4 bg-surface rounded-DEFAULT border border-outline/10 hover:bg-surface-container-high cursor-pointer transition-colors group">
+<div class="flex items-center gap-4">
+<button class="w-10 h-10 rounded-full bg-gradient-to-br from-[#ff7a55] to-[#ff5c35] flex items-center justify-center text-white shadow-[0_0_15px_rgba(255,92,53,0.3)] hover:scale-105 transition-transform">
+<span class="material-symbols-outlined" data-icon="play_arrow" data-weight="fill" style="font-variation-settings: &quot;FILL&quot; 1;">play_arrow</span>
+</button>
+<div>
+<p class="font-label-md text-label-md text-on-surface font-bold">Opulent</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">European accent</p>
+</div>
+</div>
+<div class="w-6 h-6 rounded-full border-2 border-outline/30 flex items-center justify-center group-hover:border-primary/50 transition-colors">
+<input class="hidden peer" name="voice_selection" type="radio">
+<div class="w-3 h-3 rounded-full bg-primary scale-0 peer-checked:scale-100 transition-transform"></div>
+</div>
+</label>
+<!-- Voice Item: Golden -->
+<label class="flex items-center justify-between p-4 bg-surface rounded-DEFAULT border border-outline/10 hover:bg-surface-container-high cursor-pointer transition-colors group">
+<div class="flex items-center gap-4">
+<button class="w-10 h-10 rounded-full bg-gradient-to-br from-[#ff7a55] to-[#ff5c35] flex items-center justify-center text-white shadow-[0_0_15px_rgba(255,92,53,0.3)] hover:scale-105 transition-transform">
+<span class="material-symbols-outlined" data-icon="play_arrow" data-weight="fill" style="font-variation-settings: &quot;FILL&quot; 1;">play_arrow</span>
+</button>
+<div>
+<p class="font-label-md text-label-md text-on-surface font-bold">Golden</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">African American accent</p>
+</div>
+</div>
+<div class="w-6 h-6 rounded-full border-2 border-outline/30 flex items-center justify-center group-hover:border-primary/50 transition-colors">
+<input class="hidden peer" name="voice_selection" type="radio">
+<div class="w-3 h-3 rounded-full bg-primary scale-0 peer-checked:scale-100 transition-transform"></div>
+</div>
+</label>
+<!-- Voice Item: Feisty -->
+<label class="flex items-center justify-between p-4 bg-surface rounded-DEFAULT border border-outline/10 hover:bg-surface-container-high cursor-pointer transition-colors group">
+<div class="flex items-center gap-4">
+<button class="w-10 h-10 rounded-full bg-gradient-to-br from-[#ff7a55] to-[#ff5c35] flex items-center justify-center text-white shadow-[0_0_15px_rgba(255,92,53,0.3)] hover:scale-105 transition-transform">
+<span class="material-symbols-outlined" data-icon="play_arrow" data-weight="fill" style="font-variation-settings: &quot;FILL&quot; 1;">play_arrow</span>
+</button>
+<div>
+<p class="font-label-md text-label-md text-on-surface font-bold">Feisty</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">American accent</p>
+</div>
+</div>
+<div class="w-6 h-6 rounded-full border-2 border-outline/30 flex items-center justify-center group-hover:border-primary/50 transition-colors">
+<input class="hidden peer" name="voice_selection" type="radio">
+<div class="w-3 h-3 rounded-full bg-primary scale-0 peer-checked:scale-100 transition-transform"></div>
+</div>
+</label>
+<!-- Voice Item: Husky -->
+<label class="flex items-center justify-between p-4 bg-surface rounded-DEFAULT border border-outline/10 hover:bg-surface-container-high cursor-pointer transition-colors group">
+<div class="flex items-center gap-4">
+<button class="w-10 h-10 rounded-full bg-gradient-to-br from-[#ff7a55] to-[#ff5c35] flex items-center justify-center text-white shadow-[0_0_15px_rgba(255,92,53,0.3)] hover:scale-105 transition-transform">
+<span class="material-symbols-outlined" data-icon="play_arrow" data-weight="fill" style="font-variation-settings: &quot;FILL&quot; 1;">play_arrow</span>
+</button>
+<div>
+<p class="font-label-md text-label-md text-on-surface font-bold">Husky</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">American accent</p>
+</div>
+</div>
+<div class="w-6 h-6 rounded-full border-2 border-outline/30 flex items-center justify-center group-hover:border-primary/50 transition-colors">
+<input class="hidden peer" name="voice_selection" type="radio">
+<div class="w-3 h-3 rounded-full bg-primary scale-0 peer-checked:scale-100 transition-transform"></div>
+</div>
+</label>
+<!-- Voice Item: Cozy -->
+<label class="flex items-center justify-between p-4 bg-surface rounded-DEFAULT border border-outline/10 hover:bg-surface-container-high cursor-pointer transition-colors group">
+<div class="flex items-center gap-4">
+<button class="w-10 h-10 rounded-full bg-gradient-to-br from-[#ff7a55] to-[#ff5c35] flex items-center justify-center text-white shadow-[0_0_15px_rgba(255,92,53,0.3)] hover:scale-105 transition-transform">
+<span class="material-symbols-outlined" data-icon="play_arrow" data-weight="fill" style="font-variation-settings: &quot;FILL&quot; 1;">play_arrow</span>
+</button>
+<div>
+<p class="font-label-md text-label-md text-on-surface font-bold">Cozy</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">American accent</p>
+</div>
+</div>
+<div class="w-6 h-6 rounded-full border-2 border-outline/30 flex items-center justify-center group-hover:border-primary/50 transition-colors">
+<input class="hidden peer" name="voice_selection" type="radio">
+<div class="w-3 h-3 rounded-full bg-primary scale-0 peer-checked:scale-100 transition-transform"></div>
+</div>
+</label>
+<!-- Voice Item: Glamorous -->
+<label class="flex items-center justify-between p-4 bg-surface rounded-DEFAULT border border-outline/10 hover:bg-surface-container-high cursor-pointer transition-colors group">
+<div class="flex items-center gap-4">
+<button class="w-10 h-10 rounded-full bg-gradient-to-br from-[#ff7a55] to-[#ff5c35] flex items-center justify-center text-white shadow-[0_0_15px_rgba(255,92,53,0.3)] hover:scale-105 transition-transform">
+<span class="material-symbols-outlined" data-icon="play_arrow" data-weight="fill" style="font-variation-settings: &quot;FILL&quot; 1;">play_arrow</span>
+</button>
+<div>
+<p class="font-label-md text-label-md text-on-surface font-bold">Glamorous</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">American accent</p>
+</div>
+</div>
+<div class="w-6 h-6 rounded-full border-2 border-outline/30 flex items-center justify-center group-hover:border-primary/50 transition-colors">
+<input class="hidden peer" name="voice_selection" type="radio">
+<div class="w-3 h-3 rounded-full bg-primary scale-0 peer-checked:scale-100 transition-transform"></div>
+</div>
+</label>
+<!-- Voice Item: Lovely -->
+<label class="flex items-center justify-between p-4 bg-surface rounded-DEFAULT border border-outline/10 hover:bg-surface-container-high cursor-pointer transition-colors group">
+<div class="flex items-center gap-4">
+<button class="w-10 h-10 rounded-full bg-gradient-to-br from-[#ff7a55] to-[#ff5c35] flex items-center justify-center text-white shadow-[0_0_15px_rgba(255,92,53,0.3)] hover:scale-105 transition-transform">
+<span class="material-symbols-outlined" data-icon="play_arrow" data-weight="fill" style="font-variation-settings: &quot;FILL&quot; 1;">play_arrow</span>
+</button>
+<div>
+<p class="font-label-md text-label-md text-on-surface font-bold">Lovely</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">American accent</p>
+</div>
+</div>
+<div class="w-6 h-6 rounded-full border-2 border-outline/30 flex items-center justify-center group-hover:border-primary/50 transition-colors">
+<input class="hidden peer" name="voice_selection" type="radio">
+<div class="w-3 h-3 rounded-full bg-primary scale-0 peer-checked:scale-100 transition-transform"></div>
+</div>
+</label>
+</div>
+</section>
+</main>
+<!-- Fixed Bottom Save Action -->
+<div class="fixed bottom-0 left-0 w-full px-container-margin py-6 pb-8 backdrop-blur-xl bg-background/80 z-40">
+<button class="w-full bg-on-surface text-surface py-4 rounded-full font-label-md text-[18px] font-bold shadow-lg hover:scale-[1.02] transition-transform duration-200">
+            Save
+        </button>
+</div>
+
+
+<script src="js/animations.js"></script>
+</body></html>

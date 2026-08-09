@@ -1,0 +1,136 @@
+<!DOCTYPE html><html lang="en" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Harper Premium Feature Intro</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<style data-purpose="custom-styles">
+    body {
+      background-color: #1a1a1a;
+      color: #ffffff;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    }
+    
+    .accent-color {
+      color: #ff5733;
+    }
+    
+    .progress-bar-container {
+      width: 60%;
+      height: 4px;
+      background-color: #333;
+      border-radius: 2px;
+      margin: 20px auto;
+      overflow: hidden;
+    }
+    
+    .progress-bar-fill {
+      width: 30%;
+      height: 100%;
+      background-color: #ff5733;
+    }
+    
+    .media-card-1 {
+      transform: rotate(-15deg);
+      z-index: 10;
+    }
+    
+    .media-card-2 {
+      transform: rotate(10deg);
+      z-index: 5;
+    }
+
+    .voice-bubble {
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+  </style>
+</head>
+<body class="flex flex-col h-screen overflow-hidden antialiased">
+<!-- BEGIN: Top Navigation / Progress -->
+<header class="w-full pt-12 pb-4 px-4 flex-none" data-purpose="header">
+<div class="progress-bar-container">
+<div class="progress-bar-fill"></div>
+</div>
+</header>
+<!-- END: Top Navigation / Progress -->
+<!-- BEGIN: Main Content Area -->
+<main class="flex-grow flex flex-col items-center justify-start px-6 pt-8 pb-4" data-purpose="main-content">
+<!-- Title Section -->
+<div class="text-center mb-12" data-purpose="title-section">
+<h1 class="text-3xl font-extrabold leading-tight">Harper shares more than<br>words — she sends<br><span style="background: linear-gradient(to right bottom, rgb(195, 36, 76), rgb(240, 42, 83), rgb(255, 62, 134)) text; -webkit-text-fill-color: transparent; display: inline-block;" class="">photos/videos voice messages &amp; voice calls</span></h1>
+</div>
+<!-- Visual Presentation Area -->
+<div class="relative w-full max-w-sm h-80 mx-auto flex items-center justify-center mt-4" data-purpose="visual-presentation">
+<!-- Media Previews -->
+<div class="absolute inset-0 flex items-center justify-center" data-purpose="media-stack">
+<!-- Card 1 (Video) -->
+<div class="media-card-1 relative w-48 h-64 bg-gray-300 rounded-3xl overflow-hidden shadow-2xl mr-12" style="background-image: url(&quot;https://lh3.googleusercontent.com/aida-public/AB6AXuAynGRdjJHpLvgPlcXSuhXgpx4fFpoaygAoG7nZ5wrt48UGfRcKaJwXy_Ucx2qkwY4cOUOeEGLtcOjnASb0PP6rjcqFj17ZYgCVZ2NFBN8XYyZ4cXDMWrzACy1kImC20ZPXo3EPwWNZWQ516S_C83iNU-Jc1DxLu-NfS2USJewjs50bbN6Y9NQyalzHAdqVNLRcoJ01UUmQFKMlQJli3EB26-zziS6mXm_EnkhEPmxwQ6B5u1osF3SwOQ&quot;); background-size: cover;">
+<div class="absolute inset-0 bg-black/20 flex items-center justify-center">
+<div class="bg-white/80 rounded-2xl p-4 backdrop-blur-sm">
+<svg class="h-10 w-10 text-gray-800" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+</div>
+</div>
+<!-- Card 2 (Photo) -->
+<div class="media-card-2 absolute w-48 h-64 bg-gray-400 rounded-3xl overflow-hidden shadow-2xl ml-16" style="background-image: url(&quot;https://lh3.googleusercontent.com/aida-public/AB6AXuBt_1ZwuomWZYNcRtZBOneHaeEmhmBE1yMpMBQ1dGRPK-DqKq3rLatHGhdpfCeBlFOXsAbi_RJRIuOzzaqK3yqq0lVt3u_xSZVzr6f6TzhWqKHQNhOXJkZPSMe-MdVhwqW5RXtVHgYO3ph6oFvKWUrG1sr369AoQR6-oS9d3Z7u_kvnjhogrTzusFmDQBKkd8D1RnFG3FXVFax3bSHRYhP_o4_Ouj6t1Ea3Ag2t8jxYmjV7C7ANyoms8g&quot;); background-size: cover;">
+<div class="absolute inset-0 bg-black/20 flex items-center justify-center">
+<div class="bg-white/80 rounded-2xl p-4 backdrop-blur-sm">
+<svg class="h-10 w-10 text-gray-800" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" stroke-linecap="round" stroke-linejoin="round"></path>
+<path d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+</div>
+</div>
+</div>
+<!-- Voice Message Bubble -->
+<div class="voice-bubble absolute bottom-[-40px] left-4 right-12 bg-[#f8f9fa] rounded-3xl p-4 z-20" data-purpose="voice-message">
+<div class="flex items-center space-x-3 mb-2">
+<!-- Play Button -->
+<div class="bg-[#ff5733] rounded-full p-2 flex-shrink-0">
+<svg class="h-5 w-5 text-white" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+<path clip-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" fill-rule="evenodd"></path>
+</svg>
+</div>
+<!-- Waveform Placeholder -->
+<div class="flex-grow flex items-center justify-between h-6 opacity-60">
+<div class="w-1 h-3 bg-gray-600 rounded-full"></div>
+<div class="w-1 h-5 bg-gray-600 rounded-full"></div>
+<div class="w-1 h-2 bg-gray-600 rounded-full"></div>
+<div class="w-1 h-6 bg-gray-600 rounded-full"></div>
+<div class="w-1 h-4 bg-gray-600 rounded-full"></div>
+<div class="w-1 h-5 bg-gray-600 rounded-full"></div>
+<div class="w-1 h-2 bg-gray-600 rounded-full"></div>
+<div class="w-1 h-3 bg-gray-600 rounded-full"></div>
+<div class="w-1 h-5 bg-gray-600 rounded-full"></div>
+</div>
+<!-- Voice Text Icon -->
+<div class="text-[#ff5733] flex-shrink-0 font-bold border border-[#ff5733] rounded-full px-2 py-0.5 text-xs">
+            Aa<sup class="text-[8px]">+</sup>
+</div>
+</div>
+<p class="text-[#ff5733] text-sm leading-tight">
+          Just sent you some<br>vacation pics... what do<br>you think?
+        </p>
+</div>
+<!-- Arrow Graphic -->
+<svg class="absolute bottom-[-10px] right-[-10px] z-10 w-24 h-24 text-[#ff5733]" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="4" style="transform: rotate(-10deg);" viewBox="0 0 100 100">
+<path d="M70 10 C 90 40, 80 70, 30 80"></path>
+<path d="M40 70 L 30 80 L 40 90"></path>
+</svg>
+</div>
+</main>
+<!-- END: Main Content Area -->
+<!-- BEGIN: Footer / Action -->
+<footer class="w-full p-6 flex-none text-center" data-purpose="footer">
+<p class="text-gray-400 text-sm mb-4">Exclusive content unlocks with Premium</p>
+<button class="w-full bg-white text-black font-bold text-lg py-4 rounded-full active:scale-95 transition-transform" data-purpose="continue-button">
+      Continue
+    </button>
+</footer>
+<!-- END: Footer / Action -->
+
+
+<script src="js/animations.js"></script>
+</body></html>

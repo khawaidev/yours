@@ -1,0 +1,143 @@
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Blush Discover UI</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+          },
+          colors: {
+            'app-bg': '#121212',
+            'app-surface': '#252525',
+            'app-primary': '#E2E2E2',
+            'app-secondary': '#A0A0A0',
+            'app-accent': '#3A3A3A',
+          },
+          borderRadius: {
+            'card': '24px',
+            'chip': '20px',
+            'nav': '32px',
+          }
+        }
+      }
+    }
+  </script>
+<style data-purpose="custom-utilities">
+    /* Hide scrollbar for horizontal scrolling areas */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    
+    /* Text overlay gradient for cards */
+    .card-gradient {
+      background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 50%);
+    }
+  </style>
+</head>
+<body class="bg-app-bg text-white font-sans antialiased selection:bg-gray-700 min-h-screen flex flex-col">
+<!-- BEGIN: MainHeader & Top Nav -->
+<header class="pt-12 pb-4 px-5 sticky top-0 bg-app-bg/95 backdrop-blur-sm z-50">
+<!-- Title -->
+<h1 class="text-3xl font-extrabold tracking-tight mb-6">Discover</h1>
+<!-- Search Bar -->
+<div class="relative mb-5">
+<div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+<i class="fa-solid fa-search text-app-secondary"></i>
+</div>
+<input class="w-full bg-app-surface text-app-primary placeholder-app-secondary rounded-full py-3 pl-11 pr-4 border-none focus:ring-1 focus:ring-gray-500 text-base shadow-sm" placeholder="Search for a character" type="text">
+</div>
+<!-- Filter Chips -->
+<div class="flex overflow-x-auto no-scrollbar gap-3 pb-2 -mx-5 px-5">
+<button class="whitespace-nowrap px-5 py-2 rounded-chip bg-app-surface text-app-primary font-medium text-sm transition-colors active:bg-gray-600">For you</button>
+<button class="whitespace-nowrap px-5 py-2 rounded-chip bg-app-surface text-app-primary font-medium text-sm transition-colors active:bg-gray-600">Popular</button>
+<button class="whitespace-nowrap px-5 py-2 rounded-chip bg-app-surface text-app-primary font-medium text-sm transition-colors active:bg-gray-600">Realistic</button>
+<button class="whitespace-nowrap px-5 py-2 rounded-chip bg-app-surface text-app-primary font-medium text-sm transition-colors active:bg-gray-600">Professional</button>
+</div>
+</header>
+<!-- END: MainHeader & Top Nav -->
+<!-- BEGIN: Main Content -->
+<main class="flex-1 overflow-y-auto pb-28 px-5">
+<!-- Section: Personalized -->
+<section class="mb-8">
+<div class="flex justify-between items-end mb-4">
+<h2 class="text-xl font-bold">Personalized</h2>
+<a class="text-app-secondary text-sm font-medium flex items-center gap-1" href="#">See all <i class="fa-solid fa-chevron-right text-[10px]"></i></a>
+</div>
+<!-- Horizontal Scrollable Cards -->
+<div class="flex overflow-x-auto no-scrollbar gap-4 -mx-5 px-5">
+<!-- Card 1 -->
+<div class="relative min-w-[160px] w-[160px] h-[240px] rounded-card overflow-hidden shrink-0 snap-start">
+<img alt="D.va character" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBUqkuBvG4kxML5GFDqIUZkzB1pfg_ilGPAV06hba2YpYa0Jm7TfTm1YfTcz8t6an1J7ENv0iZQwJcjjQ7F34hI9BaGKRrkLCGHNc0bP2ncHpzlzxr80IdKsBnYWiNRXIdmsqyB34vwBVXzUDZG4N3lXN4_IDuhFxiIs8TvTEu5nbR8c7nlXSjbWX5rP0Ui-5t9FmIkmmdGXxb8EI_IBocid1131FsWg_pk1HTn6WDVF_ufFeOxGeYJOg">
+<div class="absolute top-2 right-2 bg-black/40 backdrop-blur-md text-white text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-wider">
+            UGC
+          </div>
+<div class="absolute inset-0 card-gradient flex flex-col justify-end p-4">
+<h3 class="font-bold text-lg mb-1 drop-shadow-md">D.va, 22</h3>
+<p class="text-xs text-gray-200 line-clamp-2 drop-shadow-sm">Nerdy mech pilot with a passion for g...</p>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="relative min-w-[160px] w-[160px] h-[240px] rounded-card overflow-hidden shrink-0 snap-start">
+<img alt="Cherry character" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAy8kSlJMRugeuXIg9XrowniQqfJkQo70IIMnS8UFlzn3VkXEmSu_1aoNScN-jWyboUZlNMm4B94rk9t-CxboZeO54w0cmIzzWNCAi7kcdjCdyDYAdlqaNGiFzfjPNEp145pRCqyzJWRtzHJBECuqh1Jqmb-_dIZy8bG_vNaazWTSILWb5pF6IbGmqAl1WrAwRU3mSr4nPxJn4SJXCoLSaSG95DmOBaWfkrkNc6V05rhQVefA5v_F96Kg">
+<div class="absolute inset-0 card-gradient flex flex-col justify-end p-4">
+<h3 class="font-bold text-lg mb-1 drop-shadow-md">Cherry, 29</h3>
+<p class="text-xs text-gray-200 line-clamp-2 drop-shadow-sm">i'm not just your type i'm everything you'...</p>
+</div>
+</div>
+<!-- Card 3 (Partial view) -->
+<div class="relative min-w-[160px] w-[160px] h-[240px] rounded-card overflow-hidden shrink-0 snap-start">
+<img alt="Bri character" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCoz26xgGS6b-7Vk-hmpcK9Y2irWp9Guq3BxyIB6qiqjv8Q1jqk735j_lM8tOTR45mBsBdJD9zT8f4KeZB6jU3ZdoDiD3B2AuVjtWyXbw1934e2xU3E1Bnoz2ImgZK6d1hYNfrKW-ihN71iGdL5WYcdajR2c20zpXjt5sDxvLbRYUJrjlISHzw50asBxZv7Vxs0QJwAubpyv_CKf_7kMTgV3BaO-LcBOTIaAEozAxuyFZ0ZZF2cCb-gWA">
+<div class="absolute inset-0 card-gradient flex flex-col justify-end p-4">
+<h3 class="font-bold text-lg mb-1 drop-shadow-md">Bri, 24</h3>
+<p class="text-xs text-gray-200 line-clamp-2 drop-shadow-sm">your sweet neighbor...</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Section: Design Perfect Companion -->
+<section>
+<h2 class="text-xl font-bold mb-4">Design perfect companion</h2>
+<div class="flex gap-4">
+<!-- Blurred Creation Card -->
+<div class="relative w-[160px] h-[160px] rounded-card overflow-hidden bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-800/50 flex items-center justify-center cursor-pointer shadow-lg">
+<div class="absolute inset-0 bg-[url('https://placehold.co/400x400/222/666?text=Blur')] bg-cover bg-center opacity-30 blur-md"></div>
+<div class="relative z-10 flex flex-col items-center justify-center">
+<div class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center backdrop-blur-sm mb-2">
+<i class="fa-solid fa-plus text-xl"></i>
+</div>
+<span class="text-sm font-semibold">Create</span>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- END: Main Content -->
+<!-- BEGIN: Bottom Navigation (icon-only pill) -->
+<nav class="fixed bottom-4 left-4 right-4 z-50 flex items-center justify-between bg-[#252525]/95 backdrop-blur-lg rounded-[32px] px-2 py-2 shadow-[0_-5px_20px_rgba(0,0,0,0.5)]">
+<a href="feed.html" class="flex-1 flex items-center justify-center py-2 rounded-[24px] transition-all opacity-60 hover:opacity-100 cursor-pointer" title="Feed">
+<img src="https://i.ibb.co/hR2htXpk/football-card.png" alt="Feed" class="w-6 h-6 object-contain">
+</a>
+<a href="Discover.html" class="flex-1 flex items-center justify-center py-2 rounded-[24px] bg-[#3A3A3A] transition-all cursor-pointer" title="Discover">
+<img src="https://i.ibb.co/Zp5ZML9X/browser.png" alt="Discover" class="w-6 h-6 object-contain">
+</a>
+<a href="chat.html" class="flex-1 flex items-center justify-center py-2 rounded-[24px] transition-all opacity-60 hover:opacity-100 cursor-pointer" title="Chat">
+<img src="https://i.ibb.co/k2yRYWGk/ai-technology.png" alt="Chat" class="w-6 h-6 object-contain">
+</a>
+<a href="user-profile.html" class="flex-1 flex items-center justify-center py-2 rounded-[24px] transition-all opacity-60 hover:opacity-100 cursor-pointer" title="Profile">
+<img src="https://i.ibb.co/kVrCvk98/user-1.png" alt="Profile" class="w-6 h-6 object-contain">
+</a>
+</nav>
+<!-- END: Bottom Navigation -->
+<script src="js/animations.js"></script>
+</body></html>

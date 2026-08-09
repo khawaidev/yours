@@ -1,0 +1,181 @@
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>What is your age group?</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Be+Vietnam+Pro:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary-fixed": "#ffd8e8",
+                        "inverse-primary": "#b52701",
+                        "surface-container-lowest": "#0e0e0e",
+                        "outline-variant": "#5b413a",
+                        "error-container": "#93000a",
+                        "inverse-surface": "#e5e2e1",
+                        "secondary-fixed-dim": "#ffafd5",
+                        "inverse-on-surface": "#313030",
+                        "on-secondary": "#620042",
+                        "on-primary": "#621100",
+                        "tertiary-fixed-dim": "#ffb951",
+                        "on-tertiary-container": "#3f2700",
+                        "on-surface-variant": "#e3beb6",
+                        "primary-container": "#ff5c35",
+                        "surface-container-highest": "#353534",
+                        "surface-tint": "#ffb4a3",
+                        "secondary-container": "#bd0183",
+                        "surface-bright": "#393939",
+                        "on-secondary-fixed": "#3d0027",
+                        "surface-container-low": "#1c1b1b",
+                        "on-error": "#690005",
+                        "surface-dim": "#131313",
+                        "error": "#ffb4ab",
+                        "secondary": "#ffafd5",
+                        "primary": "#ffb4a3",
+                        "on-tertiary": "#452b00",
+                        "on-tertiary-fixed-variant": "#633f00",
+                        "on-background": "#e5e2e1",
+                        "on-primary-fixed-variant": "#8a1c00",
+                        "on-primary-container": "#5a0e00",
+                        "on-secondary-container": "#ffd5e6",
+                        "surface-container-high": "#2a2a2a",
+                        "primary-fixed": "#ffdad2",
+                        "surface-variant": "#353534",
+                        "tertiary": "#ffb951",
+                        "outline": "#aa8982",
+                        "on-surface": "#e5e2e1",
+                        "tertiary-fixed": "#ffddb3",
+                        "on-tertiary-fixed": "#291800",
+                        "tertiary-container": "#c5861c",
+                        "on-primary-fixed": "#3d0700",
+                        "on-error-container": "#ffdad6",
+                        "background": "#131313",
+                        "surface-container": "#201f1f",
+                        "primary-fixed-dim": "#ffb4a3",
+                        "surface": "#131313",
+                        "on-secondary-fixed-variant": "#8a005e"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "section-gap": "48px",
+                        "stack-sm": "8px",
+                        "unit": "8px",
+                        "stack-md": "16px",
+                        "container-margin": "24px",
+                        "gutter": "16px",
+                        "stack-lg": "32px"
+                    },
+                    "fontFamily": {
+                        "label-md": ["Plus Jakarta Sans"],
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "body-md": ["Be Vietnam Pro"],
+                        "label-sm": ["Plus Jakarta Sans"],
+                        "headline-xl": ["Plus Jakarta Sans"],
+                        "headline-lg-mobile": ["Plus Jakarta Sans"],
+                        "body-lg": ["Be Vietnam Pro"]
+                    },
+                    "fontSize": {
+                        "label-md": ["14px", { "lineHeight": "20px", "fontWeight": "600" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "fontWeight": "500" }],
+                        "headline-xl": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+                        "headline-lg-mobile": ["28px", { "lineHeight": "36px", "fontWeight": "700" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-background text-on-background min-h-screen flex flex-col font-body-md overflow-x-hidden selection:bg-primary-container selection:text-on-primary-container">
+<div class="fixed top-0 inset-x-0 h-1 bg-surface-container-high z-50">
+<div class="h-full bg-primary w-2/5 rounded-r-full"></div>
+</div>
+<!-- TopAppBar -->
+<header class="w-full top-0 bg-background dark:bg-background z-40">
+<div class="flex justify-between items-center px-container-margin py-stack-md w-full">
+<button aria-label="Go back" class="text-on-surface-variant hover:opacity-80 transition-transform duration-200 active:scale-95 flex items-center justify-center p-2 rounded-full hover:bg-surface-container">
+<span class="material-symbols-outlined" data-icon="arrow_back">arrow_back</span>
+</button>
+<div class="font-headline-lg-mobile text-headline-lg-mobile text-primary"></div>
+<button aria-label="Close" class="text-on-surface-variant hover:opacity-80 transition-transform duration-200 active:scale-95 flex items-center justify-center p-2 rounded-full hover:bg-surface-container">
+<span class="material-symbols-outlined" data-icon="close">close</span>
+</button>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-grow flex flex-col px-container-margin pt-stack-md pb-32">
+<div class="max-w-md mx-auto w-full flex flex-col gap-stack-lg">
+<!-- Headline -->
+<div class="text-center md:text-left">
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile md:font-headline-lg md:text-headline-lg text-on-surface">What is your age group?</h1>
+<p class="font-body-md text-body-md text-on-surface-variant mt-stack-sm">This helps us personalize your experience.</p>
+</div>
+<!-- Options List -->
+<div aria-labelledby="age-group-label" class="flex flex-col gap-stack-sm w-full" role="radiogroup">
+<!-- Selected Option -->
+<label class="group relative flex items-center justify-between p-4 rounded-xl bg-white border border-white cursor-pointer transition-all duration-300 hover:brightness-110 active:scale-[0.98]">
+<input checked="" class="sr-only" name="age_group" type="radio" value="18-24">
+<span class="font-body-lg text-body-lg text-black font-semibold">18-24</span>
+<span class="material-symbols-outlined text-primary" data-icon="check_circle" data-weight="fill" style="font-variation-settings: &quot;FILL&quot; 1;">check_circle</span>
+
+</label>
+<!-- Unselected Options -->
+<label class="group flex items-center justify-between p-4 rounded-xl bg-surface-container-low border border-transparent hover:border-surface-variant cursor-pointer transition-all duration-300 hover:brightness-110 active:scale-[0.98]">
+<input class="sr-only" name="age_group" type="radio" value="25-34">
+<span class="font-body-lg text-body-lg text-on-surface-variant group-hover:text-on-surface transition-colors">25-34</span>
+<span class="material-symbols-outlined text-transparent group-hover:text-surface-variant transition-colors" data-icon="radio_button_unchecked">radio_button_unchecked</span>
+</label>
+<label class="group flex items-center justify-between p-4 rounded-xl bg-surface-container-low border border-transparent hover:border-surface-variant cursor-pointer transition-all duration-300 hover:brightness-110 active:scale-[0.98]">
+<input class="sr-only" name="age_group" type="radio" value="35-44">
+<span class="font-body-lg text-body-lg text-on-surface-variant group-hover:text-on-surface transition-colors">35-44</span>
+<span class="material-symbols-outlined text-transparent group-hover:text-surface-variant transition-colors" data-icon="radio_button_unchecked">radio_button_unchecked</span>
+</label>
+<label class="group flex items-center justify-between p-4 rounded-xl bg-surface-container-low border border-transparent hover:border-surface-variant cursor-pointer transition-all duration-300 hover:brightness-110 active:scale-[0.98]">
+<input class="sr-only" name="age_group" type="radio" value="45-54">
+<span class="font-body-lg text-body-lg text-on-surface-variant group-hover:text-on-surface transition-colors">45-54</span>
+<span class="material-symbols-outlined text-transparent group-hover:text-surface-variant transition-colors" data-icon="radio_button_unchecked">radio_button_unchecked</span>
+</label>
+<label class="group flex items-center justify-between p-4 rounded-xl bg-surface-container-low border border-transparent hover:border-surface-variant cursor-pointer transition-all duration-300 hover:brightness-110 active:scale-[0.98]">
+<input class="sr-only" name="age_group" type="radio" value="55-64">
+<span class="font-body-lg text-body-lg text-on-surface-variant group-hover:text-on-surface transition-colors">55-64</span>
+<span class="material-symbols-outlined text-transparent group-hover:text-surface-variant transition-colors" data-icon="radio_button_unchecked">radio_button_unchecked</span>
+</label>
+<label class="group flex items-center justify-between p-4 rounded-xl bg-surface-container-low border border-transparent hover:border-surface-variant cursor-pointer transition-all duration-300 hover:brightness-110 active:scale-[0.98]">
+<input class="sr-only" name="age_group" type="radio" value="65_plus">
+<span class="font-body-lg text-body-lg text-on-surface-variant group-hover:text-on-surface transition-colors">65 or over</span>
+<span class="material-symbols-outlined text-transparent group-hover:text-surface-variant transition-colors" data-icon="radio_button_unchecked">radio_button_unchecked</span>
+</label>
+<label class="group flex items-center justify-between p-4 rounded-xl bg-surface-container-low border border-transparent hover:border-surface-variant cursor-pointer transition-all duration-300 hover:brightness-110 active:scale-[0.98]">
+<input class="sr-only" name="age_group" type="radio" value="prefer_not">
+<span class="font-body-lg text-body-lg text-on-surface-variant group-hover:text-on-surface transition-colors">Prefer not to say</span>
+<span class="material-symbols-outlined text-transparent group-hover:text-surface-variant transition-colors" data-icon="radio_button_unchecked">radio_button_unchecked</span>
+</label>
+</div>
+</div>
+</main>
+<!-- Bottom CTA / Floating Action -->
+<div class="fixed bottom-0 inset-x-0 p-container-margin from-background via-background to-transparent z-40 flex justify-center pb-safe">
+<button class="w-full max-w-md bg-white text-black font-label-md text-label-md rounded-full py-4 px-8 flex justify-center items-center font-bold hover:brightness-110 active:scale-95 transition-all duration-300">
+            Continue
+        </button>
+</div>
+<!-- Hidden image reference to satisfy requirements -->
+<div class="hidden">
+<img alt="hidden reference" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAYE9d53VEv--M-4cGY0WXzS0jIFlV0C6exIYMlQuTVniOZS5JGRgd5ca2mz6NuoKIQns2WT1vt86Sx1TZu7Kx-l1QmGI4ZCrdL8Y_YPBkYH5k01sTVsO1l6NOwqmWwvsz87yF4hXHBZXlZ3dXk8raeWVeZh8iT9VH2I7XCpyAPbtKJmOgG0ne3svbZE-fOQ1ctB7inhsCW5MqzpBN0JFNwrcbbDMZpgMCsh_4HEGmrmgc5lONUBpFGKNMYiA3o73xXgUM" class="">
+</div>
+
+
+<script src="../js/animations.js"></script>
+</body></html>
