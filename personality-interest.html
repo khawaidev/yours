@@ -225,37 +225,47 @@
 <script>
         document.addEventListener('DOMContentLoaded', () => {
             const radioButtons = document.querySelectorAll('input[type="radio"][name="personality"]');
-            
+
+            const selectOption = (radio) => {
+                // Reset all option labels
+                document.querySelectorAll('label').forEach(label => {
+                    if (!label.querySelector('input[name="personality"]')) return;
+                    label.className = 'relative flex items-center p-gutter rounded-xl glass-panel cursor-pointer hover:bg-surface-container transition-all duration-300 group';
+
+                    const activeBg = label.querySelector('.absolute.inset-0.bg-gradient-to-r');
+                    if (activeBg) activeBg.remove();
+
+                    const emojiContainer = label.querySelector('.flex.items-center.justify-center.w-12.h-12');
+                    if (emojiContainer) emojiContainer.className = 'flex items-center justify-center w-12 h-12 rounded-full bg-surface-container-high text-2xl mr-gutter group-hover:scale-110 transition-transform duration-300';
+
+                    const tick = label.querySelector('[data-icon="check"]');
+                    if (tick) { tick.style.opacity = '0'; }
+                });
+
+                // Style the checked label
+                const activeLabel = radio.closest('label');
+                activeLabel.className = 'relative flex items-center p-gutter rounded-xl glass-card-active cursor-pointer transition-all duration-300 group';
+
+                const activeBg = document.createElement('div');
+                activeBg.className = 'absolute inset-0 bg-gradient-to-r from-primary/5 to-transparent rounded-xl opacity-100 pointer-events-none';
+                activeLabel.insertBefore(activeBg, activeLabel.firstChild.nextSibling);
+
+                const activeEmoji = activeLabel.querySelector('.flex.items-center.justify-center.w-12.h-12');
+                if (activeEmoji) activeEmoji.className = 'flex items-center justify-center w-12 h-12 rounded-full bg-surface-container-highest text-2xl mr-gutter scale-110 relative z-10 shadow-[0_0_15px_rgba(255,180,163,0.2)]';
+
+                const tick = activeLabel.querySelector('[data-icon="check"]');
+                if (tick) { tick.style.opacity = '1'; }
+            };
+
             radioButtons.forEach(radio => {
                 radio.addEventListener('change', (e) => {
-                    // Reset all labels
-                    document.querySelectorAll('label').forEach(label => {
-                        label.className = 'relative flex items-center p-gutter rounded-xl glass-panel cursor-pointer hover:bg-surface-container transition-all duration-300 group';
-                        
-                        // Remove active background element if it exists
-                        const activeBg = label.querySelector('.absolute.inset-0.bg-gradient-to-r');
-                        if (activeBg) activeBg.remove();
-                        
-                        // Reset emoji container
-                        const emojiContainer = label.querySelector('.flex.items-center.justify-center.w-12.h-12');
-                        emojiContainer.className = 'flex items-center justify-center w-12 h-12 rounded-full bg-surface-container-high text-2xl mr-gutter group-hover:scale-110 transition-transform duration-300';
-                    });
-
-                    // Style the checked label
-                    if (e.target.checked) {
-                        const activeLabel = e.target.closest('label');
-                        activeLabel.className = 'relative flex items-center p-gutter rounded-xl glass-card-active cursor-pointer transition-all duration-300 group';
-                        
-                        // Add active background element
-                        const activeBg = document.createElement('div');
-                        activeBg.className = 'absolute inset-0 bg-gradient-to-r from-primary/5 to-transparent rounded-xl opacity-100 pointer-events-none';
-                        activeLabel.insertBefore(activeBg, activeLabel.firstChild.nextSibling);
-                        
-                        // Style active emoji container
-                        const activeEmoji = activeLabel.querySelector('.flex.items-center.justify-center.w-12.h-12');
-                        activeEmoji.className = 'flex items-center justify-center w-12 h-12 rounded-full bg-surface-container-highest text-2xl mr-gutter scale-110 relative z-10 shadow-[0_0_15px_rgba(255,180,163,0.2)]';
-                    }
+                    if (e.target.checked) selectOption(e.target);
                 });
+            });
+
+            // Apply active style + tick to any pre-selected radio on load
+            radioButtons.forEach(radio => {
+                if (radio.checked) selectOption(radio);
             });
         });
     </script>
