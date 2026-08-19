@@ -855,7 +855,8 @@
     bubble.className = 'msg-bubble msg-bubble-ai typing-indicator';
     var firstName = (CHARACTER.name || '').trim().split(/\s+/)[0] || 'Character';
     var label = mode === 'picture' ? (firstName + ' is taking picture')
-      : (mode === 'voice' ? (firstName + ' is recording her voice') : (firstName + ' is typing'));
+      : (mode === 'video' ? (firstName + ' is recording a video')
+      : (mode === 'voice' ? (firstName + ' is recording her voice') : (firstName + ' is typing')));
     bubble.innerHTML =
       '<div class="typing-shimmer">' + label + '</div>';
     body.appendChild(bubble);
@@ -896,6 +897,26 @@
     if (!text) return false;
     for (var i = 0; i < IMAGE_REQUEST_PATTERNS.length; i++) {
       if (IMAGE_REQUEST_PATTERNS[i].test(text)) return true;
+    }
+    return false;
+  }
+
+  // ---- AI video request trigger ----
+  var VIDEO_REQUEST_PATTERNS = [
+    /send (?:me )?a video/i,
+    /send (?:me )?your video/i,
+    /record a video/i,
+    /record (?:a |your )?video/i,
+    /video of you/i,
+    /your video/i,
+    /make (?:me )?a video/i,
+    /film (?:a |your )?video/i,
+  ];
+
+  function isVideoRequest(text) {
+    if (!text) return false;
+    for (var i = 0; i < VIDEO_REQUEST_PATTERNS.length; i++) {
+      if (VIDEO_REQUEST_PATTERNS[i].test(text)) return true;
     }
     return false;
   }
@@ -1032,6 +1053,7 @@
           return;
         }
         addVoiceMessage(data.audioUrl, data.transcript);
+        scheduleMediaFollowUp();
       })
       .catch(function (err) {
         sending = false;
@@ -1121,6 +1143,30 @@
     return row;
   }
 
+  // AI video bubble: an inline player for a character sent video.
+  function addVideoMessage(videoUrl) {
+    var row = document.createElement('div');
+    row.className = 'msg-row msg-row-ai';
+    var body = document.createElement('div');
+    body.className = 'flex items-start gap-2';
+    var bubble = document.createElement('div');
+    bubble.className = 'msg-bubble msg-bubble-ai';
+    bubble.style.padding = '0';
+    bubble.style.overflow = 'hidden';
+    var vid = document.createElement('video');
+    vid.src = videoUrl;
+    vid.controls = true;
+    vid.playsInline = true;
+    vid.className = 'w-full';
+    vid.style.cssText = 'max-width:260px;max-height:320px;object-fit:cover;border-radius:0.9rem;display:block;background:#000;';
+    bubble.appendChild(vid);
+    body.appendChild(bubble);
+    row.appendChild(body);
+    chatArea.appendChild(row);
+    scrollBottom();
+    return row;
+  }
+
   function sendPortraitRequest(text) {
     var firstName = (CHARACTER.name || '').trim().split(/\s+/)[0] || 'Character';
     sending = true;
@@ -1138,13 +1184,7 @@
           return;
         }
         addGeneratedImage(data.imageUrl || data.imageDataUrl);
-        // After the photo is delivered, the character "thinks" for a moment,
-        // then sends a random flirty follow-up.
-        showTyping();
-        setTimeout(function () {
-          hideTyping();
-          addCharacterMessage(pickPictureReaction(), true);
-        }, 1600);
+        scheduleMediaFollowUp();
       })
       .catch(function (err) {
         sending = false;
@@ -1157,32 +1197,29 @@
       });
   }
 
-  // Random flirty line sent right after a generated picture is delivered.
-  var PICTURE_REACTIONS = [
-    'Hope you like it! 😊',
-    'How do I look? 👀',
-    'Be honest… how\'s the pic? 😏',
-    'Do you like this one? 🥰',
-    'I kinda love how this turned out 😌',
-    'What do you think? ❤️',
-    'Okay… rate this one 1–10 👀',
-    'Is this a good look for me? 😚',
-    'I was feeling cute, so… here you go 🙈',
-    'Did I get your attention? 😉',
-    'Should I send you another one? 👀',
-    'Tell me what you think 😌',
-    'I hope this made you smile 🥰',
-    'Do you like me like this? 💕',
-    'I couldn\'t resist sending you this 😏',
-    'Your turn… what do you think? 👀',
-    'Was this worth the wait? 😜',
-    'I wonder what you\'re thinking right now…',
-    'Did you miss seeing me? 🥺❤️',
-    'So… was I cute enough? 😘'
+  // Random follow-up sent right after the AI delivers media
+  // (voice note, video, or generated picture). Picked at random, 0.5s later.
+  var MEDIA_FOLLOWUPS = [
+    'Hope you liked it!',
+    'How is it?',
+    'Hope I didn\'t disappoint',
+    'Here, it\'s not the best tho.',
+    'Let me know what you think 😊',
+    'Was that okay? 🥰',
+    'Tell me honestly… 👀'
   ];
 
-  function pickPictureReaction() {
-    return PICTURE_REACTIONS[Math.floor(Math.random() * PICTURE_REACTIONS.length)];
+  function pickMediaFollowup() {
+    return MEDIA_FOLLOWUPS[Math.floor(Math.random() * MEDIA_FOLLOWUPS.length)];
+  }
+
+  // Show typing for a beat, then drop the random follow-up line.
+  function scheduleMediaFollowUp() {
+    showTyping();
+    setTimeout(function () {
+      hideTyping();
+      addCharacterMessage(pickMediaFollowup(), true);
+    }, 500);
   }
 
   function isRateLimitedError(err) {
@@ -1229,6 +1266,8 @@
             addVoiceMessage(m.media_url, m.content);
           } else if (m.message_type === 'image' && (m.media_url || m.content)) {
             addGeneratedImage(m.media_url || m.content);
+          } else if (m.message_type === 'video' && (m.media_url || m.content)) {
+            addVideoMessage(m.media_url || m.content);
           } else {
             addCharacterMessage(m.content, false);
           }
@@ -1260,12 +1299,13 @@
     }
 
     if ((!text && !image) || sending) return;
+    var videoRequest = !image && isVideoRequest(text);
     input.value = '';
     clearPendingImage();
     updateSendIcon();
     addUserMessage(text, image);
     sending = true;
-    showTyping();
+    showTyping(videoRequest ? 'video' : undefined);
 
     ensureConversation()
       .then(function () {
@@ -1274,7 +1314,23 @@
       .then(function (data) {
         sending = false;
         hideTyping();
-        var reply = (data && data.aiMessage && data.aiMessage.content) || "I'm right here with you.";
+        var am = data && data.aiMessage;
+        if (am && am.message_type === 'video' && (am.media_url || am.content)) {
+          addVideoMessage(am.media_url || am.content);
+          scheduleMediaFollowUp();
+          return;
+        }
+        if (am && am.message_type === 'voice' && (am.media_url || am.content)) {
+          addVoiceMessage(am.media_url, am.content);
+          scheduleMediaFollowUp();
+          return;
+        }
+        if (am && am.message_type === 'image' && (am.media_url || am.content)) {
+          addGeneratedImage(am.media_url || am.content);
+          scheduleMediaFollowUp();
+          return;
+        }
+        var reply = (am && am.content) || "I'm right here with you.";
         addCharacterMessage(reply, true);
       })
       .catch(function (err) {
