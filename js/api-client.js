@@ -379,6 +379,16 @@ class YoursAPI {
     });
   }
 
+  static async generateVideoMessage(characterId, prompt, userId, conversationId) {
+    const body = { prompt };
+    if (userId) body.userId = userId;
+    if (conversationId) body.conversationId = conversationId;
+    return this.request(`/characters/${characterId}/generate-video`, {
+      method: 'POST',
+      body: JSON.stringify(body),
+    });
+  }
+
   // Private album: photos the current user generated in chat with a character.
   // Cached by the caller (sessionStorage) so reloads don't hit the API again.
   static async getCharacterChatMedia(characterId, userId) {

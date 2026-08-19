@@ -1167,8 +1167,36 @@
     return row;
   }
 
+  function sendVideoRequest(text) {
+    sending = true;
+    showTyping('video');
+
+    ensureConversation()
+      .then(function () {
+        return YoursAPI.generateVideoMessage(CHARACTER.id, text, USER_ID, CONVERSATION_ID);
+      })
+      .then(function (data) {
+        sending = false;
+        hideTyping();
+        if (!data || !data.videoUrl) {
+          addCharacterMessage("My camera's catching its breath — try again in a moment. 💕", true);
+          return;
+        }
+        addVideoMessage(data.videoUrl);
+        scheduleMediaFollowUp();
+      })
+      .catch(function (err) {
+        sending = false;
+        hideTyping();
+        console.error('video generation failed:', err);
+        var rlMsg = isRateLimitedError(err) && err.message ? err.message : null;
+        var detail = err && err.message ? err.message : String(err);
+        if (rlMsg) addCharacterMessage(rlMsg, true);
+        else addCharacterMessage("Hmm, the camera's being fussy — give me a moment and try again. 💕" + (window._debugErrors ? (' (' + detail + ')') : ''), true);
+      });
+  }
+
   function sendPortraitRequest(text) {
-    var firstName = (CHARACTER.name || '').trim().split(/\s+/)[0] || 'Character';
     sending = true;
     showTyping('picture');
 
@@ -1286,6 +1314,15 @@
       updateSendIcon();
       addUserMessage(text);
       sendVoiceRequest(text);
+      return;
+    }
+
+    // AI video-clip request (text only, no attached image).
+    if (text && !image && isVideoRequest(text)) {
+      input.value = '';
+      updateSendIcon();
+      addUserMessage(text);
+      sendVideoRequest(text);
       return;
     }
 
