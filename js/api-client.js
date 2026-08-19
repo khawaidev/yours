@@ -4,7 +4,9 @@
  */
 const API_BASE_URL =
   window.LOCATION_API_BASE_URL ||
-  ('http://' + (window.location.hostname || 'localhost') + ':5000/api/v1');
+  (/^(localhost|127\.0\.0\.1|10\.|192\.168\.)/.test(window.location.hostname || '')
+    ? 'http://' + (window.location.hostname || 'localhost') + ':5000/api/v1'
+    : 'https://yours-backend-e38m.onrender.com/api/v1');
 
 class YoursAPI {
   // In-memory cache bucket (per-page lifetime). sessionStorage is used as a
