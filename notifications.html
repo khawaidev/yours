@@ -1,0 +1,176 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport">
+<title>Notifications - Yours</title>
+<link href="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/file_000000003704823093c6cccb8ba71cd1.png" rel="icon" type="image/png">
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link rel="stylesheet" href="css/app.css">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style data-purpose="custom-fonts">
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: #121212;
+      color: #FFFFFF;
+    }
+  </style>
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            blush: {
+              bg: '#121212',
+              card: '#1E1E1E',
+              text: '#FFFFFF',
+              subtext: '#A0A0A0',
+              accent: '#FF4D6D',
+            }
+          },
+          fontFamily: {
+            sans: ['Plus Jakarta Sans', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .row-btn {
+      transition: background 0.2s ease, transform 0.1s ease;
+    }
+    .row-btn:active {
+      transform: scale(0.98);
+      background: rgba(255, 255, 255, 0.06);
+    }
+    /* Toggle switch */
+    .toggle {
+      width: 48px;
+      height: 28px;
+      border-radius: 9999px;
+      background: rgba(255, 255, 255, 0.15);
+      position: relative;
+      flex-shrink: 0;
+      transition: background 0.2s ease;
+      outline: none;
+    }
+    .toggle::after {
+      content: '';
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 22px;
+      height: 22px;
+      border-radius: 9999px;
+      background: #fff;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+      transition: transform 0.2s ease;
+    }
+    .toggle.on {
+      background: #FF4D6D;
+    }
+    .toggle.on::after {
+      transform: translateX(20px);
+    }
+  </style>
+</head>
+<body class="bg-blush-bg text-blush-text antialiased min-h-screen flex flex-col items-center pt-2 app-page">
+<div class="w-full max-w-[400px] h-full flex flex-col px-4 pb-8">
+<!-- BEGIN: Header -->
+<header data-reveal class="flex items-center justify-between py-3 mb-4">
+<button aria-label="Go back" class="p-2 -ml-2 rounded-full hover:bg-blush-card transition-colors focus:outline-none" onclick="if (window.history.length > 1) window.history.back(); else window.location.href='settings.html';">
+<svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M15 19l-7-7 7-7" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</button>
+<h1 class="text-xl font-bold tracking-wide absolute left-1/2 -translate-x-1/2">Notifications</h1>
+<div class="w-10"></div> <!-- Spacer for centering -->
+</header>
+<!-- END: Header -->
+<!-- BEGIN: Notification Toggles -->
+<section data-reveal class="flex flex-col space-y-3">
+<div class="row-btn flex items-center justify-between bg-blush-card rounded-full p-4 space-x-4" data-toggle-row>
+<div class="flex items-center space-x-4">
+<div class="w-8 flex justify-center">
+<svg class="h-6 w-6 text-white" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9l-3 3v-3H4a2 2 0 01-2-2V5z"></path></svg>
+</div>
+<div>
+<span class="font-bold text-base block leading-tight">Text messages</span>
+<span class="text-blush-subtext text-xs">New chats and message replies</span>
+</div>
+</div>
+<button class="toggle on" data-toggle type="button" aria-label="Toggle Text messages"></button>
+</div>
+<div class="row-btn flex items-center justify-between bg-blush-card rounded-full p-4 space-x-4" data-toggle-row>
+<div class="flex items-center space-x-4">
+<div class="w-8 flex justify-center">
+<svg class="h-6 w-6 text-white" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"></path></svg>
+</div>
+<div>
+<span class="font-bold text-base block leading-tight">Photos</span>
+<span class="text-blush-subtext text-xs">When someone shares photos (not including with you)</span>
+</div>
+</div>
+<button class="toggle on" data-toggle type="button" aria-label="Toggle Photos"></button>
+</div>
+<div class="row-btn flex items-center justify-between bg-blush-card rounded-full p-4 space-x-4" data-toggle-row>
+<div class="flex items-center space-x-4">
+<div class="w-8 flex justify-center">
+<svg class="h-6 w-6 text-white" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z"></path></svg>
+</div>
+<div>
+<span class="font-bold text-base block leading-tight">Videos</span>
+<span class="text-blush-subtext text-xs">When new video messages arrive</span>
+</div>
+</div>
+<button class="toggle on" data-toggle type="button" aria-label="Toggle Videos"></button>
+</div>
+<div class="row-btn flex items-center justify-between bg-blush-card rounded-full p-4 space-x-4" data-toggle-row>
+<div class="flex items-center space-x-4">
+<div class="w-8 flex justify-center">
+<svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19 11a7 7 0 00-14 0m7 0v7m-4 4h8m-4-18a9 9 0 019 9v1a1 1 0 01-1 1H9a1 1 0 01-1-1v-1a9 9 0 019-9zm-0.5 11H9.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+</div>
+<div>
+<span class="font-bold text-base block leading-tight">Voice messages</span>
+<span class="text-blush-subtext text-xs">When you receive voice messages</span>
+</div>
+</div>
+<button class="toggle on" data-toggle type="button" aria-label="Toggle Voice messages"></button>
+</div>
+<div class="row-btn flex items-center justify-between bg-blush-card rounded-full p-4 space-x-4" data-toggle-row>
+<div class="flex items-center space-x-4">
+<div class="w-8 flex justify-center">
+<svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3 5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5zm8 0a2 2 0 012-2h6a2 2 0 012 2v14a2 2 0 01-2 2h-6a2 2 0 01-2-2V5z" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+</div>
+<div>
+<span class="font-bold text-base block leading-tight">Voice calls</span>
+<span class="text-blush-subtext text-xs">Incoming call alerts</span>
+</div>
+</div>
+<button class="toggle on" data-toggle type="button" aria-label="Toggle Voice calls"></button>
+</div>
+<div class="row-btn flex items-center justify-between bg-blush-card rounded-full p-4 space-x-4" data-toggle-row>
+<div class="flex items-center space-x-4">
+<div class="w-8 flex justify-center">
+<svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 8c-2.5 0-4.5 1.8-4.5 4s2 4 4.5 4c.8 0 1.5-.2 2.1-.5l1.5 1.5c.3.3.8.3 1.1 0l.3-.3c.3-.3.3-.8 0-1.1l-1.5-1.5c.3-.6.9-1.4.9-2.4 0-1.5-2-3.7-4.4-3.7zm5 3l3-3-3-3v6zm-10 0L4 8l3-3v6z" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+</div>
+<div>
+<span class="font-bold text-base block leading-tight">Offers and promotions</span>
+<span class="text-blush-subtext text-xs">Deals, discounts and new features from the app</span>
+</div>
+</div>
+<button class="toggle" data-toggle type="button" aria-label="Toggle Offers and promotions"></button>
+</div>
+</section>
+<!-- END: Notification Toggles -->
+</div>
+<script>
+(function () {
+  var toggles = document.querySelectorAll('[data-toggle]');
+  for (var i = 0; i < toggles.length; i++) {
+    toggles[i].addEventListener('click', function () {
+      this.classList.toggle('on');
+    });
+  }
+})();
+</script>
+<script src="js/animations.js"></script>
+</body></html>

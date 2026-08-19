@@ -1,0 +1,863 @@
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport">
+<title>Voice call - Yours</title>
+<link href="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/file_000000003704823093c6cccb8ba71cd1.png" rel="icon" type="image/png">
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link rel="stylesheet" href="css/app.css">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Be+Vietnam+Pro:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<style>
+  .app-page {
+    background: transparent;
+  }
+  body {
+    background: #0d0d10;
+  }
+  .call-bg {
+    position: fixed;
+    inset: 0;
+    background-position: center;
+    background-size: cover;
+    filter: blur(22px) brightness(0.6) saturate(1.2);
+    transform: scale(1.12);
+    z-index: 0;
+  }
+  .call-overlay {
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.68) 0%, rgba(0,0,0,0.12) 45%, rgba(0,0,0,0.26) 100%);
+    z-index: 1;
+  }
+  .speak-btn {
+    background: #FFFFFF;
+    color: #000000;
+    transition: transform 0.12s ease, opacity 0.12s ease;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: none;
+  }
+  .speak-btn.recording {
+    transform: scale(0.96);
+  }
+  .hang-btn {
+    background: rgba(255, 77, 79, 0.5);
+    color: #FFFFFF;
+    transition: transform 0.12s ease;
+    touch-action: none;
+  }
+  .hang-btn:active { transform: scale(0.92); }
+  .dots-btn { width: 2.75rem; height: 2.75rem; border-radius: 9999px; background: rgba(0,0,0,0.4); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+  .stage-line { transition: opacity 0.4s ease, transform 0.4s ease; }
+  @keyframes gleam {
+    0% { background-position: 200% center; }
+    100% { background-position: -200% center; }
+  }
+  .gleam-text {
+    background: linear-gradient(100deg, rgba(255,255,255,0.5) 0%, #ffffff 28%, #ffd9a8 44%, #ffe08a 50%, #ffd9a8 56%, #ffffff 72%, rgba(255,255,255,0.5) 100%);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    animation: gleam 2.6s linear infinite;
+  }
+  .gleam-slow { animation-duration: 3.8s; }
+  @keyframes dotPulse { 0%,100% { opacity: 0.25; } 50% { opacity: 1; } }
+  .connecting-dot {
+    width: 0.5rem; height: 0.5rem; border-radius: 9999px;
+    background: #fff;
+    animation: dotPulse 1.3s ease-in-out infinite;
+  }
+  .connecting-dot:nth-child(2) { animation-delay: 0.2s; }
+  .connecting-dot:nth-child(3) { animation-delay: 0.4s; }
+  #connecting-ui { transition: opacity 0.4s ease; }
+  #connecting-ui.connecting-hidden { opacity: 0; pointer-events: none; }
+  .sheet {
+    position: fixed;
+    left: 0; right: 0; bottom: 0;
+    z-index: 60;
+    max-width: 26rem;
+    margin: 0 auto;
+    transform: translateY(105%);
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .sheet.open { transform: translateY(0); }
+  .sheet-backdrop {
+    position: fixed; inset: 0; z-index: 55;
+    background: rgba(0,0,0,0.6);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+  }
+  .sheet-backdrop.open { opacity: 1; pointer-events: auto; }
+  .rating-btn {
+    background: #FFFFFF;
+    color: #000;
+    transition: transform 0.1s ease, opacity 0.12s ease;
+  }
+  .rating-btn.selected { transform: scale(0.96); background: #FFD600; color: #000; }
+  .issue-chip {
+    background: #FFFFFF;
+    color: #000;
+    transition: transform 0.1s ease, opacity 0.15s ease;
+  }
+  .issue-chip.selected { background: #FFD600; color: #000; }
+  .continue-btn { background: #FFFFFF; color: #000; transition: opacity 0.15s ease, transform 0.1s ease; }
+  body.ended .controls, body.ended .call-header { display: none; }
+  @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+  .blink { animation: blink 1.4s ease-in-out infinite; }
+</style>
+</head>
+<body class="bg-[#0d0d10] text-white antialiased h-[100dvh] overflow-hidden app-page" id="page-body">
+<div class="call-bg" id="call-bg"></div>
+<div class="call-overlay"></div>
+
+<!-- Call header: character name + three dots at the top right -->
+<header class="call-header absolute top-0 left-0 right-0 z-20 flex items-center justify-end px-5 pt-5">
+<div class="flex items-center gap-3">
+<button aria-label="Call options" class="dots-btn flex items-center justify-center text-white/80 active:scale-95 transition-transform" id="call-options-btn" type="button">
+<i class="fa-solid fa-ellipsis-vertical text-lg"></i>
+</button>
+</div>
+</header>
+
+<!-- Option dropdown -->
+<div class="hidden absolute right-5 top-16 z-30 w-48 rounded-2xl bg-black/80 backdrop-blur-xl border border-white/10 overflow-hidden" id="call-dropdown">
+<button class="w-full text-left px-4 py-3 text-sm text-white/80 hover:bg-white/10 flex items-center gap-3" data-opt="mute" id="call-mute-opt" type="button"><i class="fa-solid fa-microphone-slash w-4"></i><span>Mute microphone</span></button>
+<button class="w-full text-left px-4 py-3 text-sm text-white/80 hover:bg-white/10 flex items-center gap-3" data-opt="speaker" id="call-speaker-opt" type="button"><i class="fa-solid fa-volume-high w-4"></i><span>Speaker on</span></button>
+<button class="w-full text-left px-4 py-3 text-sm text-white/80 hover:bg-white/10 flex items-center gap-3" data-opt="end" type="button"><i class="fa-solid fa-phone w-4 rotate-[135deg]"></i><span>End call</span></button>
+</div>
+
+<!-- Live transcript area (AI STT) -->
+<main class="relative z-10 flex h-full flex-col justify-end px-6 pb-8 pt-24" id="call-main">
+<div class="mb-auto flex flex-col items-center text-center pt-16" id="connecting-ui">
+<h1 class="gleam-text text-4xl font-extrabold tracking-tight leading-tight" id="connecting-title">Calling …</h1>
+<p class="gleam-text gleam-slow text-lg font-bold mt-3" id="connecting-sub">Connecting call</p>
+<div class="mt-8 flex items-center gap-2">
+<span class="connecting-dot"></span>
+<span class="connecting-dot"></span>
+<span class="connecting-dot"></span>
+</div>
+</div>
+<section class="w-full" id="transcript-area" style="display:none;">
+<div class="text-left" id="stt-user"></div>
+<div class="text-left mt-5">
+<div id="ai-spoken-past"></div>
+<div id="ai-spoken-current"></div>
+<div id="ai-spoken-next"></div>
+</div>
+</section>
+</main>
+
+<!-- Bottom controls -->
+<footer class="controls absolute bottom-0 left-0 right-0 z-20 px-6 pb-9">
+<div class="flex items-end justify-center gap-5">
+<button class="speak-btn flex-1 rounded-full py-6 flex items-center justify-center gap-3" id="hold-talk-btn" type="button" style="max-width:70%;" aria-label="Hold to speak">
+<i class="fa-solid fa-microphone text-xl"></i>
+<span class="font-semibold text-base tracking-tight">Hold to speak</span>
+</button>
+<button class="hang-btn w-[68px] h-[68px] rounded-full flex items-center justify-center flex-shrink-0 mb-4" id="hang-up-btn" type="button" aria-label="Hang up">
+<i class="fa-solid fa-phone text-2xl rotate-[135deg]"></i>
+</button>
+</div>
+</footer>
+
+<!-- Call ended screen -->
+<section class="absolute inset-0 z-30 hidden flex-col items-center justify-center px-8" id="ended-screen">
+<h1 class="text-3xl font-extrabold tracking-tight text-center">Call ended</h1>
+<p class="text-white/70 text-lg font-semibold mt-2" id="call-duration-text"></p>
+<p class="text-white/50 text-sm mt-1" id="call-ended-sub"></p>
+<button class="continue-btn w-full rounded-full py-4 font-bold text-base mt-10 active:scale-95 transition-transform" id="call-continue-btn" type="button">
+Continue
+</button>
+</section>
+
+<!-- Feedback backdrop -->
+<div class="sheet-backdrop" id="feedback-backdrop"></div>
+
+<!-- Bottom sheet: How was the call? -->
+<div class="sheet rounded-t-[32px] bg-[#161616] pt-6 pb-9 px-6 shadow-[0_-4px_30px_rgba(0,0,0,0.5)]" id="rating-sheet">
+<div class="w-10 h-1.5 rounded-full bg-white/20 mx-auto mb-5"></div>
+<h2 class="text-xl font-bold text-center mb-2">How was the call?</h2>
+<p class="text-center text-white/50 text-sm mb-6">Your feedback helps improve future calls.</p>
+<div class="flex flex-col gap-3">
+<button class="rating-btn w-full rounded-full py-4 font-bold text-base active:scale-95 transition-transform" data-rating="excellent" type="button">It was Excellent</button>
+<button class="rating-btn w-full rounded-full py-4 font-bold text-base active:scale-95 transition-transform" data-rating="okay" type="button">It was okay</button>
+<button class="rating-btn w-full rounded-full py-4 font-bold text-base active:scale-95 transition-transform" data-rating="could_be_better" type="button">Could be better</button>
+</div>
+<button class="continue-btn w-full rounded-full py-4 font-bold text-base mt-5 opacity-40 pointer-events-none" id="rating-continue" type="button">Continue</button>
+</div>
+
+<!-- Bottom sheet: How can we improve your experience? -->
+<div class="sheet rounded-t-[32px] bg-[#161616] pt-6 pb-9 px-6 shadow-[0_-4px_30px_rgba(0,0,0,0.5)]" id="issues-sheet">
+<div class="w-10 h-1.5 rounded-full bg-white/20 mx-auto mb-5"></div>
+<h2 class="text-xl font-bold text-center mb-2">How can we improve your experience?</h2>
+<p class="text-center text-white/50 text-sm mb-6">Select all that apply.</p>
+<div class="flex flex-col gap-3" id="issues-list">
+<button class="issue-chip w-full rounded-full py-4 font-bold text-base active:scale-95 transition-transform" data-issue="voice" type="button">Voice can be improved</button>
+<button class="issue-chip w-full rounded-full py-4 font-bold text-base active:scale-95 transition-transform" data-issue="speed" type="button">Response time can be faster</button>
+<button class="issue-chip w-full rounded-full py-4 font-bold text-base active:scale-95 transition-transform" data-issue="smarter" type="button">Responses can be smarter</button>
+<button class="issue-chip w-full rounded-full py-4 font-bold text-base active:scale-95 transition-transform" data-issue="understanding" type="button">Didn't understand me well</button>
+<button class="issue-chip w-full rounded-full py-4 font-bold text-base active:scale-95 transition-transform" data-issue="comment_mode" type="button">Describe your thoughts</button>
+</div>
+<div id="comment-area" style="display:none;">
+<textarea class="w-full rounded-2xl bg-black text-white p-4 text-base outline-none border border-white/15 focus:border-white/40 resize-none mt-4" id="feedback-comment" rows="4" placeholder="Tell us what happened…"></textarea>
+</div>
+<button class="continue-btn w-full rounded-full py-4 font-bold text-base mt-5 opacity-40 pointer-events-none" id="issues-continue" type="button">Continue</button>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/api-client.js"></script>
+<script>
+(function () {
+  var character = null;
+  try { character = JSON.parse(sessionStorage.getItem('yours_current_character') || 'null'); } catch (e) { character = null; }
+  var conversationId = null;
+  try { conversationId = sessionStorage.getItem('yours_conversation_id') || null; } catch (e) {}
+  if (!character || !character.id) {
+    window.location.href = 'user-profile.html';
+    return;
+  }
+
+  var pageBody = document.getElementById('page-body');
+  var bgEl = document.getElementById('call-bg');
+  var connectingTitle = document.getElementById('connecting-title');
+  var connectingSub = document.getElementById('connecting-sub');
+  var charName = character.name || 'Character';
+  connectingTitle.textContent = 'Calling ' + charName + '…';
+
+  // Character feed image as the blurred page background.
+  var feedMedia = character.character_feeds && character.character_feeds.length ? character.character_feeds[0] : null;
+  var bgUrl = feedMedia ? feedMedia.media_url : (character.circular_profile_image_url || '');
+  if (bgUrl && bgUrl.indexOf('undefined') === -1) {
+    bgEl.style.backgroundImage = 'url(' + bgUrl + ')';
+  }
+
+  // ---- State ----
+  var userId = null;
+  var callId = null;
+  var ws = null;
+  var liveStartedAt = null;
+  var ended = false;
+
+  // Transcript state
+  var spokenPast = '';
+  var currentText = '';
+  var currentTurnStarted = false;
+
+  // Metrics
+  var METRICS = {
+    durationSeconds: 0,
+    turns: 0,
+    interruptions: 0,
+    avgResponseLatencyMs: 0,
+    userSttFailures: 0,
+    aiResponseFailures: 0,
+  };
+  var latencies = [];
+  var lastUserTurnEnd = null;
+  var sessionHasOutput = false;
+  var holdSessions = 0;
+  var sttFinalCount = 0;
+  var aiBlanks = 0;
+  var modelTurnSeen = false;
+
+  // Audio out
+  var audioCtx = null;
+  var masterGain = null;
+  var playOffset = 0;
+  var muted = false;
+
+  // Mic in
+  var micStream = null;
+  var micCtx = null;
+  var sourceNode = null;
+  var processorNode = null;
+  var capturing = false;
+  var pendingSamples = [];  // raw (48k) float input samples
+  var nextSrcPos = 0;       // fractional source position for the next 16k output sample
+  var pcm16 = [];           // resampled 16k float output buffer pending encode
+
+  function $(id) { return document.getElementById(id); }
+  function formatDuration(totalSeconds) {
+    totalSeconds = Math.max(0, Math.floor(totalSeconds || 0));
+    var h = Math.floor(totalSeconds / 3600);
+    var m = Math.floor((totalSeconds % 3600) / 60);
+    var s = totalSeconds % 60;
+    if (h > 0) return h + 'h ' + m + 'm';
+    return m + 'm ' + s + 's';
+  }
+  function getToken() { return YoursAPI.getAccessToken(); }
+
+  // ---- Set character avatar initial on bg if feed missing ----
+  function setStatus(txt) {
+    if (connectingSub) connectingSub.textContent = txt;
+    var sub = $('call-ended-sub');
+    if (sub) sub.textContent = txt;
+  }
+
+  // ================= AUDIO CAPTURE (16 kHz PCM) =================
+  async function startMic() {
+    if (micStream) return;
+    try {
+      micStream = await navigator.mediaDevices.getUserMedia({
+        audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true },
+      });
+    } catch (err) {
+      setStatus('Microphone unavailable: ' + (err && err.message || ''));
+      return;
+    }
+    micCtx = new (window.AudioContext || window.webkitAudioContext)();
+    sourceNode = micCtx.createMediaStreamSource(micStream);
+    processorNode = micCtx.createScriptProcessor(4096, 1, 1);
+    var silent = micCtx.createGain();
+    silent.gain.value = 0;
+    sourceNode.connect(processorNode);
+    processorNode.connect(silent);
+    silent.connect(micCtx.destination);
+    processorNode.onaudioprocess = function (e) {
+      if (!capturing || !ws || ws.readyState !== 1) return;
+      var input = e.inputBuffer.getChannelData(0);
+      feedMicInput(input, micCtx.sampleRate || 48000);
+      flushPcmQueue();
+    };
+  }
+
+  function feedMicInput(chunk, inRate) {
+    var ratio = inRate / 16000;
+    for (var i = 0; i < chunk.length; i++) pendingSamples.push(chunk[i]);
+    while (nextSrcPos + 1 < pendingSamples.length) {
+      var i0 = Math.floor(nextSrcPos);
+      var frac = nextSrcPos - i0;
+      var s = pendingSamples[i0] + (pendingSamples[i0 + 1] - pendingSamples[i0]) * frac;
+      pcm16.push(s);
+      nextSrcPos += ratio;
+    }
+    var consumed = Math.floor(nextSrcPos);
+    if (consumed >= 1600) {
+      pendingSamples = pendingSamples.slice(consumed);
+      nextSrcPos -= consumed;
+    }
+  }
+
+  // Encode the accumulated 16k float samples as base64 audio/pcm;rate=16000.
+  function flushPcmQueue() {
+    if (!pcm16.length) return;
+    var int16 = new Int16Array(pcm16.length);
+    for (var i = 0; i < pcm16.length; i++) {
+      var v = pcm16[i];
+      if (v > 1) v = 1; else if (v < -1) v = -1;
+      int16[i] = v < 0 ? v * 0x8000 : v * 0x7fff;
+    }
+    pcm16 = [];
+    var bytes = new Uint8Array(int16.buffer);
+    var binary = '';
+    var CHUNK = 0x8000;
+    for (var i = 0; i < bytes.length; i += CHUNK) {
+      binary += String.fromCharCode.apply(null, bytes.subarray(i, i + CHUNK));
+    }
+    ws.send(JSON.stringify({
+      realtimeInput: {
+        audio: { mimeType: 'audio/pcm;rate=16000', data: btoa(binary) },
+      },
+    }));
+  }
+
+  function stopMic() {
+    capturing = false;
+    pendingSamples = [];
+    pcm16 = [];
+    nextSrcPos = 0;
+    if (processorNode) { try { processorNode.disconnect(); } catch (e) {} }
+    if (sourceNode) { try { sourceNode.disconnect(); } catch (e) {} }
+    if (micCtx) { micCtx.close().catch(function(){}); }
+    if (micStream) { micStream.getTracks().forEach(function (t) { t.stop(); }); }
+    micStream = null; micCtx = null; sourceNode = null; processorNode = null;
+  }
+
+  // ================= AUDIO PLAYBACK (24 kHz PCM → speakers) =================
+  function base64ToBytes(b64) {
+    var bin = atob(b64);
+    var bytes = new Uint8Array(bin.length);
+    for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    return bytes;
+  }
+  function ensurePlaybackCtx() {
+    if (!audioCtx) {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      masterGain = audioCtx.createGain();
+      masterGain.connect(audioCtx.destination);
+      playOffset = 0;
+    }
+    if (audioCtx.state === 'suspended') audioCtx.resume().catch(function(){});
+  }
+  function playPcm16(b64, rate) {
+    ensurePlaybackCtx();
+    if (muted) return;
+    try {
+      var bytes = base64ToBytes(b64);
+      var i16 = new Int16Array(bytes.buffer);
+      var f32 = new Float32Array(i16.length);
+      for (var i = 0; i < i16.length; i++) f32[i] = i16[i] / 32768;
+      var buf = audioCtx.createBuffer(1, f32.length, rate || 24000);
+      buf.copyToChannel(f32, 0);
+      var src = audioCtx.createBufferSource();
+      src.buffer = buf;
+      src.connect(masterGain);
+      var t = Math.max(audioCtx.currentTime + 0.02, playOffset);
+      src.start(t);
+      playOffset = t + buf.duration;
+    } catch (err) { console.warn('playback failed', err); }
+  }
+  function stopPlayback() {
+    if (audioCtx) { audioCtx.close().catch(function(){}); audioCtx = null; masterGain = null; playOffset = 0; }
+  }
+
+  // ================= HOLD TO SPEAK =================
+  var holdBtn = $('hold-talk-btn');
+  function beginHold(e) {
+    if (e) e.preventDefault();
+    if (ended) return;
+    holdBtn.classList.add('recording');
+    holdBtn.querySelector('span').textContent = 'Listening…';
+    capturing = true;
+    holdSessions += 1;
+    ensurePlaybackCtx();
+    if (!micStream) {
+      startMic();
+    }
+  }
+  function endHold(e) {
+    if (e) e.preventDefault();
+    holdBtn.classList.remove('recording');
+    holdBtn.querySelector('span').textContent = 'Hold to speak';
+    // Brief trailing capture so speech isn't cut mid-word.
+    setTimeout(function () {
+      if (!capturing) return;
+      capturing = false;
+      // Flush any remaining PCM ahead of the release.
+      if (pcm16.length) flushPcmQueue();
+    }, 300);
+    lastUserTurnEnd = Date.now();
+  }
+  holdBtn.addEventListener('pointerdown', beginHold);
+  holdBtn.addEventListener('pointerup', endHold);
+  holdBtn.addEventListener('pointerleave', endHold);
+  holdBtn.addEventListener('pointercancel', endHold);
+
+  // ================= WS / GEMINI LIVE =================
+  function connectCall() {
+    var token = getToken();
+    if (!token) {
+      setStatus('You need to sign in to call.');
+      return;
+    }
+    ensurePlaybackCtx();
+    var url = YoursAPI.getCallWebSocketUrl() + '?token=' + encodeURIComponent(token) +
+      '&characterId=' + encodeURIComponent(character.id);
+    ws = new WebSocket(url);
+    ws.onopen = function () {
+      setStatus('Connecting…');
+    };
+    ws.onmessage = function (ev) {
+      if (ended) return;
+      try {
+        var msg = JSON.parse(ev.data);
+      } catch (e) { return; }
+      if (msg.type === 'call_error') {
+        setStatus(msg.error || 'Call error');
+        return;
+      }
+      if (msg.type === 'connected') {
+        setStatus('Connecting call…');
+        return;
+      }
+      if (msg.type === 'model_switching') {
+        setStatus('Switching voice model…');
+        return;
+      }
+      if (msg.setupComplete) {
+        setStatus('Connected');
+        showTranscript();
+        return;
+      }
+      if (!msg.serverContent) return;
+      handleServerContent(msg.serverContent);
+    };
+    ws.onclose = function (ev) {
+      if (ended) return;
+      if (ev.reason === 'invalid_token') setStatus('Session expired — please sign in again.');
+      else if (!callEndedByUser) finishCall();
+    };
+    ws.onerror = function () {};
+  }
+
+  var callEndedByUser = false;
+
+  function showTranscript() {
+    var area = $('transcript-area');
+    if (area) area.style.display = 'block';
+    var ui = $('connecting-ui');
+    if (ui) ui.classList.add('connecting-hidden');
+  }
+
+  // Render the three AI text stages into the transcript area.
+  function renderStages() {
+    var pastEl = $('ai-spoken-past');
+    var curEl = $('ai-spoken-current');
+    var nextEl = $('ai-spoken-next');
+    if (pastEl) pastEl.innerHTML = spokenPast
+      ? '<div class="stage-line text-white/45 font-bold text-[17px] leading-snug mb-3">' + spokenPast + '</div>'
+      : '';
+    if (curEl) curEl.innerHTML = currentText
+      ? '<div class="stage-line text-white font-extrabold text-2xl leading-snug mb-3">' + currentText + '</div>'
+      : '';
+    if (nextEl) nextEl.innerHTML = '<div class="stage-line text-white/35 font-bold text-[17px] leading-snug blink">. . .</div>';
+  }
+
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (m) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m];
+    });
+  }
+
+  function handleServerContent(sc) {
+    // --- Input transcription (user's speech → STT text, bold big, left aligned) ---
+    if (sc.inputTranscription && sc.inputTranscription.text) {
+      var sttEl = $('stt-user');
+      if (sttEl) sttEl.innerHTML = '<div class="text-white font-extrabold text-xl leading-snug text-left">You: ' + esc(sc.inputTranscription.text) + '</div>';
+      if (sc.inputTranscription.status === 'INPUT_TEXT_AUDIO_TRANSCRIPTION_STATUS_COMPLETE') {
+        sttFinalCount += 1;
+      }
+    }
+
+    // --- Output transcription (what the character is saying right now) ---
+    if (sc.outputTranscription && sc.outputTranscription.text) {
+      if (!currentTurnStarted) {
+        currentTurnStarted = true;
+        modelTurnSeen = true;
+        if (lastUserTurnEnd != null) {
+          latencies.push(Date.now() - lastUserTurnEnd);
+          lastUserTurnEnd = null;
+        }
+      }
+      sessionHasOutput = true;
+      currentText = (currentText ? currentText + ' ' : '') + sc.outputTranscription.text;
+      renderStages();
+    }
+
+    // --- Interruptions (barge-in / hang-up) ---
+    if (sc.interrupted) {
+      METRICS.interruptions += 1;
+      if (!sessionHasOutput) aiBlanks += 1;
+      stopPlayback();
+      // Reset the current turn; keep what was spoken so far.
+      if (currentText) {
+        spokenPast += (spokenPast ? ' ' : '') + currentText;
+      }
+      currentText = '';
+      sessionHasOutput = false;
+      currentTurnStarted = false;
+      renderStages();
+      return;
+    }
+
+    if (!sc.modelTurn) {
+      if (sc.turnComplete) {
+        METRICS.turns += 1;
+        if (currentText) {
+          spokenPast += (spokenPast ? ' ' : '') + currentText;
+          currentText = '';
+          currentTurnStarted = false;
+          sessionHasOutput = false;
+          renderStages();
+        }
+        if (lastUserTurnEnd) {
+          // AI response failed if a turn completed with no output at all.
+        }
+      }
+      return;
+    }
+
+    // --- Model turn: audio + text ---
+    if (!currentTurnStarted) {
+      currentTurnStarted = true;
+      modelTurnSeen = true;
+      if (lastUserTurnEnd != null) {
+        latencies.push(Date.now() - lastUserTurnEnd);
+        lastUserTurnEnd = null;
+      }
+    }
+    var turn = sc.modelTurn;
+    var parts = turn.parts || [];
+    var gotAnything = false;
+    for (var i = 0; i < parts.length; i++) {
+      var p = parts[i];
+      if (p && p.inlineData && p.inlineData.data) {
+        gotAnything = true;
+        sessionHasOutput = true;
+        var mime = (p.inlineData.mimeType || 'audio/pcm;rate=24000');
+        var rateMatch = mime.match(/rate=(\d+)/);
+        playPcm16(p.inlineData.data, rateMatch ? parseInt(rateMatch[1], 10) : 24000);
+      } else if (p && typeof p.text === 'string' && p.text) {
+        gotAnything = true;
+        sessionHasOutput = true;
+        currentText = (currentText ? currentText + ' ' : '') + p.text;
+        renderStages();
+      }
+    }
+    if (gotAnything) sessionHasOutput = true;
+  }
+
+  // ================= HANG UP =================
+  function finishCall() {
+    if (ended) return;
+    ended = true;
+    pageBody.classList.add('ended');
+    capturing = false;
+    stopMic();
+    stopPlayback();
+    if (ws) { try { ws.onmessage = null; ws.close(1000, 'hangup'); } catch (e) {} ws = null; }
+    var duration = Math.max(0, Math.round((Date.now() - liveStartedAt) / 1000));
+    METRICS.durationSeconds = duration;
+    METRICS.userSttFailures = Math.max(0, holdSessions - sttFinalCount);
+    METRICS.aiResponseFailures = aiBlanks;
+    if (latencies.length) {
+      METRICS.avgResponseLatencyMs = Math.round(latencies.reduce(function (a, b) { return a + b; }, 0) / latencies.length);
+    }
+
+    var durationText = formatDuration(duration);
+    $('call-duration-text').textContent = durationText;
+
+    var backTarget = 'messaging.html';
+    if (character && character.id) {
+      try { sessionStorage.setItem('yours_current_character', JSON.stringify(character)); } catch (e) {}
+      backTarget = 'messaging.html';
+    }
+
+    // Persist metrics + "Call ended" bubble, then show the ended screen.
+    var endedScreen = $('ended-screen');
+    endedScreen.style.display = 'flex';
+    function showEnded() {
+      $('call-continue-btn').onclick = function () {
+        openRatingSheet();
+      };
+      // Continue always goes to the chat with the character.
+      window._callBackTarget = backTarget;
+      window._callCharacter = character;
+      window._callId = callId;
+      window._callDurationText = durationText;
+      window._metrics = METRICS;
+    }
+
+    if (userId && callId) {
+      YoursAPI.endCall(callId, userId, METRICS).catch(function (err) {
+        console.warn('endCall failed', err);
+      }).finally(showEnded);
+    } else {
+      showEnded();
+    }
+  }
+
+  $('hang-up-btn').addEventListener('click', function () {
+    if (ended) return;
+    callEndedByUser = true;
+    finishCall();
+  });
+
+  // ================= OPTIONS MENU =================
+  var optsBtn = $('call-options-btn');
+  var dropdown = $('call-dropdown');
+  var mutedState = false;
+  optsBtn.addEventListener('click', function (e) {
+    e.stopPropagation();
+    dropdown.classList.toggle('hidden');
+  });
+  document.addEventListener('click', function (e) {
+    if (!e.target.closest('#call-options-btn') && !e.target.closest('#call-dropdown') && !dropdown.classList.contains('hidden')) {
+      dropdown.classList.add('hidden');
+    }
+  });
+  dropdown.addEventListener('click', function (e) {
+    var opt = e.target.closest('[data-opt]');
+    if (!opt) return;
+    var action = opt.getAttribute('data-opt');
+    dropdown.classList.add('hidden');
+    if (action === 'end') {
+      callEndedByUser = true;
+      finishCall();
+    } else if (action === 'mute') {
+      mutedState = !mutedState;
+      muted = mutedState;
+      $('call-mute-opt').innerHTML = mutedState
+        ? '<i class="fa-solid fa-microphone w-4"></i><span>Unmute microphone</span>'
+        : '<i class="fa-solid fa-microphone-slash w-4"></i><span>Mute microphone</span>';
+    } else if (action === 'speaker') {
+      // Speaker is default; nothing extra needed here.
+      var so = $('call-speaker-opt');
+      so.innerHTML = '<i class="fa-solid fa-volume-high w-4"></i><span>Speaker on</span>';
+    }
+  });
+
+  // ================= RATING / FEEDBACK FLOW =================
+  var backdrop = $('feedback-backdrop');
+  var ratingSheet = $('rating-sheet');
+  var issuesSheet = $('issues-sheet');
+  var ratingContinue = $('rating-continue');
+  var issuesContinue = $('issues-continue');
+  var selectedRating = null;
+  var selectedIssues = [];
+  var commentMode = false;
+
+  function openRatingSheet() {
+    selectedRating = null;
+    updateRatingContinue();
+    backdrop.classList.add('open');
+    ratingSheet.classList.add('open');
+  }
+  function closeSheets() {
+    backdrop.classList.remove('open');
+    ratingSheet.classList.remove('open');
+    issuesSheet.classList.remove('open');
+  }
+  function updateRatingContinue() {
+    var on = !!selectedRating;
+    ratingContinue.classList.toggle('opacity-40', !on);
+    ratingContinue.classList.toggle('pointer-events-none', !on);
+  }
+  function updateIssuesContinue() {
+    var on = commentMode || selectedIssues.length > 0;
+    issuesContinue.classList.toggle('opacity-40', !on);
+    issuesContinue.classList.toggle('pointer-events-none', !on);
+  }
+
+  document.querySelectorAll('.rating-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      document.querySelectorAll('.rating-btn').forEach(function (b) { b.classList.remove('selected'); });
+      btn.classList.add('selected');
+      selectedRating = btn.getAttribute('data-rating');
+      updateRatingContinue();
+    });
+  });
+
+  ratingContinue.addEventListener('click', function () {
+    if (!selectedRating) return;
+    if (selectedRating === 'could_be_better') {
+      ratingSheet.classList.remove('open');
+      issuesSheet.classList.add('open');
+      selectedIssues = [];
+      commentMode = false;
+      $('comment-area').style.display = 'none';
+      updateIssuesContinue();
+    } else {
+      submitFeedback(selectedRating, [], '');
+    }
+  });
+
+  document.querySelectorAll('.issue-chip').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var issue = btn.getAttribute('data-issue');
+      if (issue === 'comment_mode') {
+        commentMode = true;
+        startCommentMode();
+        return;
+      }
+      var isSel = btn.classList.contains('selected');
+      if (isSel) { btn.classList.remove('selected'); } else { btn.classList.add('selected'); }
+      if (issue !== 'comment_mode') {
+        var idx = selectedIssues.indexOf(issue);
+        if (idx === -1) selectedIssues.push(issue); else selectedIssues.splice(idx, 1);
+      }
+      updateIssuesContinue();
+    });
+  });
+
+  function startCommentMode() {
+    // Smoothly remove the other chips, keep only the text area + the Comment label.
+    var list = $('issues-list');
+    list.querySelectorAll('.issue-chip').forEach(function (chip) {
+      if (chip.getAttribute('data-issue') !== 'comment_mode') {
+        chip.style.transition = 'opacity 0.25s ease, transform 0.25s ease, height 0.25s ease';
+        chip.style.opacity = '0';
+        chip.style.height = '0';
+        chip.style.overflow = 'hidden';
+        chip.style.paddingTop = '0';
+        chip.style.paddingBottom = '0';
+        chip.disabled = true;
+      }
+    });
+    var commentBtn = list.querySelector('[data-issue="comment_mode"]');
+    if (commentBtn) {
+      commentBtn.textContent = 'Describe your thoughts';
+      commentBtn.classList.remove('selected');
+    }
+    $('comment-area').style.display = 'block';
+    updateIssuesContinue();
+  }
+
+  issuesContinue.addEventListener('click', function () {
+    if (!commentMode && !selectedIssues.length) return;
+    var comment = $('feedback-comment').value || '';
+    submitFeedback('could_be_better', selectedIssues, comment);
+  });
+
+  function submitFeedback(rating, issues, comment) {
+    closeSheets();
+    var finalize = function () {
+      goBackToChat();
+    };
+    if (userId && callId) {
+      YoursAPI.submitCallFeedback(callId, userId, { rating: rating, issues: issues, comment: comment })
+        .then(finalize)
+        .catch(function (err) {
+          console.warn('submitCallFeedback failed', err);
+          finalize();
+        });
+    } else {
+      finalize();
+    }
+  }
+
+  function goBackToChat() {
+    // The call page redirects home when the character is unknown.
+    if (character && character.id) {
+      window.location.href = 'messaging.html';
+    } else {
+      window.location.href = 'user-profile.html';
+    }
+  }
+
+  // The first Continue (after hang-up) opens the rating sheet; feedback's
+  // final Continue returns to the chat.
+  window._goBackToChat = goBackToChat;
+
+  // ================= BOOT =================
+  var supabaseUrl = 'https://dgbxcakkqrgrapwsvrol.supabase.co';
+  var supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRnYnhjYWtrcXJncmFwd3N2cm9sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYxOTM0NDksImV4cCI6MjEwMTc2OTQ0OX0.v2gOgC28bfXXVjRVki1lL0ulgCHVloUAv1eF5HVSzuk';
+  var supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+  (async function () {
+    var session = null;
+    try {
+      session = await supabase.auth.getSession().then(function (r) { return r.data.session || null; });
+    } catch (e) {}
+    if (!session || !session.user) {
+      setStatus('Please sign in to start a call.');
+      return;
+    }
+    userId = session.user.id;
+    // Create the call record, then open the live stream.
+    try {
+      var created = await YoursAPI.startCall(userId, character.id, conversationId);
+      callId = created.callId;
+    } catch (err) {
+      console.warn('startCall failed', err);
+    }
+    liveStartedAt = Date.now();
+    connectCall();
+  })();
+})();
+</script>
+</body></html>

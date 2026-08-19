@@ -1,8 +1,10 @@
 <!DOCTYPE html><html class="dark" lang="en"><head>
 <meta charset="utf-8">
-<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport">
 <title>Store - Turn up the heat</title>
+<link href="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/file_000000003704823093c6cccb8ba71cd1.png" rel="icon" type="image/png">
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link rel="stylesheet" href="css/app.css">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&amp;family=Be+Vietnam+Pro:wght@400&amp;display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
@@ -103,7 +105,7 @@
         }
     </style>
 </head>
-<body class="bg-background text-on-background min-h-screen flex flex-col font-body-md pb-24">
+<body class="bg-background text-white min-h-screen flex flex-col font-body-md pb-8 app-page">
 <!-- BEGIN: Custom skeleton loader (mirrors page layout) -->
 <div id="page-skeleton" style="position:fixed;inset:0;z-index:9999;background:#0e0e0e;overflow-y:auto">
 <div style="width:100%;max-width:28rem;margin:0 auto;padding:1rem 1.5rem 4rem">
@@ -111,7 +113,6 @@
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2.5rem">
 <div class="skeleton-block" style="width:2.5rem;height:2.5rem;border-radius:9999px"></div>
 <div class="skeleton-block" style="width:5rem;height:2.25rem;border-radius:9999px"></div>
-<div class="skeleton-block" style="width:2.5rem;height:2.5rem;border-radius:9999px"></div>
 </div>
 <!-- Title + subtitle -->
 <div class="skeleton-block" style="height:2rem;width:14rem;border-radius:.5rem;margin:0 auto 1rem"></div>
@@ -119,22 +120,22 @@
 <!-- Package grid -->
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
 <div style="display:flex;flex-direction:column;align-items:center;gap:1rem;background:#1c1b1b;border-radius:1rem;padding:1rem">
-<div class="skeleton-block" style="width:100%;aspect-ratio:1/1;border-radius:.75rem"></div>
+<div class="skeleton-block" style="width:100%;height:10rem;border-radius:.75rem"></div>
 <div class="skeleton-block" style="height:1.25rem;width:5rem;border-radius:.375rem"></div>
 <div class="skeleton-block" style="height:2.5rem;width:100%;border-radius:9999px"></div>
 </div>
 <div style="display:flex;flex-direction:column;align-items:center;gap:1rem;background:#1c1b1b;border-radius:1rem;padding:1rem">
-<div class="skeleton-block" style="width:100%;aspect-ratio:1/1;border-radius:.75rem"></div>
+<div class="skeleton-block" style="width:100%;height:10rem;border-radius:.75rem"></div>
 <div class="skeleton-block" style="height:1.25rem;width:5rem;border-radius:.375rem"></div>
 <div class="skeleton-block" style="height:2.5rem;width:100%;border-radius:9999px"></div>
 </div>
 <div style="display:flex;flex-direction:column;align-items:center;gap:1rem;background:#1c1b1b;border-radius:1rem;padding:1rem">
-<div class="skeleton-block" style="width:100%;aspect-ratio:1/1;border-radius:.75rem"></div>
+<div class="skeleton-block" style="width:100%;height:10rem;border-radius:.75rem"></div>
 <div class="skeleton-block" style="height:1.25rem;width:5rem;border-radius:.375rem"></div>
 <div class="skeleton-block" style="height:2.5rem;width:100%;border-radius:9999px"></div>
 </div>
 <div style="display:flex;flex-direction:column;align-items:center;gap:1rem;background:#1c1b1b;border-radius:1rem;padding:1rem">
-<div class="skeleton-block" style="width:100%;aspect-ratio:1/1;border-radius:.75rem"></div>
+<div class="skeleton-block" style="width:100%;height:10rem;border-radius:.75rem"></div>
 <div class="skeleton-block" style="height:1.25rem;width:5rem;border-radius:.375rem"></div>
 <div class="skeleton-block" style="height:2.5rem;width:100%;border-radius:9999px"></div>
 </div>
@@ -145,118 +146,278 @@
 <!-- TopAppBar -->
 <header class="bg-background/80 backdrop-blur-xl docked full-width top-0 sticky z-40 transition-all duration-300">
 <div class="flex justify-between items-center w-full px-container-margin py-4">
-<button class="text-on-surface-variant hover:opacity-80 transition-all duration-300 active:scale-95 flex items-center justify-center p-2 rounded-full">
+<button id="btn-back" class="text-white hover:opacity-80 transition-all duration-300 active:scale-95 flex items-center justify-center p-2 rounded-full">
 <span class="material-symbols-outlined text-2xl">arrow_back</span>
 </button>
 <div class="flex items-center gap-2 bg-surface-container-high px-4 py-1.5 rounded-full shadow-[0_0_10px_rgba(255,180,163,0.1)] border border-outline-variant/20">
-<span class="material-symbols-outlined text-primary text-xl">payments</span>
-<span class="font-label-md text-on-surface font-bold tracking-wide">50</span>
+<img alt="Cash" class="w-5 h-5 object-contain" src="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/slazzer-preview-z0bt9.png">
+<span class="font-label-md text-white font-bold tracking-wide" id="recharge-balance">50</span>
 </div>
-<button class="text-on-surface-variant hover:opacity-80 transition-all duration-300 active:scale-95 flex items-center justify-center p-2 rounded-full">
-<span class="material-symbols-outlined text-2xl">close</span>
-</button>
 </div>
 </header>
 <!-- Main Content -->
-<main class="flex-grow px-container-margin pt-stack-md flex flex-col gap-stack-lg">
+<main class="flex-grow px-container-margin pt-2 flex flex-col gap-3">
 <!-- Header Section -->
-<section class="text-center flex flex-col gap-stack-sm items-center">
-<h1 class="font-headline-lg-mobile text-headline-lg-mobile md:font-headline-lg md:text-headline-lg font-extrabold uppercase tracking-tight text-on-surface">Turn up the heat</h1>
-<p class="font-body-md text-on-surface-variant max-w-[280px] md:max-w-md mx-auto">Unleash your creativity with Blush Bucks</p>
+<section class="text-center flex flex-col gap-1 items-center">
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile md:font-headline-lg md:text-headline-lg font-extrabold uppercase tracking-tight text-white">Turn up the heat</h1>
+<p class="font-body-md text-white/70 max-w-[280px] md:max-w-md mx-auto">Unleash your creativity with Love Tokens</p>
 </section>
 <!-- Store Grid -->
 <section class="grid grid-cols-2 gap-4 md:gap-6 md:grid-cols-3 lg:grid-cols-4 max-w-7xl mx-auto w-full pb-10">
 <!-- Package 1: Most Popular -->
-<article class="bg-surface-container-low rounded-xl p-4 flex flex-col items-center gap-4 relative border border-outline-variant/10 shadow-lg hover:shadow-[0_0_20px_rgba(255,92,53,0.15)] transition-all duration-300">
-<div class="absolute -top-3 -right-3 badge-scallop bg-gradient-to-br from-[#ff5c35] to-[#bd0183] text-white font-label-sm font-bold text-[10px] leading-tight text-center p-3 w-16 h-16 flex items-center justify-center transform rotate-12 shadow-md z-10">
+<article class="relative overflow-hidden rounded border border-outline-variant/10 shadow-lg hover:shadow-[0_0_20px_rgba(255,255,255,0.06)] transition-all duration-300 h-64" style="background: linear-gradient(to bottom left, #4E4C40 0%, #6B654F 35%, #3C3B38 70%, #2E2E32 100%);">
+<div class="absolute top-2 right-2 badge-scallop bg-gradient-to-br from-[#ff5c35] to-[#bd0183] text-white font-label-sm font-bold text-[10px] leading-tight text-center p-3 w-16 h-16 flex items-center justify-center transform rotate-12 shadow-md z-20">
                     MOST<br>POPULAR
                 </div>
-<div class="w-full aspect-square relative rounded-lg overflow-hidden bg-gradient-to-b from-surface-container-high/50 to-transparent flex items-center justify-center p-2 mt-4">
-<img class="w-full h-full object-contain mix-blend-screen opacity-90 drop-shadow-2xl filter contrast-125 saturate-150" data-alt="A stylized, high-quality 3D render of neat stacks of crisp green banknotes tied with simple bands, set against a dark, moody studio background. The lighting is soft yet dramatic, highlighting the texture of the paper and the vibrant green color of the money, creating a premium, inviting aesthetic suitable for a high-end digital store." src="https://www.gstatic.com/labs-code/stitch/stitch-placeholder-300x300.svg">
+<div class="relative z-10 h-full flex flex-col items-center justify-end gap-2 p-3">
+<img class="h-[126px] w-[126px] object-contain drop-shadow-lg" data-alt="Cash top-up for the first plan" src="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/71.2380796672021.png">
+<div class="flex items-center gap-1.5">
+<img alt="Cash" class="w-4 h-4 object-contain" src="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/slazzer-preview-z0bt9.png">
+<span class="text-xl font-bold text-white" id="tok-count-1">250</span>
 </div>
-<div class="flex items-center gap-1.5 mt-2">
-<span class="material-symbols-outlined text-primary text-xl">payments</span>
-<span class="font-headline-lg-mobile text-headline-lg-mobile font-bold text-on-surface">2500</span>
-</div>
-<button class="w-full bg-white text-background font-label-md font-bold py-3 px-4 rounded-full hover:bg-on-surface active:scale-95 transition-all duration-200 mt-2 shadow-[0_4px_14px_0_rgba(255,255,255,0.1)]">
-                    ₹520.00
+<button class="w-full bg-white text-background font-label-md font-bold py-2.5 px-4 rounded-full hover:bg-on-surface active:scale-95 transition-all duration-200 shadow-[0_4px_14px_0_rgba(255,255,255,0.1)]" data-usd="$2.49" data-inr="₹99" data-item="tokens_250" type="button">
+                    $2.49
                 </button>
+</div>
 </article>
 <!-- Package 2: Best Value -->
-<article class="bg-surface-container-low rounded-xl p-4 flex flex-col items-center gap-4 relative border border-outline-variant/10 shadow-lg hover:shadow-[0_0_20px_rgba(255,92,53,0.15)] transition-all duration-300">
-<div class="absolute -top-3 -right-3 badge-scallop bg-gradient-to-br from-[#ffafd5] to-[#bd0183] text-white font-label-sm font-bold text-[10px] leading-tight text-center p-3 w-16 h-16 flex items-center justify-center transform rotate-12 shadow-md z-10">
+<article class="relative overflow-hidden rounded border border-outline-variant/10 shadow-lg hover:shadow-[0_0_20px_rgba(255,255,255,0.06)] transition-all duration-300 h-64" style="background: linear-gradient(to bottom left, #4E4C40 0%, #6B654F 35%, #3C3B38 70%, #2E2E32 100%);">
+<div class="absolute top-2 right-2 badge-scallop bg-gradient-to-br from-[#ffafd5] to-[#bd0183] text-white font-label-sm font-bold text-[10px] leading-tight text-center p-3 w-16 h-16 flex items-center justify-center transform rotate-12 shadow-md z-20">
                     BEST<br>VALUE
                 </div>
-<div class="w-full aspect-square relative rounded-lg overflow-hidden bg-gradient-to-b from-surface-container-high/50 to-transparent flex items-center justify-center p-2 mt-4">
-<img class="w-full h-full object-contain mix-blend-screen opacity-90 drop-shadow-2xl filter contrast-125 saturate-150" data-alt="A detailed, vibrant 3D render of a messy, larger pile of slightly scattered green banknotes. The lighting is cinematic and moody with a dark background, making the glowing green edges of the money pop out. The style is modern, slightly stylized glassmorphism mixed with tactile realism, fitting for a premium digital currency purchase screen." src="https://www.gstatic.com/labs-code/stitch/stitch-placeholder-300x300.svg">
+<div class="relative z-10 h-full flex flex-col items-center justify-end gap-2 p-3">
+<img class="h-[126px] w-[126px] object-contain drop-shadow-lg" data-alt="Cash top-up for the second plan" src="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/68.7047262767501.png">
+<div class="flex items-center gap-1.5">
+<img alt="Cash" class="w-4 h-4 object-contain" src="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/slazzer-preview-z0bt9.png">
+<span class="text-xl font-bold text-white" id="tok-count-2">750</span>
 </div>
-<div class="flex items-center gap-1.5 mt-2">
-<span class="material-symbols-outlined text-primary text-xl">payments</span>
-<span class="font-headline-lg-mobile text-headline-lg-mobile font-bold text-on-surface">5500</span>
-</div>
-<button class="w-full bg-white text-background font-label-md font-bold py-3 px-4 rounded-full hover:bg-on-surface active:scale-95 transition-all duration-200 mt-2 shadow-[0_4px_14px_0_rgba(255,255,255,0.1)]">
-                    ₹1,050.00
+<button class="w-full bg-white text-background font-label-md font-bold py-2.5 px-4 rounded-full hover:bg-on-surface active:scale-95 transition-all duration-200 shadow-[0_4px_14px_0_rgba(255,255,255,0.1)]" data-usd="$5.99" data-inr="₹199" data-item="tokens_750" type="button">
+                    $5.99
                 </button>
+</div>
 </article>
 <!-- Package 3 -->
-<article class="bg-surface-container-low rounded-xl p-4 flex flex-col items-center gap-4 border border-outline-variant/10 shadow-lg hover:shadow-[0_0_20px_rgba(255,255,255,0.05)] transition-all duration-300">
-<div class="w-full aspect-square relative rounded-lg overflow-hidden bg-gradient-to-b from-surface-container-high/50 to-transparent flex items-center justify-center p-2 mt-4">
-<img class="w-full h-full object-contain mix-blend-screen opacity-90 drop-shadow-2xl filter contrast-125 saturate-150" data-alt="A premium 3D illustration of a plump, smooth white canvas money bag tied securely with a shiny gold string at the top. The bag is surrounded at its base by several stacks of green cash. Set against a dark, moody backdrop with soft studio lighting that accentuates the smooth texture of the bag and the metallic glint of the gold string." src="https://www.gstatic.com/labs-code/stitch/stitch-placeholder-300x300.svg">
+<article class="relative overflow-hidden rounded border border-outline-variant/10 shadow-lg hover:shadow-[0_0_20px_rgba(255,255,255,0.06)] transition-all duration-300 h-64" style="background: linear-gradient(to bottom left, #4E4C40 0%, #6B654F 35%, #3C3B38 70%, #2E2E32 100%);">
+<div class="relative z-10 h-full flex flex-col items-center justify-end gap-2 p-3">
+<img class="h-[126px] w-[126px] object-contain drop-shadow-lg" data-alt="Cash top-up for the third plan" src="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/42.93868551461303.png">
+<div class="flex items-center gap-1.5">
+<img alt="Cash" class="w-4 h-4 object-contain" src="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/slazzer-preview-z0bt9.png">
+<span class="text-xl font-bold text-white" id="tok-count-3">2000</span>
 </div>
-<div class="flex items-center gap-1.5 mt-2">
-<span class="material-symbols-outlined text-primary text-xl">payments</span>
-<span class="font-headline-lg-mobile text-headline-lg-mobile font-bold text-on-surface">12000</span>
-</div>
-<button class="w-full bg-white text-background font-label-md font-bold py-3 px-4 rounded-full hover:bg-on-surface active:scale-95 transition-all duration-200 mt-2 shadow-[0_4px_14px_0_rgba(255,255,255,0.1)]">
-                    ₹2,100.00
+<button class="w-full bg-white text-background font-label-md font-bold py-2.5 px-4 rounded-full hover:bg-on-surface active:scale-95 transition-all duration-200 shadow-[0_4px_14px_0_rgba(255,255,255,0.1)]" data-usd="$12.99" data-inr="₹499" data-item="tokens_2000" type="button">
+                    $12.99
                 </button>
+</div>
 </article>
 <!-- Package 4 -->
-<article class="bg-surface-container-low rounded-xl p-4 flex flex-col items-center gap-4 border border-outline-variant/10 shadow-lg hover:shadow-[0_0_20px_rgba(255,255,255,0.05)] transition-all duration-300">
-<div class="w-full aspect-square relative rounded-lg overflow-hidden bg-gradient-to-b from-surface-container-high/50 to-transparent flex items-center justify-center p-2 mt-4">
-<img class="w-full h-full object-contain mix-blend-screen opacity-90 drop-shadow-2xl filter contrast-125 saturate-150" data-alt="A stylized 3D rendering of a heavy, white metal safe with its thick door swung open. Inside and spilling out onto the floor is an enormous, chaotic pile of green banknotes. The safe has a shiny gold combination dial. The scene is lit with moody, dramatic lighting against a dark background, emphasizing wealth and security." src="https://www.gstatic.com/labs-code/stitch/stitch-placeholder-300x300.svg">
+<article class="relative overflow-hidden rounded border border-outline-variant/10 shadow-lg hover:shadow-[0_0_20px_rgba(255,255,255,0.06)] transition-all duration-300 h-64" style="background: linear-gradient(to bottom left, #4E4C40 0%, #6B654F 35%, #3C3B38 70%, #2E2E32 100%);">
+<div class="relative z-10 h-full flex flex-col items-center justify-end gap-2 p-3">
+<img class="h-[126px] w-[126px] object-contain drop-shadow-lg" data-alt="Cash top-up for the fourth plan" src="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/37.74908936625081.png">
+<div class="flex items-center gap-1.5">
+<img alt="Cash" class="w-4 h-4 object-contain" src="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/slazzer-preview-z0bt9.png">
+<span class="text-xl font-bold text-white" id="tok-count-4">5000</span>
 </div>
-<div class="flex items-center gap-1.5 mt-2">
-<span class="material-symbols-outlined text-primary text-xl">payments</span>
-<span class="font-headline-lg-mobile text-headline-lg-mobile font-bold text-on-surface">20000</span>
-</div>
-<button class="w-full bg-white text-background font-label-md font-bold py-3 px-4 rounded-full hover:bg-on-surface active:scale-95 transition-all duration-200 mt-2 shadow-[0_4px_14px_0_rgba(255,255,255,0.1)]">
-                    ₹3,150.00
+<button class="w-full bg-white text-background font-label-md font-bold py-2.5 px-4 rounded-full hover:bg-on-surface active:scale-95 transition-all duration-200 shadow-[0_4px_14px_0_rgba(255,255,255,0.1)]" data-usd="$24.99" data-inr="₹999" data-item="tokens_5000" type="button">
+                    $24.99
                 </button>
+</div>
 </article>
 <!-- Package 5 -->
-<article class="bg-surface-container-low rounded-xl p-4 flex flex-col items-center gap-4 border border-outline-variant/10 shadow-lg hover:shadow-[0_0_20px_rgba(255,255,255,0.05)] transition-all duration-300">
-<div class="w-full aspect-square relative rounded-lg overflow-hidden bg-gradient-to-b from-surface-container-high/50 to-transparent flex items-center justify-center p-2 mt-4">
-<img class="w-full h-full object-contain mix-blend-screen opacity-90 drop-shadow-2xl filter contrast-125 saturate-150" data-alt="An impressive 3D design of a gleaming gold championship trophy cup placed triumphantly atop a massive, sprawling mountain of green banknotes. The gold trophy reflects soft, high-end studio lighting. The background is a deep, luxurious dark grey, creating a strong contrast that makes the gold and green colors pop intensely." src="https://www.gstatic.com/labs-code/stitch/stitch-placeholder-300x300.svg">
+<article class="relative overflow-hidden rounded border border-outline-variant/10 shadow-lg hover:shadow-[0_0_20px_rgba(255,255,255,0.06)] transition-all duration-300 h-64" style="background: linear-gradient(to bottom left, #4E4C40 0%, #6B654F 35%, #3C3B38 70%, #2E2E32 100%);">
+<div class="relative z-10 h-full flex flex-col items-center justify-end gap-2 p-3">
+<img class="h-[126px] w-[126px] object-contain drop-shadow-lg" data-alt="Cash top-up for the fifth plan" src="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/42.10402394299323.png">
+<div class="flex items-center gap-1.5">
+<img alt="Cash" class="w-4 h-4 object-contain" src="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/slazzer-preview-z0bt9.png">
+<span class="text-xl font-bold text-white" id="tok-count-5">12000</span>
 </div>
-<div class="flex items-center gap-1.5 mt-2">
-<span class="material-symbols-outlined text-primary text-xl">payments</span>
-<span class="font-headline-lg-mobile text-headline-lg-mobile font-bold text-on-surface">35000</span>
-</div>
-<button class="w-full bg-white text-background font-label-md font-bold py-3 px-4 rounded-full hover:bg-on-surface active:scale-95 transition-all duration-200 mt-2 shadow-[0_4px_14px_0_rgba(255,255,255,0.1)]">
-                    ₹5,250.00
+<button class="w-full bg-white text-background font-label-md font-bold py-2.5 px-4 rounded-full hover:bg-on-surface active:scale-95 transition-all duration-200 shadow-[0_4px_14px_0_rgba(255,255,255,0.1)]" data-usd="$49.99" data-inr="₹1,999" data-item="tokens_12000" type="button">
+                    $49.99
                 </button>
+</div>
 </article>
 </section>
 </main>
-<!-- BottomNavBar -->
-<nav class="bg-surface/90 backdrop-blur-lg fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-3 pb-safe shadow-[0_-4px_20px_rgba(0,0,0,0.3)] md:hidden">
-<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-transform duration-200 active:scale-90 w-16" href="#">
-<span class="material-symbols-outlined text-2xl mb-1">home</span>
-<span class="font-label-sm text-label-sm">Home</span>
-</a>
-<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-transform duration-200 active:scale-90 w-16" href="#">
-<span class="material-symbols-outlined text-2xl mb-1">chat_bubble</span>
-<span class="font-label-sm text-label-sm">Chat</span>
-</a>
-<a class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-full px-4 py-1 hover:text-primary transition-transform duration-200 active:scale-90 min-w-16" href="#">
-<span class="material-symbols-outlined text-2xl mb-1" style="font-variation-settings: 'FILL' 1;">local_mall</span>
-<span class="font-label-sm text-label-sm font-bold">Store</span>
-</a>
-<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-transform duration-200 active:scale-90 w-16" href="#">
-<span class="material-symbols-outlined text-2xl mb-1">person</span>
-<span class="font-label-sm text-label-sm">Profile</span>
-</a>
-</nav>
+<script src="js/api-client.js"></script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+  (function () {
+    // The back arrow returns the user to the page they came from
+    // (browser history); fall back to the feed if there is no previous
+    // page (e.g. the store was opened directly).
+    function goBack() {
+      if (window.history.length > 1) {
+        window.history.back();
+      } else {
+        window.location.href = 'index.html';
+      }
+    }
+    var backBtn = document.getElementById('btn-back');
+    if (backBtn) backBtn.addEventListener('click', goBack);
+
+    var USER_ID = null;
+    try {
+      var cu = YoursAPI.getCurrentUser();
+      if (cu) USER_ID = cu.id;
+    } catch (e) {}
+
+    // Live wallet balance (kept in sync with other pages).
+    function refreshBalance() {
+      if (!USER_ID) return;
+      YoursAPI.getWallet(USER_ID).then(function (res) {
+        var bal = document.getElementById('recharge-balance');
+        if (res && res.wallet && res.wallet.credits != null && bal) {
+          bal.textContent = Math.floor(Number(res.wallet.credits)).toLocaleString();
+        }
+      }).catch(function () {});
+    }
+    refreshBalance();
+
+    // Regional pricing: India shows INR, everywhere else shows USD. Prices are
+    // loaded from the backend catalog (DB-driven, cached) and rounded to the
+    // detected device region.
+    var RESOLVED_COUNTRY = null;
+    var CATALOG = null;
+
+    function fmtPrice(v, isIndia) {
+      var n = Number(v) || 0;
+      if (isIndia) return '₹' + n.toLocaleString('en-IN');
+      return '$' + (Math.round(n * 100) / 100).toFixed(2);
+    }
+
+    // Render token counts + prices from the catalog. Falls back to the static
+    // data-* attributes when the backend catalog is unavailable.
+    function renderCatalog(isIndia) {
+      var buttons = document.querySelectorAll('button[data-item]');
+      for (var i = 0; i < buttons.length; i++) {
+        var item = buttons[i].getAttribute('data-item');
+        var pack = null;
+        if (CATALOG && CATALOG.tokenPacks) {
+          for (var j = 0; j < CATALOG.tokenPacks.length; j++) {
+            if (CATALOG.tokenPacks[j].id === item) { pack = CATALOG.tokenPacks[j]; break; }
+          }
+        }
+        if (pack) {
+          buttons[i].setAttribute('data-usd', '$' + (Math.round(pack.usd * 100) / 100).toFixed(2));
+          buttons[i].setAttribute('data-inr', '₹' + Number(pack.inr).toLocaleString('en-IN'));
+          buttons[i].textContent = isIndia
+            ? '₹' + Number(pack.inr).toLocaleString('en-IN')
+            : '$' + (Math.round(pack.usd * 100) / 100).toFixed(2);
+          var cntEl = document.getElementById('tok-count-' + (i + 1));
+          if (cntEl) cntEl.textContent = pack.tokens.toLocaleString('en-US');
+        } else {
+          buttons[i].textContent = isIndia
+            ? buttons[i].getAttribute('data-inr')
+            : buttons[i].getAttribute('data-usd');
+        }
+      }
+    }
+
+    function applyRegionalPrices() {
+      var country = RESOLVED_COUNTRY || 'US';
+      try { if (!RESOLVED_COUNTRY) country = YoursAPI.detectCountry(); } catch (e) {}
+      renderCatalog(country === 'IN');
+    }
+
+    // Resolve the user's real location (IP-based, caches in sessionStorage)
+    // and load the DB-backed price catalog before rendering.
+    function loadStorePage() {
+      return YoursAPI.getPaymentCatalog()
+        .then(function (res) {
+          if (res && res.tokenPacks) CATALOG = res;
+          applyRegionalPrices();
+        })
+        .catch(function () { applyRegionalPrices(); });
+    }
+    YoursAPI.detectLocation()
+      .then(function (code) { RESOLVED_COUNTRY = code; })
+      .finally(function () { loadStorePage(); });
+
+    function showToast(msg) {
+      var t = document.createElement('div');
+      t.textContent = msg;
+      t.style.cssText = 'position:fixed;bottom:2rem;left:50%;transform:translateX(-50%);background:#262626;color:#fff;padding:.8rem 1.2rem;border-radius:9999px;z-index:9999;box-shadow:0 8px 24px rgba(0,0,0,.4);';
+      document.body.appendChild(t);
+      setTimeout(function () { t.remove(); }, 4000);
+    }
+
+    // Purchase flow: re-fetch the current price (bypassing the backend cache),
+    // then create order → open Razorpay checkout → verify.
+    function purchase(itemId, btn) {
+      var country = RESOLVED_COUNTRY || 'US';
+      try { if (!RESOLVED_COUNTRY) country = YoursAPI.detectCountry(); } catch (e) {}
+
+      if (!USER_ID) {
+        showToast('Please sign in to recharge your tokens.');
+        return;
+      }
+
+      btn.disabled = true;
+      var original = btn.textContent;
+      btn.textContent = '...';
+
+      YoursAPI.getPaymentCatalog(true)
+        .then(function (res) {
+          if (res && res.tokenPacks) {
+            CATALOG = res;
+            renderCatalog(country === 'IN');
+          }
+          return YoursAPI.createPaymentOrder(USER_ID, itemId, country);
+        })
+        .then(function (res) {
+          var order = res.order;
+          if (typeof Razorpay === 'undefined') throw new Error('Razorpay SDK failed to load');
+          var options = {
+            key: order.keyId,
+            amount: order.amountInSmallestUnit,
+            currency: order.currency,
+            name: 'Yours AI',
+            image: 'https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/file_000000006a2c81fa833aa9f0571bfffc.png',
+            description: order.description,
+            order_id: order.orderId,
+            prefill: {
+              contact: '',
+              email: ''
+            },
+            handler: function (payResp) {
+              return YoursAPI.verifyPayment(USER_ID, {
+                orderId: payResp.razorpay_order_id,
+                paymentId: payResp.razorpay_payment_id,
+                signature: payResp.razorpay_signature,
+                itemId: itemId
+              }).then(function (verify) {
+                showToast('Payment successful! Tokens added to your wallet.');
+                if (verify.wallet) {
+                  var bal = document.getElementById('recharge-balance');
+                  if (bal) bal.textContent = verify.wallet.credits;
+                }
+              }).catch(function (err) {
+                showToast('Payment confirmed but verification failed: ' + (err.message || 'error'));
+              });
+            },
+            modal: {
+              ondismiss: function () { btn.disabled = false; btn.textContent = original; }
+            }
+          };
+          var rzp = new Razorpay(options);
+          rzp.on('payment.failed', function () { showToast('Payment failed. Please try again.'); });
+          rzp.open();
+        })
+        .catch(function (err) {
+          btn.disabled = false;
+          btn.textContent = original;
+          showToast('Could not start checkout: ' + (err.message || 'error'));
+        });
+    }
+
+    var buttons = document.querySelectorAll('button[data-item]');
+    for (var i = 0; i < buttons.length; i++) {
+      (function (btn) {
+        btn.addEventListener('click', function () {
+          purchase(btn.getAttribute('data-item'), btn);
+        });
+      })(buttons[i]);
+    }
+  })();
+</script>
 <script src="js/animations.js"></script>
 </body></html>

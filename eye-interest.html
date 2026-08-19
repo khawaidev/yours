@@ -1,8 +1,10 @@
 <!DOCTYPE html><html class="dark" lang="en" style=""><head>
 <meta charset="utf-8">
-<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport">
 <title>Who catches your eye?</title>
+<link href="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/file_000000003704823093c6cccb8ba71cd1.png" rel="icon" type="image/png">
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link rel="stylesheet" href="css/app.css">
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@500;600;700;800&amp;display=swap" rel="stylesheet">
 <script id="tailwind-config">
@@ -119,11 +121,11 @@
         .swipe-card {
             flex: 0 0 85vw;
             scroll-snap-align: center;
-            height: 60vh; /* Adjust height based on available space */
+            height: 56vh; /* Adjust height based on available space */
             transition: filter 0.3s ease, transform 0.3s ease, opacity 0.3s ease;
         }
         .card-active {
-            border-color: #ff5c35;
+            border-color: rgba(255, 255, 255, 0.4);
             filter: blur(0px);
             opacity: 1;
             transform: scale(1);
@@ -140,11 +142,11 @@
     }
   </style>
 </head>
-<body class="bg-black text-on-background min-h-screen font-body-md flex flex-col antialiased selection:bg-primary-container selection:text-on-primary-container relative">
+<body class="bg-black text-on-background min-h-screen font-body-md flex flex-col antialiased selection:bg-primary-container selection:text-on-primary-container relative app-page" style="padding-top: max(8px, env(safe-area-inset-top));">
 <!-- Top App Bar (Transactional / Onboarding Mode - Navigation Suppressed) -->
-<header class="w-full flex items-center justify-between px-container-margin py-gutter bg-transparent z-10 sticky top-0">
+<header class="w-full flex items-center justify-between px-container-margin pb-2 bg-transparent z-10 sticky top-0">
 <button onclick="window.location.href='art-interest.html'" aria-label="Go back" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-variant transition-colors cursor-pointer">
-<span class="material-symbols-outlined text-white" data-icon="arrow_back">arrow_back</span>
+<svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M15 19l-7-7 7-7" stroke-linecap="round" stroke-linejoin="round"></path></svg>
 </button>
 <!-- Progress Bar (same style as the other onboarding pages) -->
 <div class="flex-1 max-w-[200px] mx-4">
@@ -155,16 +157,15 @@
 <div class="w-10"></div> <!-- Spacer to balance back button -->
 </header>
 <!-- Main Content Canvas -->
-<main class="flex-1 flex flex-col pt-stack-md w-full mx-auto relative pb-32">
+<main class="flex-1 flex flex-col pt-3 w-full mx-auto relative pb-32">
 <!-- Header Section -->
-<div class="text-center mb-stack-lg px-container-margin">
-<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-white mb-unit">Who catches your eye?</h1>
-<p class="font-body-md text-body-md text-on-surface-variant">Choose one option</p>
+<div class="text-center mb-4 px-container-margin">
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-white">Who catches your eye?</h1>
 </div>
 <!-- Swipe Gallery -->
 <div class="swipe-container flex-1 items-center pb-8">
 <!-- Card 1: Boss Lady -->
-<button class="swipe-card relative rounded-xl overflow-hidden bg-surface group border hover:border-primary/50 text-left card-inactive border-surface-container" onclick="selectCard(this)">
+<button class="swipe-card relative rounded-xl overflow-hidden bg-surface group border hover:border-white/30 text-left card-inactive border-white/10" onclick="selectCard(this)">
 <div class="absolute inset-0 bg-cover bg-center" data-alt="A portrait of a sophisticated, confident woman in her 40s wearing stylish, dark-rimmed glasses and a crisp white silk blouse." style="background-image: url(&quot;https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/ChatGPT%20Image%20Aug%208%2C%202026%2C%2001_11_43%20AM.png&quot;);"></div>
 <div class="absolute inset-0 glass-overlay"></div>
 <!-- Label -->
@@ -173,7 +174,7 @@
 </div>
 </button>
 <!-- Card 2: MILF -->
-<button class="swipe-card relative rounded-xl overflow-hidden bg-surface group border hover:border-primary/50 text-left card-inactive border-surface-container" onclick="selectCard(this)">
+<button class="swipe-card relative rounded-xl overflow-hidden bg-surface group border hover:border-white/30 text-left card-inactive border-white/10" onclick="selectCard(this)">
 <div class="absolute inset-0 bg-cover bg-center" data-alt="A captivating portrait of an attractive, mature woman with blonde hair styled in a messy chic updo." style="background-image: url(&quot;https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/ChatGPT%20Image%20Aug%208%2C%202026%2C%2001_21_33%20AM.png&quot;);"></div>
 <div class="absolute inset-0 glass-overlay"></div>
 <!-- Label -->
@@ -182,7 +183,7 @@
 </div>
 </button>
 <!-- Card 3: Sugar Mama -->
-<button class="swipe-card relative rounded-xl overflow-hidden bg-surface group border hover:border-primary/50 text-left card-inactive border-surface-container" onclick="selectCard(this)">
+<button class="swipe-card relative rounded-xl overflow-hidden bg-surface group border hover:border-white/30 text-left card-inactive border-white/10" onclick="selectCard(this)">
 <div class="absolute inset-0 bg-cover bg-center" data-alt="A vibrant portrait of a stunning, wealthy-looking woman with rich brown skin and voluminous dark hair." style="background-image: url(&quot;https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/ChatGPT%20Image%20Aug%208%2C%202026%2C%2001_29_36%20AM.png&quot;);"></div>
 <div class="absolute inset-0 glass-overlay"></div>
 <!-- Label -->
@@ -191,7 +192,7 @@
 </div>
 </button>
 <!-- Card 4: BDSM Queen -->
-<button class="swipe-card relative rounded-xl overflow-hidden bg-surface group border hover:border-primary/50 text-left card-active" onclick="selectCard(this)">
+<button class="swipe-card relative rounded-xl overflow-hidden bg-surface group border hover:border-white/30 text-left card-active border-white/10" onclick="selectCard(this)">
 <div class="absolute inset-0 bg-cover bg-center" data-alt="A dramatic portrait of an intense, authoritative woman with dark hair." style="background-image: url(&quot;https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/ChatGPT%20Image%20Aug%208%2C%202026%2C%2001_40_45%20AM.png&quot;);"></div>
 <div class="absolute inset-0 glass-overlay"></div>
 <!-- Label -->
@@ -233,10 +234,10 @@
                 cards.forEach(card => {
                     if (card === centerCard) {
                         card.classList.add('card-active');
-                        card.classList.remove('card-inactive', 'border-surface-container');
+                        card.classList.remove('card-inactive', 'border-white/10');
                     } else {
                         card.classList.remove('card-active');
-                        card.classList.add('card-inactive', 'border-surface-container');
+                        card.classList.add('card-inactive', 'border-white/10');
                     }
                 });
             };

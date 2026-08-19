@@ -1,8 +1,10 @@
 <!DOCTYPE html><html class="dark" lang="en" style=""><head>
 <meta charset="utf-8">
-<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport">
 <title>What's your style?</title>
+<link href="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/file_000000003704823093c6cccb8ba71cd1.png" rel="icon" type="image/png">
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link rel="stylesheet" href="css/app.css">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Be+Vietnam+Pro:wght@400&amp;display=swap" rel="stylesheet">
 <script id="tailwind-config">
   tailwind.config = {
@@ -173,7 +175,7 @@
     }
     .carousel-item {
       scroll-snap-align: center;
-      flex: 0 0 85%;
+      flex: 0 0 85vw;
       margin: 0 1%;
       transition: transform 0.3s ease, filter 0.3s ease;
     }
@@ -190,9 +192,9 @@
     }
   </style>
 </head>
-<body class="min-h-screen flex flex-col bg-background text-on-background pb-container-margin pt-12 overflow-hidden font-sans selection:bg-primary selection:text-on-primary">
+<body class="min-h-screen flex flex-col bg-background text-on-background overflow-hidden font-sans selection:bg-primary selection:text-on-primary app-page" style="padding-top: max(8px, env(safe-area-inset-top)); padding-bottom: max(16px, env(safe-area-inset-bottom));">
 <!-- BEGIN: Top Navigation & Progress -->
-<header class="flex items-center justify-between mb-stack-lg px-container-margin" data-purpose="top-navigation">
+<header class="flex items-center justify-between mb-2 px-container-margin" data-purpose="top-navigation">
 <!-- Back Button -->
 <button onclick="window.location.href='age-interest.html'" aria-label="Go back" class="p-2 -ml-2 text-on-surface hover:opacity-80 transition-opacity cursor-pointer">
 <svg fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" width="24">
@@ -212,13 +214,12 @@
 <!-- BEGIN: Main Content Area -->
 <main class="flex-1 flex flex-col w-full" data-purpose="main-content">
 <!-- Header Text -->
-<div class="text-center mb-4 px-container-margin" data-purpose="header-text">
-<h1 class="text-[28px] leading-tight font-extrabold text-white tracking-tight mb-2">What's your style?</h1>
-<p class="text-[15px] font-medium text-white">Choose your preferred look</p>
+<div class="text-center mb-8 px-container-margin" data-purpose="header-text">
+<h1 class="text-[28px] leading-tight font-extrabold text-white tracking-tight">What's your style?</h1>
 </div>
 <!-- Swipe Carousel -->
-<div class="w-full flex-1 relative flex flex-col min-h-0" data-purpose="style-carousel">
-<div class="carousel-container flex overflow-x-auto w-full flex-1 min-h-[320px]" id="carousel">
+<div class="w-full relative flex flex-col" data-purpose="style-carousel">
+<div class="carousel-container flex overflow-x-auto w-full" style="height:56vh" id="carousel">
 <!-- Left Padding -->
 <div class="carousel-padding shrink-0"></div>
 <!-- Realistic Option Card -->
@@ -226,7 +227,7 @@
 <img alt="Realistic style preview" class="absolute inset-0 w-full h-full object-cover" src="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/download%20(4).jpg">
 <!-- Gradient Overlay and Label -->
 <div class="absolute inset-x-0 bottom-0 h-1/2 card-overlay flex flex-col justify-end pb-8 px-6 z-10">
-<span class="text-center font-headline-lg text-white tracking-wide">Realistic</span>
+<span class="text-center text-[28px] leading-tight font-extrabold text-white tracking-tight">Realistic</span>
 </div>
 </div>
 <!-- Anime Option Card -->
@@ -234,7 +235,7 @@
 <img alt="Anime style preview" class="absolute inset-0 w-full h-full object-cover" src="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/ChatGPT%20Image%20Aug%208%2C%202026%2C%2012_56_47%20AM.png">
 <!-- Gradient Overlay and Label -->
 <div class="absolute inset-x-0 bottom-0 h-1/2 card-overlay flex flex-col justify-end pb-8 px-6 z-10">
-<span class="text-center font-headline-lg text-white tracking-wide">Anime</span>
+<span class="text-center text-[28px] leading-tight font-extrabold text-white tracking-tight">Anime</span>
 </div>
 </div>
 <!-- Right Padding -->
@@ -243,9 +244,9 @@
 </div>
 </main>
 <!-- END: Main Content Area -->
-<!-- Bottom Action -->
-<div class="mt-auto px-container-margin pt-stack-md w-full" data-purpose="bottom-action">
-<button onclick="window.location.href='eye-interest.html'" class="w-full bg-white text-black font-label-md py-4 rounded-full hover:bg-gray-100 transition-colors active:scale-95 duration-200 cursor-pointer">
+<!-- Fixed Bottom Action -->
+<div class="fixed bottom-0 left-0 right-0 p-container-margin bg-gradient-to-t from-background via-background/90 to-transparent z-20" data-purpose="bottom-action">
+<button onclick="window.location.href='eye-interest.html'" class="w-full bg-white text-black font-bold py-4 rounded-full text-[18px] active:scale-[0.98] transition-transform shadow-lg cursor-pointer">
     Continue
   </button>
 </div>

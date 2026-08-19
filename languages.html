@@ -1,0 +1,235 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport">
+<title>Languages - Yours</title>
+<link href="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/file_000000003704823093c6cccb8ba71cd1.png" rel="icon" type="image/png">
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link rel="stylesheet" href="css/app.css">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style data-purpose="custom-fonts">
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: #121212;
+      color: #FFFFFF;
+    }
+  </style>
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            blush: {
+              bg: '#121212',
+              card: '#1E1E1E',
+              text: '#FFFFFF',
+              subtext: '#A0A0A0',
+              accent: '#FF4D6D',
+            }
+          },
+          fontFamily: {
+            sans: ['Plus Jakarta Sans', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    /* Hide the Google Translate floating toolbar/banner so only the page
+       content is translated. The widget itself is invisible and is only
+       driven programmatically from the language rows below. */
+    .goog-te-banner-frame.skiptranslate {
+      display: none !important;
+    }
+    .goog-te-menu-frame, .goog-te-gadget, #google_translate_element {
+      display: none !important;
+    }
+    body { top: 0 !important; }
+    .lang-row {
+      transition: background 0.2s ease, transform 0.1s ease;
+    }
+    .lang-row:active {
+      transform: scale(0.98);
+      background: rgba(255, 255, 255, 0.06);
+    }
+    .lang-row .tick {
+      width: 1.5rem;
+      height: 1.5rem;
+      border-radius: 9999px;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+    .lang-row .tick svg {
+      display: none;
+      color: #fff;
+    }
+    .lang-row.active .tick {
+      border-color: #FF4D6D;
+      background: #FF4D6D;
+    }
+    .lang-row.active .tick svg {
+      display: block;
+    }
+    .row-btn {
+      transition: background 0.2s ease, transform 0.1s ease;
+    }
+    .row-btn:active {
+      transform: scale(0.98);
+      background: rgba(255, 255, 255, 0.06);
+    }
+  </style>
+</head>
+<body class="bg-blush-bg text-blush-text antialiased min-h-screen flex flex-col items-center pt-2 app-page">
+<div class="w-full max-w-[400px] h-full flex flex-col px-4 pb-8">
+<!-- BEGIN: Header -->
+<header data-reveal class="flex items-center justify-between py-3 mb-4">
+<button aria-label="Go back" class="p-2 -ml-2 rounded-full hover:bg-blush-card transition-colors focus:outline-none" onclick="if (window.history.length > 1) window.history.back(); else window.location.href='settings.html';">
+<svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M15 19l-7-7 7-7" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</button>
+<h1 class="text-xl font-bold tracking-wide absolute left-1/2 -translate-x-1/2">Languages</h1>
+<div class="w-10"></div> <!-- Spacer for centering -->
+</header>
+<!-- END: Header -->
+<!-- BEGIN: Language List -->
+<section data-reveal class="flex flex-col space-y-3">
+<button class="lang-row active w-full bg-blush-card rounded-full p-4 flex items-center justify-between row-btn" data-lang="English" data-code="en" type="button">
+<span class="font-semibold text-base">English</span>
+<span class="tick"><svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"></path></svg></span>
+</button>
+<button class="lang-row w-full bg-blush-card rounded-full p-4 flex items-center justify-between row-btn" data-lang="Español" data-code="es" type="button">
+<span class="font-semibold text-base">Español</span>
+<span class="tick"><svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"></path></svg></span>
+</button>
+<button class="lang-row w-full bg-blush-card rounded-full p-4 flex items-center justify-between row-btn" data-lang="Français" data-code="fr" type="button">
+<span class="font-semibold text-base">Français</span>
+<span class="tick"><svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"></path></svg></span>
+</button>
+<button class="lang-row w-full bg-blush-card rounded-full p-4 flex items-center justify-between row-btn" data-lang="Deutsch" data-code="de" type="button">
+<span class="font-semibold text-base">Deutsch</span>
+<span class="tick"><svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"></path></svg></span>
+</button>
+<button class="lang-row w-full bg-blush-card rounded-full p-4 flex items-center justify-between row-btn" data-lang="Italiano" data-code="it" type="button">
+<span class="font-semibold text-base">Italiano</span>
+<span class="tick"><svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"></path></svg></span>
+</button>
+<button class="lang-row w-full bg-blush-card rounded-full p-4 flex items-center justify-between row-btn" data-lang="Filipino" data-code="fil" type="button">
+<span class="font-semibold text-base">Filipino</span>
+<span class="tick"><svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"></path></svg></span>
+</button>
+<button class="lang-row w-full bg-blush-card rounded-full p-4 flex items-center justify-between row-btn" data-lang="日本語" data-code="ja" type="button">
+<span class="font-semibold text-base">日本語</span>
+<span class="tick"><svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"></path></svg></span>
+</button>
+<button class="lang-row w-full bg-blush-card rounded-full p-4 flex items-center justify-between row-btn" data-lang="हिन्दी" data-code="hi" type="button">
+<span class="font-semibold text-base">हिन्दी</span>
+<span class="tick"><svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"></path></svg></span>
+</button>
+<button class="lang-row w-full bg-blush-card rounded-full p-4 flex items-center justify-between row-btn" data-lang="Português" data-code="pt" type="button">
+<span class="font-semibold text-base">Português</span>
+<span class="tick"><svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"></path></svg></span>
+</button>
+<button class="lang-row w-full bg-blush-card rounded-full p-4 flex items-center justify-between row-btn" data-lang="中文" data-code="zh-CN" type="button">
+<span class="font-semibold text-base">中文 (Chinese)</span>
+<span class="tick"><svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"></path></svg></span>
+</button>
+<button class="lang-row w-full bg-blush-card rounded-full p-4 flex items-center justify-between row-btn" data-lang="한국어" data-code="ko" type="button">
+<span class="font-semibold text-base">한국어 (Korean)</span>
+<span class="tick"><svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"></path></svg></span>
+</button>
+<button class="lang-row w-full bg-blush-card rounded-full p-4 flex items-center justify-between row-btn" data-lang="العربية" data-code="ar" type="button">
+<span class="font-semibold text-base">العربية (Arabic)</span>
+<span class="tick"><svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"></path></svg></span>
+</button>
+</section>
+<!-- END: Language List -->
+</div>
+<div id="google_translate_element" style="display:none;"></div>
+<script>
+(function () {
+  var STORAGE_KEY = 'yours_language';
+
+  // Map the language display names to Google Translate language codes.
+  var rows = document.querySelectorAll('.lang-row');
+
+  // Read the chosen language from session storage so a refresh keeps it.
+  function storedLang() {
+    try { return sessionStorage.getItem(STORAGE_KEY); } catch (e) { return null; }
+  }
+  function storeLang(lang, code) {
+    try {
+      sessionStorage.setItem(STORAGE_KEY, lang);
+      sessionStorage.setItem('yours_language_code', code || 'en');
+    } catch (e) {}
+  }
+
+  // Apply a translation via the Google Translate widget select. The widget is
+  // hidden, we just trigger the same <select> the toolbar uses.
+  function applyTranslate(code) {
+    try {
+      var sel = document.querySelector('.goog-te-combo');
+      if (!sel) return false;
+      sel.value = code;
+      sel.dispatchEvent(new Event('change'));
+      return true;
+    } catch (e) { return false; }
+  }
+
+  // Mark the given language row (matching stored "lang" name) as active.
+  function selectRow(lang) {
+    for (var i = 0; i < rows.length; i++) {
+      var active = rows[i].getAttribute('data-lang') === lang;
+      rows[i].classList.toggle('active', active);
+      if (active) {
+        storeLang(lang, rows[i].getAttribute('data-code'));
+        applyTranslate(rows[i].getAttribute('data-code'));
+      }
+    }
+  }
+
+  // On load: restore the saved language (session storage) before the widget
+  // is ready, then apply again once Google Translate finishes initialising.
+  var saved = storedLang();
+  if (saved) selectRow(saved);
+  var savedCode = null;
+  try { savedCode = sessionStorage.getItem('yours_language_code') || null; } catch (e) {}
+
+  // Wait for Google Translate to be fully ready (it replaces the <body> once),
+  // then re-apply the saved language so a reload actually keeps it.
+  var attempts = 0;
+  var restoreTimer = setInterval(function () {
+    attempts++;
+    var code = savedCode || '';
+    if (!code && saved) {
+      for (var r = 0; r < rows.length; r++) {
+        if (rows[r].getAttribute('data-lang') === saved) { code = rows[r].getAttribute('data-code'); break; }
+      }
+    }
+    if (code && applyTranslate(code)) clearInterval(restoreTimer);
+    else if (attempts > 60) clearInterval(restoreTimer);
+  }, 500);
+
+  for (var i = 0; i < rows.length; i++) {
+    (function (row) {
+      row.addEventListener('click', function () {
+        var lang = row.getAttribute('data-lang');
+        var code = row.getAttribute('data-code');
+        storeLang(lang, code);
+        selectRow(lang);
+        applyTranslate(code);
+      });
+    })(rows[i]);
+  }
+})();
+</script>
+<script type="text/javascript">
+  function googleTranslateElementInit() {
+    new google.translate.TranslateElement({ pageLanguage: 'en' }, 'google_translate_element');
+  }
+</script>
+<script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+<script src="js/animations.js"></script>
+</body></html>

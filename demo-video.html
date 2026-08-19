@@ -1,8 +1,10 @@
 <!DOCTYPE html><html lang="en" style=""><head>
 <meta charset="utf-8">
-<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport">
 <title>Video Preferences</title>
+<link href="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/file_000000003704823093c6cccb8ba71cd1.png" rel="icon" type="image/png">
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link rel="stylesheet" href="css/app.css">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
 <script>
     tailwind.config = {
@@ -31,12 +33,12 @@
     }
   </style>
 </head>
-<body class="antialiased min-h-screen flex flex-col items-center">
-<div class="w-full max-w-md min-h-screen flex flex-col relative px-4 py-6">
+<body class="antialiased min-h-screen flex flex-col items-center app-page">
+<div class="w-full max-w-md min-h-screen flex flex-col relative px-4 pt-2 pb-6">
 <!-- BEGIN: Top Navigation & Progress -->
-<header class="flex items-center w-full mb-8 pt-4">
+<header class="flex items-center w-full mb-3">
 <!-- Back Button -->
-<button onclick="window.location.href='demo-image.html'" class="text-white p-2 shrink-0 cursor-pointer">
+<button onclick="window.location.href='analyse.html'" class="text-white p-2 shrink-0 cursor-pointer">
 <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
 <path d="M15 19l-7-7 7-7" stroke-linecap="round" stroke-linejoin="round"></path>
 </svg>
@@ -52,9 +54,8 @@
 </header>
 <!-- END: Top Navigation & Progress -->
 <!-- BEGIN: Header Text -->
-<div class="text-center mb-2 px-2">
-<h1 class="text-[32px] leading-tight font-extrabold text-white mb-2">Created&nbsp; for you 💕</h1>
-
+<div class="text-center mb-3 px-2">
+<h1 class="text-[32px] leading-tight font-extrabold text-white">Created&nbsp; for you 💕</h1>
 </div>
 <!-- END: Header Text -->
 <!-- BEGIN: Main Content Area -->

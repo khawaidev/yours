@@ -1,8 +1,10 @@
 <!DOCTYPE html><html class="dark" lang="en"><head>
 <meta charset="utf-8">
-<meta content="width=device-width, initial-scale=1.0" name="viewport">
-<title>Blush Discover UI</title>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport">
+<title>Discover - Yours</title>
+<link href="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/file_000000003704823093c6cccb8ba71cd1.png" rel="icon" type="image/png">
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link rel="stylesheet" href="css/app.css">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 <script>
@@ -38,79 +40,141 @@
       -ms-overflow-style: none;
       scrollbar-width: none;
     }
-    
+
     /* Text overlay gradient for cards */
     .card-gradient {
       background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 50%);
     }
+
+    /* Active discover tab */
+    .discover-tab {
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    /* Card shimmer / skeleton */
+    .skel-card {
+      position: relative;
+      overflow: hidden;
+      background: #1f1f1f;
+      border-radius: 24px;
+    }
+    .skel-card::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
+      animation: discover-shimmer 1.2s infinite;
+      transform: translateX(-100%);
+    }
+    @keyframes discover-shimmer {
+      100% { transform: translateX(100%); }
+    }
   </style>
 </head>
-<body class="bg-app-bg text-white font-sans antialiased selection:bg-gray-700 min-h-screen flex flex-col">
+<body class="bg-app-bg text-white font-sans antialiased selection:bg-gray-700 min-h-screen flex flex-col app-page">
 <!-- BEGIN: MainHeader & Top Nav -->
-<header class="pt-12 pb-4 px-5 sticky top-0 bg-app-bg/95 backdrop-blur-sm z-50">
-<!-- Title -->
-<h1 class="text-3xl font-extrabold tracking-tight mb-6">Discover</h1>
+<header class="pb-4 px-5 sticky top-0 bg-app-bg/95 backdrop-blur-sm z-50" style="padding-top: max(12px, env(safe-area-inset-top));">
+<!-- Title + Cash pill -->
+<div class="flex items-center justify-between mb-6">
+<h1 class="text-3xl font-extrabold tracking-tight">Discover</h1>
+<a href="recharge.html" class="bg-app-surface rounded-full px-3 py-2 flex items-center space-x-2 active:scale-95 transition-transform" aria-label="Recharge">
+<img alt="Cash" class="w-4 h-4 object-contain" src="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/slazzer-preview-z0bt9.png">
+<span class="text-white font-bold text-sm" id="disc-balance">50</span>
+<i class="fa-solid fa-plus text-white text-xs"></i>
+</a>
+</div>
 <!-- Search Bar -->
 <div class="relative mb-5">
 <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
 <i class="fa-solid fa-search text-app-secondary"></i>
 </div>
-<input class="w-full bg-app-surface text-app-primary placeholder-app-secondary rounded-full py-3 pl-11 pr-4 border-none focus:ring-1 focus:ring-gray-500 text-base shadow-sm" placeholder="Search for a character" type="text">
+<input class="w-full bg-app-surface text-app-primary placeholder-app-secondary rounded-full py-3 pl-11 pr-4 border-none focus:ring-1 focus:ring-gray-500 text-base shadow-sm" placeholder="Search for a character" type="text" id="discover-search">
 </div>
-<!-- Filter Chips -->
+<!-- Tabs: Liked is the default -->
 <div class="flex overflow-x-auto no-scrollbar gap-3 pb-2 -mx-5 px-5">
-<button class="whitespace-nowrap px-5 py-2 rounded-chip bg-app-surface text-app-primary font-medium text-sm transition-colors active:bg-gray-600">For you</button>
-<button class="whitespace-nowrap px-5 py-2 rounded-chip bg-app-surface text-app-primary font-medium text-sm transition-colors active:bg-gray-600">Popular</button>
-<button class="whitespace-nowrap px-5 py-2 rounded-chip bg-app-surface text-app-primary font-medium text-sm transition-colors active:bg-gray-600">Realistic</button>
-<button class="whitespace-nowrap px-5 py-2 rounded-chip bg-app-surface text-app-primary font-medium text-sm transition-colors active:bg-gray-600">Professional</button>
+<button class="discover-tab active whitespace-nowrap px-5 py-2 rounded-chip bg-app-accent text-white font-medium text-sm" data-tab="liked" type="button">Liked</button>
+<button class="discover-tab whitespace-nowrap px-5 py-2 rounded-chip bg-app-surface text-app-primary font-medium text-sm" data-tab="foryou" type="button">For you</button>
+<button class="discover-tab whitespace-nowrap px-5 py-2 rounded-chip bg-app-surface text-app-primary font-medium text-sm" data-tab="popular" type="button">Popular</button>
+<button class="discover-tab whitespace-nowrap px-5 py-2 rounded-chip bg-app-surface text-app-primary font-medium text-sm" data-tab="realistic" type="button">Realistic</button>
+<button class="discover-tab whitespace-nowrap px-5 py-2 rounded-chip bg-app-surface text-app-primary font-medium text-sm" data-tab="anime" type="button">Anime</button>
 </div>
 </header>
 <!-- END: MainHeader & Top Nav -->
 <!-- BEGIN: Main Content -->
 <main class="flex-1 overflow-y-auto pb-28 px-5">
-<!-- Section: Personalized -->
-<section class="mb-8">
-<div class="flex justify-between items-end mb-4">
-<h2 class="text-xl font-bold">Personalized</h2>
-<a class="text-app-secondary text-sm font-medium flex items-center gap-1" href="#">See all <i class="fa-solid fa-chevron-right text-[10px]"></i></a>
+<!-- Panel: Liked (default) -->
+<section data-panel="liked" class="mb-8">
+<div class="flex justify-between items-center mb-4">
+<h2 class="text-xl font-bold">Liked</h2>
+<span class="text-app-secondary text-sm font-medium">Saved by you</span>
 </div>
-<!-- Horizontal Scrollable Cards -->
-<div class="flex overflow-x-auto no-scrollbar gap-4 -mx-5 px-5">
-<!-- Card 1 -->
-<div class="relative min-w-[160px] w-[160px] h-[240px] rounded-card overflow-hidden shrink-0 snap-start">
-<img alt="D.va character" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBUqkuBvG4kxML5GFDqIUZkzB1pfg_ilGPAV06hba2YpYa0Jm7TfTm1YfTcz8t6an1J7ENv0iZQwJcjjQ7F34hI9BaGKRrkLCGHNc0bP2ncHpzlzxr80IdKsBnYWiNRXIdmsqyB34vwBVXzUDZG4N3lXN4_IDuhFxiIs8TvTEu5nbR8c7nlXSjbWX5rP0Ui-5t9FmIkmmdGXxb8EI_IBocid1131FsWg_pk1HTn6WDVF_ufFeOxGeYJOg">
-<div class="absolute top-2 right-2 bg-black/40 backdrop-blur-md text-white text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-wider">
-            UGC
-          </div>
-<div class="absolute inset-0 card-gradient flex flex-col justify-end p-4">
-<h3 class="font-bold text-lg mb-1 drop-shadow-md">D.va, 22</h3>
-<p class="text-xs text-gray-200 line-clamp-2 drop-shadow-sm">Nerdy mech pilot with a passion for g...</p>
+<!-- Loading skeletons -->
+<div class="flex overflow-x-auto no-scrollbar gap-4 -mx-5 px-5" id="liked-grid">
+<div class="skel-card w-[160px] h-[320px] shrink-0"></div>
+<div class="skel-card w-[160px] h-[320px] shrink-0"></div>
 </div>
+<!-- Empty state -->
+<div class="hidden text-center py-14 px-6" id="liked-empty">
+<div class="w-16 h-16 mx-auto rounded-full bg-app-surface flex items-center justify-center mb-4">
+<i class="fa-solid fa-heart text-app-secondary text-2xl"></i>
 </div>
-<!-- Card 2 -->
-<div class="relative min-w-[160px] w-[160px] h-[240px] rounded-card overflow-hidden shrink-0 snap-start">
-<img alt="Cherry character" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAy8kSlJMRugeuXIg9XrowniQqfJkQo70IIMnS8UFlzn3VkXEmSu_1aoNScN-jWyboUZlNMm4B94rk9t-CxboZeO54w0cmIzzWNCAi7kcdjCdyDYAdlqaNGiFzfjPNEp145pRCqyzJWRtzHJBECuqh1Jqmb-_dIZy8bG_vNaazWTSILWb5pF6IbGmqAl1WrAwRU3mSr4nPxJn4SJXCoLSaSG95DmOBaWfkrkNc6V05rhQVefA5v_F96Kg">
-<div class="absolute inset-0 card-gradient flex flex-col justify-end p-4">
-<h3 class="font-bold text-lg mb-1 drop-shadow-md">Cherry, 29</h3>
-<p class="text-xs text-gray-200 line-clamp-2 drop-shadow-sm">i'm not just your type i'm everything you'...</p>
-</div>
-</div>
-<!-- Card 3 (Partial view) -->
-<div class="relative min-w-[160px] w-[160px] h-[240px] rounded-card overflow-hidden shrink-0 snap-start">
-<img alt="Bri character" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCoz26xgGS6b-7Vk-hmpcK9Y2irWp9Guq3BxyIB6qiqjv8Q1jqk735j_lM8tOTR45mBsBdJD9zT8f4KeZB6jU3ZdoDiD3B2AuVjtWyXbw1934e2xU3E1Bnoz2ImgZK6d1hYNfrKW-ihN71iGdL5WYcdajR2c20zpXjt5sDxvLbRYUJrjlISHzw50asBxZv7Vxs0QJwAubpyv_CKf_7kMTgV3BaO-LcBOTIaAEozAxuyFZ0ZZF2cCb-gWA">
-<div class="absolute inset-0 card-gradient flex flex-col justify-end p-4">
-<h3 class="font-bold text-lg mb-1 drop-shadow-md">Bri, 24</h3>
-<p class="text-xs text-gray-200 line-clamp-2 drop-shadow-sm">your sweet neighbor...</p>
-</div>
-</div>
+<h3 class="text-lg font-bold mb-1">No liked characters yet</h3>
+<p class="text-sm text-app-secondary leading-relaxed">Tap the <i class="fa-solid fa-heart text-[#f43f5e]"></i> button on any character in the feed and they&rsquo;ll show up here.</p>
 </div>
 </section>
+
+<!-- Panel: For you -->
+<section data-panel="foryou" class="mb-8 hidden">
+<div class="flex justify-between items-end mb-4">
+<h2 class="text-xl font-bold">Personalized</h2>
+</div>
+<div class="flex overflow-x-auto no-scrollbar gap-4 -mx-5 px-5" id="foryou-grid">
+<div class="skel-card w-[160px] h-[320px] shrink-0"></div>
+<div class="skel-card w-[160px] h-[320px] shrink-0"></div>
+</div>
+</section>
+
+<!-- Panel: Popular -->
+<section data-panel="popular" class="mb-8 hidden">
+<div class="flex justify-between items-end mb-4">
+<h2 class="text-xl font-bold">Popular</h2>
+</div>
+<div class="flex overflow-x-auto no-scrollbar gap-4 -mx-5 px-5" id="popular-grid">
+<div class="skel-card w-[160px] h-[320px] shrink-0"></div>
+<div class="skel-card w-[160px] h-[320px] shrink-0"></div>
+</div>
+</section>
+
+<!-- Panel: Realistic -->
+<section data-panel="realistic" class="mb-8 hidden">
+<div class="flex justify-between items-end mb-4">
+<h2 class="text-xl font-bold">Realistic</h2>
+</div>
+<div class="flex overflow-x-auto no-scrollbar gap-4 -mx-5 px-5" id="realistic-grid">
+<div class="skel-card w-[160px] h-[320px] shrink-0"></div>
+<div class="skel-card w-[160px] h-[320px] shrink-0"></div>
+</div>
+</section>
+
+<!-- Panel: Anime -->
+<section data-panel="anime" class="mb-8 hidden">
+<div class="flex justify-between items-end mb-4">
+<h2 class="text-xl font-bold">Anime</h2>
+</div>
+<div class="flex overflow-x-auto no-scrollbar gap-4 -mx-5 px-5" id="anime-grid">
+<div class="skel-card w-[160px] h-[320px] shrink-0"></div>
+<div class="skel-card w-[160px] h-[320px] shrink-0"></div>
+</div>
+</section>
+
 <!-- Section: Design Perfect Companion -->
-<section>
+<section class="mb-8">
 <h2 class="text-xl font-bold mb-4">Design perfect companion</h2>
 <div class="flex gap-4">
-<!-- Blurred Creation Card -->
-<div class="relative w-[160px] h-[160px] rounded-card overflow-hidden bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-800/50 flex items-center justify-center cursor-pointer shadow-lg">
+<div class="relative w-[160px] h-[160px] rounded-card overflow-hidden bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-800/50 flex items-center justify-center cursor-pointer shadow-lg" id="create-btn">
 <div class="absolute inset-0 bg-[url('https://placehold.co/400x400/222/666?text=Blur')] bg-cover bg-center opacity-30 blur-md"></div>
 <div class="relative z-10 flex flex-col items-center justify-center">
 <div class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center backdrop-blur-sm mb-2">
@@ -139,5 +203,214 @@
 </a>
 </nav>
 <!-- END: Bottom Navigation -->
+<!-- Coming soon popup -->
+<div id="coming-soon-modal" style="position:fixed;inset:0;z-index:9999;display:none;align-items:center;justify-content:center;">
+<div id="coming-soon-backdrop" style="position:absolute;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);"></div>
+<div class="relative bg-[#1a1a1a] border border-white/10 rounded-[24px] p-8 text-center mx-6" style="width:min(90vw,320px);">
+<h3 class="text-xl font-bold text-white mb-2">Coming soon!</h3>
+<p class="text-sm text-gray-400 leading-relaxed mb-6">This feature is not available yet.</p>
+<button class="w-full bg-white text-black font-semibold py-3 rounded-full active:scale-95 transition-transform" id="coming-soon-ok" type="button">Got it</button>
+</div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/api-client.js"></script>
+<script>
+  (function () {
+    var API = window.YoursAPI;
+
+    // ---- Coming soon (Create) modal ----
+    var createBtn = document.getElementById('create-btn');
+    var comingSoonModal = document.getElementById('coming-soon-modal');
+    var comingSoonBackdrop = document.getElementById('coming-soon-backdrop');
+    var comingSoonOk = document.getElementById('coming-soon-ok');
+    if (createBtn && comingSoonModal) {
+      createBtn.addEventListener('click', function () { comingSoonModal.style.display = 'flex'; });
+      comingSoonOk.addEventListener('click', function () { comingSoonModal.style.display = 'none'; });
+      comingSoonBackdrop.addEventListener('click', function () { comingSoonModal.style.display = 'none'; });
+    }
+
+    // ---- Helpers ----
+    function esc(s) {
+      return String(s == null ? '' : s).replace(/[&<>"']/g, function (m) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m];
+      });
+    }
+
+    function feedImage(c) {
+      if (c.character_feeds && c.character_feeds.length) {
+        var imgFeed = c.character_feeds.find(function (f) { return f.media_type === 'image' && f.media_url; });
+        if (imgFeed) return imgFeed.media_url;
+        return c.character_feeds[0].media_url || null;
+      }
+      return c.circular_profile_image_url || c.feed_media_url || c.background_image_url || null;
+    }
+
+    function cardHtml(c, wide) {
+      var img = feedImage(c);
+      var nameAge = (c.name || '') + (c.age ? ', ' + c.age : '');
+      var about = c.about || c.description || c.bio || '';
+      var cls = wide
+        ? 'relative w-full aspect-[3/4] rounded-card overflow-hidden shrink-0 snap-start cursor-pointer'
+        : 'relative w-[160px] h-[320px] rounded-card overflow-hidden shrink-0 snap-start cursor-pointer';
+      return '<div class="' + cls + '" data-char="' + esc(c.id) + '">' +
+        (img
+          ? '<img loading="lazy" class="w-full h-full object-cover" src="' + esc(img) + '" alt="' + esc(c.name) + '">'
+          : '<div class="w-full h-full bg-app-accent flex items-center justify-center text-4xl font-bold">' + esc((c.name || '?').charAt(0).toUpperCase()) + '</div>') +
+        '<div class="absolute inset-0 card-gradient flex flex-col justify-end p-4">' +
+          '<h3 class="font-bold text-lg mb-1 drop-shadow-md">' + esc(nameAge) + '</h3>' +
+          '<p class="text-xs text-gray-200 line-clamp-2 drop-shadow-sm">' + esc(about) + '</p>' +
+        '</div></div>';
+    }
+
+    function renderInto(container, chars, wide) {
+      container.innerHTML = '';
+      if (!chars || !chars.length) {
+        container.innerHTML = '<p class="text-sm text-app-secondary py-8">No characters here yet.</p>';
+        return;
+      }
+      chars.forEach(function (c) {
+        var div = document.createElement('div');
+        div.innerHTML = cardHtml(c, wide);
+        var card = div.firstChild;
+        card.addEventListener('click', function () { openCharacter(c); });
+        container.appendChild(card);
+      });
+    }
+
+    function openCharacter(c) {
+      try {
+        sessionStorage.setItem('yours_current_character', JSON.stringify(c));
+      } catch (e) {}
+      window.location.href = 'character-profile.html';
+    }
+
+    // ---- Tabs ----
+    var tabs = document.querySelectorAll('.discover-tab');
+    var panels = document.querySelectorAll('[data-panel]');
+
+    function activateTab(name) {
+      tabs.forEach(function (t) {
+        var on = t.getAttribute('data-tab') === name;
+        t.classList.toggle('active', on);
+        t.classList.toggle('bg-app-accent', on);
+        t.classList.toggle('text-white', on);
+        t.classList.toggle('bg-app-surface', !on);
+        t.classList.toggle('text-app-primary', !on);
+      });
+      panels.forEach(function (p) {
+        p.classList.toggle('hidden', p.getAttribute('data-panel') !== name);
+      });
+      if (name === 'liked') loadLiked();
+    }
+
+    tabs.forEach(function (t) {
+      t.addEventListener('click', function () { activateTab(t.getAttribute('data-tab')); });
+    });
+
+    // ---- Liked tab (default) ----
+    var likedGrid = document.getElementById('liked-grid');
+    var likedEmpty = document.getElementById('liked-empty');
+
+    function loadLiked() {
+      var user = null;
+      try { user = API ? API.getCurrentUser() : null; } catch (e) {}
+      if (!user || !user.id) {
+        likedGrid.innerHTML = '';
+        likedGrid.classList.add('hidden');
+        likedEmpty.classList.remove('hidden');
+        return;
+      }
+      likedGrid.classList.remove('hidden');
+      likedEmpty.classList.add('hidden');
+      API.getSavedCharacters(user.id).then(function (res) {
+        var chars = (res && res.characters) || [];
+        if (!chars.length) {
+          likedGrid.innerHTML = '';
+          likedGrid.classList.add('hidden');
+          likedEmpty.classList.remove('hidden');
+          return;
+        }
+        renderInto(likedGrid, chars, false);
+      }).catch(function () {
+        likedGrid.innerHTML = '<p class="text-sm text-app-secondary py-8">Could not load your likes. Try again.</p>';
+      });
+    }
+
+    // ---- Other tabs: shared character list (cached per session) ----
+    var allCharsCache = null;
+    function getAllChars() {
+      if (allCharsCache) return Promise.resolve(allCharsCache);
+      if (!API) return Promise.resolve([]);
+      return API.getPublicCharacters().then(function (res) {
+        allCharsCache = (res && res.characters) || [];
+        return allCharsCache;
+      }).catch(function () { return []; });
+    }
+
+    function tabRenderer(name, elId) {
+      return function () {
+        var el = document.getElementById(elId);
+        getAllChars().then(function (list) {
+          var out = list;
+          if (name === 'realistic') out = list.filter(function (c) { return c.art_style === 'realistic'; });
+          if (name === 'anime') out = list.filter(function (c) { return c.art_style === 'anime'; });
+          renderInto(el, out, false);
+        });
+      };
+    }
+
+    var foryouEl = document.getElementById('foryou-grid');
+    getAllChars().then(function (list) { renderInto(foryouEl, list, false); });
+
+    document.querySelectorAll('[data-panel]').forEach(function (p) {
+      var name = p.getAttribute('data-panel');
+      if (name === 'foryou' || name === 'popular' || name === 'realistic' || name === 'anime') {
+        var gridId = name + '-grid';
+        var el = document.getElementById(gridId);
+        getAllChars().then(function () { tabRenderer(name, gridId)(); });
+      }
+    });
+
+    // ---- Search: filter the currently visible panel ----
+    var search = document.getElementById('discover-search');
+    if (search) {
+      search.addEventListener('input', function () {
+        var q = (search.value || '').trim().toLowerCase();
+        if (!q) {
+          // Re-render active panel with defaults
+          var active = document.querySelector('.discover-tab.active');
+          if (active) activateTab(active.getAttribute('data-tab'));
+          return;
+        }
+        getAllChars().then(function (list) {
+          var filtered = list.filter(function (c) {
+            return ((c.name || '') + ' ' + (c.about || '') + ' ' + (c.description || '')).toLowerCase().indexOf(q) !== -1;
+          });
+          var active = document.querySelector('.discover-tab.active');
+          var name = active ? active.getAttribute('data-tab') : 'foryou';
+          var el = document.getElementById(name === 'liked' ? 'liked-grid' : name + '-grid');
+          if (el && name !== 'liked') renderInto(el, filtered, false);
+        });
+      });
+    }
+
+    // ---- Live wallet balance (kept in sync with other pages) ----
+    function loadBalance() {
+      var user = null;
+      try { user = API ? API.getCurrentUser() : null; } catch (e) {}
+      if (!user || !user.id) return;
+      API.getWallet(user.id).then(function (res) {
+        var el = document.getElementById('disc-balance');
+        if (res && res.wallet && res.wallet.credits != null && el) {
+          el.textContent = Math.floor(Number(res.wallet.credits)).toLocaleString();
+        }
+      }).catch(function () {});
+    }
+    loadBalance();
+
+    // Default tab = Liked
+    activateTab('liked');
+  })();
+</script>
 <script src="js/animations.js"></script>
 </body></html>

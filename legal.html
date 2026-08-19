@@ -1,0 +1,134 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport">
+<title>Legal - Yours</title>
+<link href="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/file_000000003704823093c6cccb8ba71cd1.png" rel="icon" type="image/png">
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link rel="stylesheet" href="css/app.css">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style data-purpose="custom-fonts">
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: #121212;
+      color: #FFFFFF;
+    }
+  </style>
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            blush: {
+              bg: '#121212',
+              card: '#1E1E1E',
+              text: '#FFFFFF',
+              subtext: '#A0A0A0',
+              accent: '#FF4D6D',
+            }
+          },
+          fontFamily: {
+            sans: ['Plus Jakarta Sans', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .row-btn {
+      transition: background 0.2s ease, transform 0.1s ease;
+    }
+    .row-btn:active {
+      transform: scale(0.98);
+      background: rgba(255, 255, 255, 0.06);
+    }
+  </style>
+</head>
+<body class="bg-blush-bg text-blush-text antialiased min-h-screen flex flex-col items-center pt-2 app-page">
+<div class="w-full max-w-[400px] h-full flex flex-col px-4 pb-8">
+<!-- BEGIN: Header -->
+<header data-reveal class="flex items-center justify-between py-3 mb-4">
+<button aria-label="Go back" class="p-2 -ml-2 rounded-full hover:bg-blush-card transition-colors focus:outline-none" onclick="if (window.history.length > 1) window.history.back(); else window.location.href='settings.html';">
+<svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M15 19l-7-7 7-7" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</button>
+<h1 class="text-xl font-bold tracking-wide absolute left-1/2 -translate-x-1/2">Legal</h1>
+<div class="w-10"></div>
+</header>
+<!-- END: Header -->
+<p class="text-blush-subtext text-sm px-2 mb-4">The documents below explain how Yours works, how your data is handled, and the rules you agree to when you use the app.</p>
+<!-- BEGIN: Legal Links -->
+<section data-reveal class="flex flex-col space-y-3">
+<a class="block bg-blush-card rounded-full p-4 flex items-center justify-between row-btn" href="privacy-policy.html">
+<div class="flex items-center space-x-4">
+<div class="w-8 flex justify-center">
+<svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+<div class="flex flex-col">
+<span class="font-bold text-base block">Privacy Policy</span>
+<span class="text-blush-subtext text-xs block">What data we collect and how it's used</span>
+</div>
+</div>
+<svg class="h-5 w-5 text-blush-subtext" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</a>
+<a class="block bg-blush-card rounded-full p-4 flex items-center justify-between row-btn" href="terms.html">
+<div class="flex items-center space-x-4">
+<div class="w-8 flex justify-center">
+<svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+<div class="flex flex-col">
+<span class="font-bold text-base block">Terms of Service</span>
+<span class="text-blush-subtext text-xs block">The rules for using Yours</span>
+</div>
+</div>
+<svg class="h-5 w-5 text-blush-subtext" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</a>
+<a class="block bg-blush-card rounded-full p-4 flex items-center justify-between row-btn" href="community-guidelines.html">
+<div class="flex items-center space-x-4">
+<div class="w-8 flex justify-center">
+<svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+<div class="flex flex-col">
+<span class="font-bold text-base block">Community Guidelines</span>
+<span class="text-blush-subtext text-xs block">Keeping the experience safe and respectful</span>
+</div>
+</div>
+<svg class="h-5 w-5 text-blush-subtext" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</a>
+<a class="block bg-blush-card rounded-full p-4 flex items-center justify-between row-btn" href="cookie-policy.html">
+<div class="flex items-center space-x-4">
+<div class="w-8 flex justify-center">
+<svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M21 15.546c-.523 0-1.046.151-1.5.454a2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0 2.701 2.701 0 00-1.5-.454M5 21h14a2 2 0 002-2v-7.5a2 2 0 00-2-2H5a2 2 0 00-2 2V19a2 2 0 002 2zm9.5-9a.5.5 0 110-1 .5.5 0 010 1zm-5 4a.5.5 0 110-1 .5.5 0 010 1zm4 0a.5.5 0 110-1 .5.5 0 010 1z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+<div class="flex flex-col">
+<span class="font-bold text-base block">Cookie Policy</span>
+<span class="text-blush-subtext text-xs block">How cookies and similar tech are used</span>
+</div>
+</div>
+<svg class="h-5 w-5 text-blush-subtext" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</a>
+</section>
+<!-- END: Legal Links -->
+<p class="text-blush-subtext text-xs text-center mt-8 px-2 leading-relaxed">
+Last updated <span data-purpose="last-updated">August 2025</span> · Version 1.0<br>
+If you have questions about your data, contact <a class="text-white underline underline-offset-4 decoration-white/50" href="mailto:khawain.in@gmail.com">khawain.in@gmail.com</a>.
+</p>
+</div>
+<script src="js/animations.js"></script>
+</body></html>

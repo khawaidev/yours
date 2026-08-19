@@ -1,8 +1,10 @@
 <!DOCTYPE html><html lang="en"><head>
 <meta charset="utf-8">
-<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport">
 <title>Premium Access</title>
+<link href="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/file_000000003704823093c6cccb8ba71cd1.png" rel="icon" type="image/png">
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link rel="stylesheet" href="css/app.css">
 <link href="https://fonts.googleapis.com" rel="preconnect">
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&amp;display=swap" rel="stylesheet">
@@ -31,12 +33,12 @@
     }
   </style>
 </head>
-<body class="bg-surface text-onSurface font-sans antialiased h-screen w-screen overflow-hidden flex flex-col justify-end relative">
+<body class="bg-surface text-onSurface font-sans antialiased h-screen w-screen overflow-hidden flex flex-col justify-end relative app-page">
 <!-- BEGIN: Custom skeleton loader (mirrors page layout) -->
 <div id="page-skeleton" style="position:fixed;inset:0;z-index:9999;background:#0e0e0e;display:flex;flex-direction:column;align-items:center">
 <div style="width:100%;max-width:28rem;padding:0 1.5rem 2.5rem;display:flex;flex-direction:column;justify-content:flex-end;flex-grow:1">
-<!-- Close button -->
-<div style="position:absolute;top:3rem;right:1.5rem"><div class="skeleton-block" style="width:2.5rem;height:2.5rem;border-radius:9999px"></div></div>
+<!-- Skip button -->
+<div style="position:absolute;top:.5rem;right:1rem"><div class="skeleton-block" style="width:3rem;height:1.5rem;border-radius:.375rem"></div></div>
 <!-- Title + subtitle -->
 <div class="skeleton-block" style="height:3.25rem;width:17rem;border-radius:.75rem;margin:0 auto .75rem"></div>
 <div class="skeleton-block" style="height:1.5rem;width:15rem;border-radius:.5rem;margin:0 auto 2.5rem"></div>
@@ -56,19 +58,16 @@
 <!-- END: Custom skeleton loader -->
 <!-- BEGIN: Background Image -->
 <div class="absolute inset-0 z-0 pointer-events-none">
-<img alt="Background" class="w-full h-full object-cover opacity-80" src="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/ChatGPT%20Image%20Aug%207%2C%202026%2C%2007_37_50%20PM.png">
+<img id="premium-bg-a" alt="Background" class="absolute inset-0 w-full h-full object-cover opacity-80 transition-opacity duration-1000" src="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/ChatGPT%20Image%20Aug%207%2C%202026%2C%2007_37_50%20PM.png">
+<img id="premium-bg-b" alt="Background" class="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-1000" src="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/ChatGPT%20Image%20Aug%207%2C%202026%2C%2008_21_20%20PM.png">
 <div class="absolute inset-0 bg-gradient-overlay"></div>
 </div>
 <!-- END: Background Image -->
-<!-- BEGIN: Close Button -->
-<div class="absolute top-12 right-6 z-20">
-<button class="p-2 bg-black/20 rounded-full backdrop-blur-sm text-white hover:bg-black/40 transition-colors" type="button">
-<svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-<path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round"></path>
-</svg>
-</button>
+<!-- BEGIN: Skip Button -->
+<div class="absolute top-2 right-4 z-20">
+<button aria-label="Skip" class="text-white/90 font-bold text-lg bg-transparent border-0 p-0 hover:text-white transition-colors cursor-pointer" onclick="var pp = null; try { pp = sessionStorage.getItem('yours_prev_page'); } catch (e) {} if (pp) { try { sessionStorage.removeItem('yours_prev_page'); } catch (e2) {} window.location.href = pp; } else if (window.history.length > 1) { window.history.back(); } else { window.location.href = 'index.html'; }" type="button">Skip</button>
 </div>
-<!-- END: Close Button -->
+<!-- END: Skip Button -->
 <!-- BEGIN: Main Content -->
 <main class="relative z-10 px-6 pb-8 pt-20 w-full max-w-md mx-auto flex flex-col items-center">
 <!-- Header -->
@@ -130,11 +129,19 @@
 </div>
 <!-- CTA Button -->
 <div class="w-full mb-4">
-<button class="w-full bg-primary hover:bg-primary/90 text-white font-bold py-4 px-6 rounded-full flex items-center justify-center gap-2 transition-all active:scale-95 shadow-[0_4px_14px_0_rgba(255,92,53,0.39)]">
+<button class="w-full bg-surface-bright hover:bg-surface-bright/90 text-white font-bold py-4 px-6 rounded-full flex items-center justify-center gap-2 transition-all active:scale-95 cursor-pointer" id="premium-subscribe-btn" type="button">
+<span id="subscribe-price-btn" class="text-[17px]">Subscribe to Premium</span>
 <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
 <path clip-rule="evenodd" d="M12.963 2.286a.75.75 0 00-1.071-.136 9.742 9.742 0 00-3.539 6.177A7.547 7.547 0 016.648 6.61a.75.75 0 00-1.152.082A9 9 0 1015.68 4.534a7.46 7.46 0 01-2.717-2.248zM15.75 14.25a3.75 3.75 0 11-7.313-1.172c.628.465 1.35.81 2.133 1a5.99 5.99 0 011.925-3.545 3.75 3.75 0 013.255 3.717z" fill-rule="evenodd"></path>
 </svg>
-<span id="subscribe-price-btn" class="text-[17px]">Subscribe to Premium</span>
+</button>
+</div>
+<!-- Annual Button -->
+<div class="w-full mb-4 relative">
+<span id="annual-badge" class="absolute -top-2.5 right-4 bg-primary text-white text-[11px] font-extrabold px-3 py-1 rounded-full border-2 border-white z-10 shadow-[0_2px_8px_0_rgba(255,92,53,0.45)]">33.3% OFF + 1 month free</span>
+<button class="w-full bg-primary hover:bg-primary/90 text-white font-bold py-4 px-6 rounded-full flex flex-col items-center justify-center transition-all active:scale-95 shadow-[0_4px_14px_0_rgba(255,92,53,0.39)] cursor-pointer" id="premium-subscribe-annual-btn" type="button">
+<span id="subscribe-price-annual-btn" class="text-[17px]">Subscribe annually</span>
+<span id="subscribe-price-annual-sub" class="text-[12px] font-bold text-white/90">(month)/month, billed $/yr</span>
 </button>
 </div>
 <!-- Footer Text -->
@@ -144,17 +151,143 @@
 </main>
 <!-- END: Main Content -->
 <script src="js/api-client.js"></script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
   document.addEventListener('DOMContentLoaded', async () => {
+    // Rotate the two background images every 2s (crossfade).
+    var bgA = document.getElementById('premium-bg-a');
+    var bgB = document.getElementById('premium-bg-b');
+    var showB = false;
+    if (bgA && bgB) {
+      setInterval(function () {
+        showB = !showB;
+        bgA.style.opacity = showB ? '0' : '0.8';
+        bgB.style.opacity = showB ? '0.8' : '0';
+      }, 2000);
+    }
+
+    var USER_ID = null;
     try {
-      // Fetch dynamic pricing from backend
-      const res = await YoursAPI.getPricingForCountry();
-      if (res && res.pricing) {
-        const p = res.pricing;
-        const btn = document.getElementById('subscribe-price-btn');
-        const footer = document.getElementById('subscribe-price-footer');
-        if (btn) btn.textContent = `Subscribe for ${p.currency_symbol}${p.premium_price}/month (${p.currency})`;
-        if (footer) footer.textContent = `Plus Plan starting at ${p.currency_symbol}${p.plus_price}/month`;
+      var cu = YoursAPI.getCurrentUser();
+      if (cu) USER_ID = cu.id;
+    } catch (e) {}
+
+    // Detect the user's real location (IP-based, falls back to locale).
+    var country = 'US';
+    try { country = await YoursAPI.detectLocation(); } catch (e) {
+      try { country = YoursAPI.detectCountry(); } catch (e2) {}
+    }
+    var isIndia = country === 'IN';
+
+    function showToast(msg) {
+      var t = document.createElement('div');
+      t.textContent = msg;
+      t.style.cssText = 'position:fixed;bottom:2rem;left:50%;transform:translateX(-50%);background:#262626;color:#fff;padding:.8rem 1.2rem;border-radius:9999px;z-index:9999;box-shadow:0 8px 24px rgba(0,0,0,.4);';
+      document.body.appendChild(t);
+      setTimeout(function () { t.remove(); }, 4000);
+    }
+
+    function goPrev() {
+      var pp = null;
+      try { pp = sessionStorage.getItem('yours_prev_page'); } catch (e) {}
+      if (pp) { try { sessionStorage.removeItem('yours_prev_page'); } catch (e2) {} window.location.href = pp; }
+      else if (window.history.length > 1) { window.history.back(); }
+      else { window.location.href = 'index.html'; }
+    }
+
+    // Render the plan prices from the DB-backed regional pricing object.
+    function renderPrices(p) {
+      if (!p) return;
+      var btn = document.getElementById('subscribe-price-btn');
+      if (btn) btn.textContent = 'Subscribe for ' + p.currency_symbol + p.premium_price + '/month';
+
+      var annual = p.premium_annual_price || Math.round(p.premium_price * 12);
+      var monthlyEquiv = p.premium_annual_monthly_price != null
+        ? Number(p.premium_annual_monthly_price)
+        : Math.round(annual / 12 * 100) / 100;
+
+      var annualText = Number.isInteger(annual) ? String(annual) : String(Math.round(annual * 100) / 100);
+      var monthlyText = Number.isInteger(monthlyEquiv) ? String(monthlyEquiv) : String(Math.round(monthlyEquiv * 100) / 100);
+      var priceSpan = document.getElementById('subscribe-price-annual-btn');
+      if (priceSpan) priceSpan.textContent = p.currency_symbol + monthlyText + '/month, billed ' + p.currency_symbol + annualText + '/yr';
+      var subSpan = document.getElementById('subscribe-price-annual-sub');
+      if (subSpan) subSpan.textContent = '';
+
+      var savePct = p.premium_save_percent != null ? Number(p.premium_save_percent) : Math.round((1 - annual / (p.premium_price * 12)) * 1000) / 10;
+      var freeMonths = p.premium_free_months != null ? Number(p.premium_free_months) : 1;
+      var footer = document.getElementById('subscribe-price-footer');
+      if (footer) footer.textContent = 'Save ' + savePct + '% + ' + freeMonths + (freeMonths === 1 ? ' month' : ' months') + ' free';
+    }
+
+    // Direct Razorpay checkout for the premium plans. Before opening the
+    // payment sheet we re-fetch pricing with `fresh=1` (bypasses the backend
+    // cache) so the shown/charged price is the current DB price.
+    function purchase(itemId) {
+      itemId = itemId || 'premium_monthly';
+      if (!USER_ID) { showToast('Please sign in to subscribe to Premium.'); return; }
+      var btnId = itemId === 'premium_annual' ? 'premium-subscribe-annual-btn' : 'premium-subscribe-btn';
+      var btn = document.getElementById(btnId);
+      btn.disabled = true;
+      var originalText = btn.textContent;
+      btn.textContent = '...';
+      YoursAPI.getCountryPricing(country, true)
+        .then(function (fresh) {
+          renderPrices(fresh);
+          return YoursAPI.createPaymentOrder(USER_ID, itemId, country);
+        })
+        .then(function (res) {
+          btn.textContent = originalText;
+          var order = res.order;
+          if (typeof Razorpay === 'undefined') throw new Error('Razorpay SDK failed to load');
+          var options = {
+            key: order.keyId,
+            amount: order.amountInSmallestUnit,
+            currency: order.currency,
+            name: 'Yours AI',
+            image: 'https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/file_000000006a2c81fa833aa9f0571bfffc.png',
+            description: order.description,
+            order_id: order.orderId,
+            method: isIndia ? 'upi' : 'card',
+            prefill: { email: '' },
+            handler: function (payResp) {
+              YoursAPI.verifyPayment(USER_ID, {
+                orderId: payResp.razorpay_order_id,
+                paymentId: payResp.razorpay_payment_id,
+                signature: payResp.razorpay_signature,
+                itemId: itemId
+              }).then(function () {
+                showToast('Premium activated! Enjoy unlimited access. ✨');
+                setTimeout(goPrev, 1500);
+              }).catch(function (err) {
+                showToast('Verification failed: ' + (err.message || 'error'));
+              });
+            }
+          };
+          var rzp = new Razorpay(options);
+          rzp.on('payment.failed', function () { showToast('Payment failed. Please try again.'); });
+          rzp.open();
+        })
+        .catch(function (err) {
+          btn.disabled = false;
+          btn.textContent = originalText;
+          showToast('Could not start checkout: ' + (err.message || 'error'));
+        });
+    }
+
+    var subscribeBtn = document.getElementById('premium-subscribe-btn');
+    if (subscribeBtn) subscribeBtn.addEventListener('click', function () { purchase('premium_monthly'); });
+    var annualBtn = document.getElementById('premium-subscribe-annual-btn');
+    if (annualBtn) annualBtn.addEventListener('click', function () { purchase('premium_annual'); });
+
+    try {
+      // Fetch dynamic pricing for the detected region (DB-backed, cached).
+      const p = await YoursAPI.getCountryPricing(country);
+      if (p) {
+        renderPrices(p);
+        var savePct = p.premium_save_percent != null ? Number(p.premium_save_percent) : 33.3;
+        var freeMonths = p.premium_free_months != null ? Number(p.premium_free_months) : 1;
+        var badgeEl = document.getElementById('annual-badge');
+        if (badgeEl) badgeEl.textContent = savePct + '% OFF + ' + freeMonths + (freeMonths === 1 ? ' month' : ' months') + ' free';
       }
     } catch (e) {
       console.log('Dynamic pricing fallback active');

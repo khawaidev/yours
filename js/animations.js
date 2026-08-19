@@ -20,6 +20,16 @@
   if (window.__yoursSharedAnimations) return;
   window.__yoursSharedAnimations = true;
 
+  // ---- Disable pinch-zoom / gesture zoom app-wide ----
+  document.addEventListener('gesturestart', function (e) { e.preventDefault(); }, { passive: false });
+  document.addEventListener('gesturechange', function (e) { e.preventDefault(); }, { passive: false });
+  document.addEventListener('gestureend', function (e) { e.preventDefault(); }, { passive: false });
+  document.addEventListener('touchmove', function (e) {
+    if (e.touches && e.touches.length > 1) e.preventDefault();
+  }, { passive: false });
+  document.documentElement.style.touchAction = 'manipulation';
+  document.documentElement.style.overscrollBehavior = 'none';
+
   // Pages that already implement their own skeleton + reveal (auth.html) are skipped.
   if (document.getElementById('skeleton-screen')) return;
 

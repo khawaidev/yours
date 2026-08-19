@@ -1,8 +1,12 @@
 <!DOCTYPE html><html lang="en"><head>
 <meta charset="utf-8">
-<meta content="width=device-width, initial-scale=1.0" name="viewport">
-<title>Settings - Blush Design System</title>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport">
+<title>Settings - Yours</title>
+<link href="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/file_000000003704823093c6cccb8ba71cd1.png" rel="icon" type="image/png">
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/api-client.js"></script>
+<link rel="stylesheet" href="css/app.css">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
 <style data-purpose="custom-fonts">
     body {
@@ -21,7 +25,7 @@
               card: '#1E1E1E',
               text: '#FFFFFF',
               subtext: '#A0A0A0',
-              accent: '#FF4D6D', // Example Blush accent
+              accent: '#FF4D6D',
             }
           },
           fontFamily: {
@@ -31,14 +35,23 @@
       }
     }
   </script>
+<style>
+    .row-btn {
+      transition: background 0.2s ease, transform 0.1s ease;
+    }
+    .row-btn:active {
+      transform: scale(0.98);
+      background: rgba(255, 255, 255, 0.06);
+    }
+  </style>
 </head>
-<body class="bg-blush-bg text-blush-text antialiased min-h-screen flex flex-col items-center pt-8">
+<body class="bg-blush-bg text-blush-text antialiased min-h-screen flex flex-col items-center pt-2 app-page">
 <!-- Mobile Container to simulate the app view -->
 <div class="w-full max-w-[400px] h-full flex flex-col px-4 pb-8">
 <!-- BEGIN: Header -->
-<header data-reveal class="flex items-center justify-between py-4 mb-6">
-<button aria-label="Go back" class="p-2 -ml-2 rounded-full hover:bg-blush-card transition-colors focus:outline-none focus:ring-2 focus:ring-blush-accent">
-<svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24" xmlns="http://www.w3.e3.org/2000/svg">
+<header data-reveal class="flex items-center justify-between py-3 mb-4">
+<button aria-label="Go back" class="p-2 -ml-2 rounded-full hover:bg-blush-card transition-colors focus:outline-none" onclick="if (window.history.length > 1) window.history.back(); else window.location.href='user-profile.html';">
+<svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
 <path d="M15 19l-7-7 7-7" stroke-linecap="round" stroke-linejoin="round"></path>
 </svg>
 </button>
@@ -48,14 +61,15 @@
 <!-- END: Header -->
 <!-- BEGIN: Profile Section -->
 <section data-reveal class="mb-8">
-<a class="block bg-blush-card rounded-full p-4 flex items-center justify-between hover:bg-opacity-80 transition-opacity focus:outline-none focus:ring-2 focus:ring-blush-accent" href="#">
+<a class="block bg-blush-card rounded-full p-4 flex items-center justify-between row-btn" href="edit-profile.html">
 <div class="flex items-center space-x-4">
-<div class="w-12 h-12 bg-gray-700 rounded-full flex items-center justify-center text-2xl">
-            🤪
-          </div>
+<div class="w-12 h-12 bg-gray-700 rounded-full flex items-center justify-center text-2xl overflow-hidden">
+<span id="settings-avatar-fallback">🤪</span>
+<img alt="Profile" class="hidden w-full h-full object-cover" id="settings-avatar-img">
+</div>
 <div>
 <h2 class="font-bold text-lg leading-tight">Edit profile</h2>
-<p class="text-blush-subtext text-sm">Tyga</p>
+<p class="text-blush-subtext text-sm" id="settings-profile-name">Not signed in</p>
 </div>
 </div>
 <svg class="h-5 w-5 text-blush-subtext" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -68,26 +82,8 @@
 <section data-reveal class="mb-8">
 <h3 class="text-blush-subtext font-semibold mb-3 px-2 text-sm uppercase tracking-wider">Account</h3>
 <div class="flex flex-col space-y-3">
-<!-- Email Item -->
-<a class="block bg-blush-card rounded-[24px] p-4 flex items-center justify-between hover:bg-opacity-80 transition-opacity focus:outline-none focus:ring-2 focus:ring-blush-accent" href="#">
-<div class="flex items-center space-x-4">
-<div class="w-8 flex justify-center">
-<svg class="h-6 w-6 text-white" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-<path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path>
-<path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
-</svg>
-</div>
-<div>
-<span class="font-bold text-base block leading-tight">Email</span>
-<span class="text-blush-subtext text-sm">Add email login</span>
-</div>
-</div>
-<svg class="h-5 w-5 text-blush-subtext" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-<path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"></path>
-</svg>
-</a>
 <!-- Manage Subscription Item -->
-<a class="block bg-blush-card rounded-full p-4 flex items-center justify-between hover:bg-opacity-80 transition-opacity focus:outline-none focus:ring-2 focus:ring-blush-accent" href="#">
+<a class="block bg-blush-card rounded-full p-4 flex items-center justify-between row-btn" href="premium-acess.html" id="manage-sub">
 <div class="flex items-center space-x-4">
 <div class="w-8 flex justify-center">
 <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -101,7 +97,7 @@
 </svg>
 </a>
 <!-- Restore Purchases Item -->
-<a class="block bg-blush-card rounded-full p-4 flex items-center justify-between hover:bg-opacity-80 transition-opacity focus:outline-none focus:ring-2 focus:ring-blush-accent" href="#">
+<a class="block bg-blush-card rounded-full p-4 flex items-center justify-between row-btn" href="#" id="restore-btn">
 <div class="flex items-center space-x-4">
 <div class="w-8 flex justify-center">
 <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -122,7 +118,7 @@
 <h3 class="text-blush-subtext font-semibold mb-3 px-2 text-sm uppercase tracking-wider">App settings</h3>
 <div class="flex flex-col space-y-3">
 <!-- Language Item -->
-<a class="block bg-blush-card rounded-full p-4 flex items-center justify-between hover:bg-opacity-80 transition-opacity focus:outline-none focus:ring-2 focus:ring-blush-accent" href="#">
+<a class="block bg-blush-card rounded-full p-4 flex items-center justify-between row-btn" href="languages.html">
 <div class="flex items-center space-x-4">
 <div class="w-8 flex justify-center">
 <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -136,7 +132,7 @@
 </svg>
 </a>
 <!-- Notifications Item -->
-<a class="block bg-blush-card rounded-full p-4 flex items-center justify-between hover:bg-opacity-80 transition-opacity focus:outline-none focus:ring-2 focus:ring-blush-accent" href="#">
+<a class="block bg-blush-card rounded-full p-4 flex items-center justify-between row-btn" href="notifications.html">
 <div class="flex items-center space-x-4">
 <div class="w-8 flex justify-center">
 <svg class="h-6 w-6 text-white" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
@@ -149,45 +145,15 @@
 <path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"></path>
 </svg>
 </a>
-<!-- Content & Media Item -->
-<a class="block bg-blush-card rounded-full p-4 flex items-center justify-between hover:bg-opacity-80 transition-opacity focus:outline-none focus:ring-2 focus:ring-blush-accent" href="#">
-<div class="flex items-center space-x-4">
-<div class="w-8 flex justify-center">
-<svg class="h-6 w-6 text-white" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-<path clip-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" fill-rule="evenodd"></path>
-</svg>
-</div>
-<span class="font-bold text-base block">Content &amp; Media</span>
-</div>
-<svg class="h-5 w-5 text-blush-subtext" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-<path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"></path>
-</svg>
-</a>
-<!-- Sounds & Vibration Item -->
-<a class="block bg-blush-card rounded-full p-4 flex items-center justify-between hover:bg-opacity-80 transition-opacity focus:outline-none focus:ring-2 focus:ring-blush-accent" href="#">
+<!-- Customer Support Item -->
+<a class="block bg-blush-card rounded-full p-4 flex items-center justify-between row-btn" href="mailto:khawain.in@gmail.com">
 <div class="flex items-center space-x-4">
 <div class="w-8 flex justify-center">
 <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-<path d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" stroke-linecap="round" stroke-linejoin="round"></path>
+<path d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" stroke-linecap="round" stroke-linejoin="round"></path>
 </svg>
 </div>
-<span class="font-bold text-base block">Sounds &amp; Vibration</span>
-</div>
-<svg class="h-5 w-5 text-blush-subtext" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-<path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"></path>
-</svg>
-</a>
-<!-- Appearance Item -->
-<a class="block bg-blush-card rounded-full p-4 flex items-center justify-between hover:bg-opacity-80 transition-opacity focus:outline-none focus:ring-2 focus:ring-blush-accent" href="#">
-<div class="flex items-center space-x-4">
-<div class="w-8 flex justify-center">
-<svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-<path d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round"></path> <!-- Fallback icon -->
-<!-- Hexagon icon representation -->
-<path d="M12 2l8.66 5v10L12 22l-8.66-5V7L12 2z" stroke-linecap="round" stroke-linejoin="round"></path>
-</svg>
-</div>
-<span class="font-bold text-base block">Appearance</span>
+<span class="font-bold text-base block">Customer support</span>
 </div>
 <svg class="h-5 w-5 text-blush-subtext" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
 <path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"></path>
@@ -196,6 +162,256 @@
 </div>
 </section>
 <!-- END: App Settings -->
+<!-- BEGIN: Legal -->
+<section data-reveal class="mb-8">
+<h3 class="text-blush-subtext font-semibold mb-3 px-2 text-sm uppercase tracking-wider">Legal</h3>
+<div class="flex flex-col space-y-3">
+<a class="block bg-blush-card rounded-full p-4 flex items-center justify-between row-btn" href="legal.html">
+<div class="flex items-center space-x-4">
+<div class="w-8 flex justify-center">
+<svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
 </div>
+<span class="font-bold text-base block">Legal &amp; policies</span>
+</div>
+<svg class="h-5 w-5 text-blush-subtext" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</a>
+</div>
+</section>
+<!-- END: Legal -->
+<!-- BEGIN: Danger Zone -->
+<section data-reveal class="flex flex-col space-y-3 mt-12">
+<button class="w-full bg-blush-card rounded-full p-4 font-bold text-base flex items-center justify-center row-btn" id="logout-btn" type="button">
+Log out
+</button>
+<button class="w-full bg-[#2a1215] rounded-full p-4 font-bold text-base flex items-center justify-center text-[#ff6b6b] row-btn" id="delete-btn" type="button">
+Delete account
+</button>
+</section>
+<!-- END: Danger Zone -->
+</div>
+
+<!-- BEGIN: Confirmation Modal -->
+<div class="fixed inset-0 z-50 items-center justify-center px-6" id="confirm-modal" style="display:none;">
+<div class="absolute inset-0 bg-black/70" id="confirm-backdrop"></div>
+<div class="relative w-full max-w-[340px] bg-blush-card rounded-3xl p-6 text-center shadow-2xl">
+<h2 class="text-lg font-bold mb-2" id="confirm-title">Are you sure?</h2>
+<p class="text-blush-subtext text-sm mb-6" id="confirm-desc"></p>
+<div class="flex space-x-3">
+<button class="flex-1 bg-blush-bg border border-white/15 text-white font-bold py-3 rounded-full focus:outline-none" id="confirm-cancel" type="button">Cancel</button>
+<button class="flex-1 bg-blush-accent text-white font-bold py-3 rounded-full focus:outline-none" id="confirm-ok" type="button"></button>
+</div>
+</div>
+</div>
+<!-- END: Confirmation Modal -->
+
+<script>
+(function () {
+  var SUPABASE_URL = 'https://dgbxcakkqrgrapwsvrol.supabase.co';
+  var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRnYnhjYWtrcXJncmFwd3N2cm9sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYxOTM0NDksImV4cCI6MjEwMTc2OTQ0OX0.v2gOgC28bfXXVjRVki1lL0ulgCHVloUAv1eF5HVSzuk';
+
+  var supabase = null;
+  try {
+    if (window.supabase) {
+      supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    }
+  } catch (err) {
+    supabase = null;
+  }
+
+  // Clear any app-level auth/session flags so the app returns to the guest state.
+  function clearSession() {
+    try {
+      localStorage.removeItem('yours_demo_mode');
+    } catch (e) {}
+    // Drop persisted Supabase auth tokens (localStorage + sessionStorage) so a
+    // signed-out user can never be silently restored by supabase-js.
+    var tokenKeys = [
+      'supabase.auth.token',
+      'sb-dgbxcakkqrgrapwsvrol-auth-token',
+      'sb-dgbxcakkqrgrapwsvrol-auth-token-code-verifier'
+    ];
+    for (var k = 0; k < tokenKeys.length; k++) {
+      try { localStorage.removeItem(tokenKeys[k]); } catch (e) {}
+      try { sessionStorage.removeItem(tokenKeys[k]); } catch (e) {}
+    }
+    try {
+      sessionStorage.clear();
+    } catch (e) {}
+  }
+
+  function goHome() {
+    window.location.href = 'index.html';
+  }
+
+  function getCurrentUserId() {
+    return new Promise(function (resolve) {
+      if (!supabase) return resolve(null);
+      supabase.auth.getUser().then(function (res) {
+        resolve(res.data && res.data.user ? res.data.user.id : null);
+      }).catch(function () {
+        resolve(null);
+      });
+    });
+  }
+
+  var modal = document.getElementById('confirm-modal');
+  var backdrop = document.getElementById('confirm-backdrop');
+  var title = document.getElementById('confirm-title');
+  var desc = document.getElementById('confirm-desc');
+  var okBtn = document.getElementById('confirm-ok');
+  var cancelBtn = document.getElementById('confirm-cancel');
+  var pending = null;
+
+  function showConfirm(t, d, okLabel, onOk) {
+    title.textContent = t;
+    desc.textContent = d;
+    okBtn.textContent = okLabel;
+    pending = onOk;
+    modal.style.display = 'flex';
+  }
+  function hideConfirm() {
+    modal.style.display = 'none';
+    pending = null;
+  }
+  function setBusy(busy) {
+    okBtn.disabled = busy;
+    okBtn.classList.toggle('opacity-60', busy);
+  }
+  cancelBtn.addEventListener('click', hideConfirm);
+  backdrop.addEventListener('click', hideConfirm);
+  okBtn.addEventListener('click', function () {
+    hideConfirm();
+    if (pending) pending();
+  });
+
+  // ---- Log out: invalidate the Supabase session, then clear local state ----
+  document.getElementById('logout-btn').addEventListener('click', function () {
+    showConfirm('Log out', 'You will need to sign in again to continue.', 'Log out', function () {
+      if (!supabase) {
+        clearSession();
+        goHome();
+        return;
+      }
+      setBusy(true);
+      supabase.auth.signOut().then(function () {
+        clearSession();
+        goHome();
+      }).catch(function () {
+        clearSession();
+        goHome();
+      });
+    });
+  });
+
+  // ---- Delete account: permanently remove the user + all data, then return home ----
+  document.getElementById('delete-btn').addEventListener('click', function () {
+    showConfirm('Delete account', 'This will permanently delete your account, chats and all data. This cannot be undone.', 'Delete', function () {
+      getCurrentUserId().then(function (userId) {
+        if (!userId) {
+          clearSession();
+          goHome();
+          return;
+        }
+        setBusy(true);
+        window.YoursAPI.deleteAccount(userId).then(function () {
+          if (supabase) {
+            return supabase.auth.signOut();
+          }
+          return null;
+        }).then(function () {
+          clearSession();
+          goHome();
+        }).catch(function (err) {
+          setBusy(false);
+          alert('Could not delete account: ' + (err && err.message ? err.message : 'Unknown error'));
+        });
+      });
+    });
+  });
+
+  // Manage subscription: if the user is on the free plan, open the premium plan page.
+  var manageSub = document.getElementById('manage-sub');
+  var plan = localStorage.getItem('yours_plan') || 'free';
+  if (manageSub) {
+    if (plan !== 'pro') {
+      manageSub.setAttribute('href', 'premium-acess.html');
+    } else {
+      manageSub.setAttribute('href', 'features.html');
+    }
+  }
+
+  // ---- Profile row: render the signed-in user's name + avatar ----
+  function applyProfile(p) {
+    if (!p) return;
+    var nameEl = document.getElementById('settings-profile-name');
+    var imgEl = document.getElementById('settings-avatar-img');
+    var fbEl = document.getElementById('settings-avatar-fallback');
+    if (p.displayName && nameEl) nameEl.textContent = p.displayName;
+    if (p.avatarUrl && imgEl) {
+      imgEl.src = p.avatarUrl;
+      imgEl.classList.remove('hidden');
+      if (fbEl) fbEl.classList.add('hidden');
+    }
+  }
+  function loadProfile() {
+    var meta = null;
+    try {
+      var cu = (window.YoursAPI && YoursAPI.getCurrentUser) ? YoursAPI.getCurrentUser() : null;
+      if (cu) meta = cu;
+    } catch (e) {}
+    if (!supabase) { applyProfile(meta); return; }
+    supabase.auth.getUser().then(function (r) {
+      var u = r.data && r.data.user;
+      if (!u) return;
+      var um = u.user_metadata || {};
+      applyProfile({ displayName: um.full_name || um.name || null, avatarUrl: um.avatar_url || um.picture || null });
+      // The DB profile may have a newer display name (edited from edit-profile).
+      supabase.from('profiles')
+        .select('display_name, avatar_url')
+        .eq('id', u.id)
+        .maybeSingle()
+        .then(function (res) {
+          if (res && res.data) {
+            applyProfile({ displayName: res.data.display_name, avatarUrl: res.data.avatar_url });
+          }
+        })
+        .catch(function () {});
+    }).catch(function () { applyProfile(meta); });
+  }
+  loadProfile();
+
+  // ---- Restore purchases: verify the account's subscription state ----
+  function showToast(msg) {
+    var t = document.createElement('div');
+    t.textContent = msg;
+    t.style.cssText = 'position:fixed;bottom:2rem;left:50%;transform:translateX(-50%);background:#262626;color:#fff;padding:.8rem 1.2rem;border-radius:9999px;z-index:9999;box-shadow:0 8px 24px rgba(0,0,0,.4);';
+    document.body.appendChild(t);
+    setTimeout(function () { t.remove(); }, 3500);
+  }
+  var restoreBtn = document.getElementById('restore-btn');
+  if (restoreBtn) {
+    restoreBtn.addEventListener('click', function (e) {
+      e.preventDefault();
+      getCurrentUserId().then(function (uid) {
+        if (!uid) { showToast('Please sign in to restore purchases.'); return; }
+        window.YoursAPI.getSubscription(uid).then(function (res) {
+          var sub = res && res.subscription;
+          if (sub && (sub.plan_type === 'plus' || sub.plan_type === 'premium') && sub.status !== 'cancelled' && sub.status !== 'expired') {
+            showToast('Premium is already active on this account.');
+          } else {
+            showToast('No previous purchases found on this account.');
+          }
+        }).catch(function () {
+          showToast('Could not check your account. Try again.');
+        });
+      });
+    });
+  }
+})();
+</script>
 <script src="js/animations.js"></script>
 </body></html>

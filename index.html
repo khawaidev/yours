@@ -1,11 +1,14 @@
 <!DOCTYPE html><html lang="en" style=""><head>
 <meta charset="utf-8">
-<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport">
 <title>Yours</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link rel="stylesheet" href="css/app.css">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<link href="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/file_000000006a2c81fa833aa9f0571bfffc.png" rel="icon" type="image/png">
 <!-- Supabase browser client (anon key is public by design; keep the service role key server-side only) -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/api-client.js"></script>
 <style data-purpose="custom-styles">
         body {
             background-color: #000; /* For mobile device feel outside safe area */
@@ -64,20 +67,9 @@
             display: flex;
             flex-direction: column;
             min-height: 100dvh;
-            padding: 20px;
+            padding: max(10px, env(safe-area-inset-top)) 20px 20px;
         }
 
-        /* Custom Font for Logo (Approximation) */
-        .brand-logo {
-            font-family: 'Arial Black', Gadget, sans-serif;
-            background: -webkit-linear-gradient(#ff6b6b, #ff4757);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-size: 28px;
-            font-weight: 900;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-            letter-spacing: -1px;
-        }
 
         .bottom-nav-bg {
             background: rgba(40, 40, 40, 0.85);
@@ -104,21 +96,253 @@
         body.is-auth #guest-cta { display: none; }
         body.is-guest #guest-cta { display: flex; }
         body.is-auth #auth-controls { display: flex; }
+
+        /* ---- Swipe Guide Overlay ---- */
+        #swipe-guide {
+            display: flex;
+            transition: opacity 0.4s ease;
+        }
+        #swipe-guide.guide-hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        .guide-step { display: none; flex-direction: column; align-items: center; }
+        .guide-step.guide-active {
+            display: flex;
+            animation: guideStepIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+        }
+        @keyframes guideStepIn {
+            from { opacity: 0; transform: translateY(16px) scale(0.97); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .guide-stage {
+            position: relative;
+            width: 220px;
+            height: 130px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .guide-hand {
+            position: absolute;
+            color: #fff;
+            font-size: 46px;
+            filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.45));
+        }
+        .guide-hand-right { animation: guideSwipeRight 1.6s ease-in-out infinite; }
+        .guide-hand-left  { animation: guideSwipeLeft  1.6s ease-in-out infinite; }
+        .guide-hand-up    { animation: guideSwipeUp    1.6s ease-in-out infinite; }
+        @keyframes guideSwipeRight {
+            0%   { transform: translateX(-70px); opacity: 0; }
+            12%  { opacity: 1; }
+            45%  { transform: translateX(0); }
+            88%  { opacity: 1; }
+            100% { transform: translateX(70px); opacity: 0; }
+        }
+        @keyframes guideSwipeLeft {
+            0%   { transform: translateX(70px); opacity: 0; }
+            12%  { opacity: 1; }
+            45%  { transform: translateX(0); }
+            88%  { opacity: 1; }
+            100% { transform: translateX(-70px); opacity: 0; }
+        }
+        @keyframes guideSwipeUp {
+            0%   { transform: translateY(60px); opacity: 0; }
+            12%  { opacity: 1; }
+            45%  { transform: translateY(0); }
+            88%  { opacity: 1; }
+            100% { transform: translateY(-60px); opacity: 0; }
+        }
+        .guide-trail {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            border-radius: 2px;
+        }
+        .guide-trail-right,
+        .guide-trail-left {
+            width: 130px;
+            height: 3px;
+            background: repeating-linear-gradient(90deg, rgba(255,255,255,0.75) 0 10px, transparent 10px 18px);
+        }
+        .guide-trail-up {
+            width: 3px;
+            height: 110px;
+            background: repeating-linear-gradient(180deg, rgba(255,255,255,0.75) 0 10px, transparent 10px 18px);
+        }
+        .guide-chevron {
+            position: absolute;
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 16px;
+            animation: guideChevronPulse 1.2s ease-in-out infinite;
+        }
+        .guide-chevron-right { top: 50%; right: 10px; margin-top: -9px; }
+        .guide-chevron-left  { top: 50%; left: 10px; margin-top: -9px; }
+        .guide-chevron-up    { left: 50%; top: 8px; margin-left: -8px; }
+        @keyframes guideChevronPulse {
+            0%, 100% { opacity: 0.25; transform: scale(0.9); }
+            50%      { opacity: 1; transform: scale(1.1); }
+        }
+        .guide-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+        .guide-dot-active {
+            width: 26px;
+            background: #fff;
+        }
+
+        /* ---- Guest feed character swap ---- */
+        #feed-bg,
+        #feed-info {
+            transition: opacity 0.25s ease, transform 0.25s ease;
+        }
+        .feed-swap-out {
+            opacity: 0;
+            transform: scale(1.02);
+        }
+
+        /* ---- Feed character loading skeleton ---- */
+        .feed-skeleton {
+            position: relative;
+            overflow: hidden;
+            background: rgba(38, 38, 38, 0.9);
+        }
+        .feed-skeleton::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.14), transparent);
+            animation: feed-shimmer 1.2s infinite;
+            transform: translateX(-100%);
+        }
+        @keyframes feed-shimmer {
+            100% { transform: translateX(100%); }
+        }
+        .feed-text-skeleton {
+            color: transparent !important;
+            background: rgba(255, 255, 255, 0.10);
+            border-radius: 0.5rem;
+            overflow: hidden;
+            position: relative;
+        }
+        .feed-text-skeleton::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.14), transparent);
+            animation: feed-shimmer 1.2s infinite;
+            transform: translateX(-100%);
+        }
+
+        /* ---- Floating love heart (from love button to center of page) ---- */
+        #feed-love-btn {
+            transition: transform 0.2s ease;
+        }
+        #feed-love-btn.love-btn-pop {
+            transform: scale(0.82);
+        }
+        #feed-love-btn.love-btn-liked {
+            box-shadow: inset 0 0 0 2px #fff, 0 0 14px rgba(255, 255, 255, 0.35);
+            animation: loveBtnPulse 0.4s ease;
+        }
+        @keyframes loveBtnPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(0.85); }
+            100% { transform: scale(1); }
+        }
+        #feed-avatar {
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        #feed-avatar:active {
+            transform: scale(0.94);
+        }
+        .love-float-heart {
+            position: fixed;
+            z-index: 9999;
+            font-size: 30px;
+            line-height: 1;
+            color: #ff4d7d;
+            filter: drop-shadow(0 0 12px rgba(255, 77, 125, 0.85));
+            pointer-events: none;
+            transform: translate(-50%, -50%) scale(0.3);
+            opacity: 0;
+            will-change: transform, opacity;
+        }
+        .love-float-heart.love-float-active {
+            animation: loveFloatUp 1.05s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+        @keyframes loveFloatUp {
+            0%   { transform: translate(-50%, -50%) scale(0.3); opacity: 0; }
+            18%  { transform: translate(-50%, -50%) scale(1.25); opacity: 1; }
+            100% { transform: translate(-50%, calc(-50% - var(--dy))) scale(1); opacity: 0; }
+        }
+
+        /* ---- Filters bottom sheet ---- */
+        .filter-chip {
+            padding: 0.6rem 1.25rem;
+            border-radius: 9999px;
+            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.85);
+            font-weight: 600;
+            font-size: 0.875rem;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            transition: all 0.15s ease;
+            cursor: pointer;
+        }
+        .filter-chip:active {
+            transform: scale(0.96);
+        }
+        .filter-chip.active {
+            background: #ffffff;
+            color: #000;
+            font-weight: 700;
+            border-color: transparent;
+        }
+        .filter-category-label {
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: #fff;
+        }
+        #filter-apply {
+            opacity: 0.4;
+            pointer-events: none;
+            transition: opacity 0.2s ease;
+        }
+        #filter-apply.enabled {
+            opacity: 1;
+            pointer-events: auto;
+        }
     </style>
 </head>
-<body class="is-guest">
+<body class="is-guest app-page">
 <!-- BEGIN: AppContainer -->
 <div id="app-container">
 <!-- Background Image -->
-<img alt="Brandy in office" class="bg-image" src="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/IMG_20260807_032009.png">
+<img alt="" class="bg-image" id="feed-bg" src="">
+<!-- Skeleton backdrop shown while a swiped character's feed image loads -->
+<div class="feed-skeleton absolute inset-0" id="feed-skeleton-bg" style="display:none;" aria-hidden="true"></div>
 <!-- Gradient Overlay for text readability -->
 <div class="gradient-overlay"></div>
 <!-- Content Layer -->
 <div class="content-layer">
 <!-- BEGIN: TopHeader -->
-<header class="flex justify-between items-center pt-4">
+<header class="flex justify-between items-center pt-0">
 <!-- Logo -->
-<div class="brand-logo">Yours</div>
+<img alt="Yours" class="h-12 w-auto object-contain drop-shadow-md" src="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/file_000000003704823093c6cccb8ba71cd1.png">
 <!-- Right Controls -->
 <!-- Guest: Sign up for free CTA -->
 <a href="auth.html" id="guest-cta" class="items-center gap-2 bg-white text-black font-bold text-sm py-2.5 px-5 rounded-full shadow-lg hover:bg-gray-100 active:scale-95 transition-all cursor-pointer">
@@ -128,12 +352,13 @@
 <!-- Auth: Currency + Filters -->
 <div id="auth-controls" class="items-center space-x-3">
 <!-- Currency -->
-<div class="bg-black/40 backdrop-blur-md rounded-full px-3 py-1.5 flex items-center space-x-2">
-<i class="fa-solid fa-money-bill-1 text-green-400 text-sm"></i>
-<span class="text-white font-bold text-sm">50</span>
-</div>
+<a href="recharge.html" class="bg-black/40 backdrop-blur-md rounded-full px-3 py-1.5 flex items-center space-x-2 active:scale-95 transition-transform cursor-pointer" aria-label="Recharge">
+<img alt="Cash" class="w-4 h-4 object-contain" src="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/slazzer-preview-z0bt9.png">
+<span class="text-white font-bold text-sm" id="feed-wallet-balance">50</span>
+<i class="fa-solid fa-plus text-white text-xs"></i>
+</a>
 <!-- Settings/Filter Icon -->
-<button class="bg-black/40 backdrop-blur-md rounded-full w-10 h-10 flex items-center justify-center text-white relative">
+<button class="bg-black/40 backdrop-blur-md rounded-full w-10 h-10 flex items-center justify-center text-white relative" id="feed-filters-btn" type="button" aria-label="Filters">
 <i class="fa-solid fa-sliders text-lg"></i>
 <span class="absolute top-2 right-2 w-2.5 h-2.5 bg-orange-500 rounded-full border-2 border-transparent"></span>
 </button>
@@ -143,7 +368,7 @@
 <!-- Spacer to push content to bottom -->
 <div class="flex-grow"></div>
 <!-- BEGIN: ProfileInfo -->
-<main class="pb-24"><div class="mb-4"><h1 class="text-white text-3xl font-extrabold shadow-sm drop-shadow-md">Brandy, 56</h1><p class="text-white/90 text-sm leading-snug drop-shadow-sm px-1 mt-1">Marketing exec who believes the best things in life come with experience 😉</p></div><div class="flex items-center space-x-4"><img alt="Brandy Avatar" class="w-16 h-16 rounded-full border-2 border-white/20 shadow-lg object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAki33uQl_aGSoN9936hLWBG_jJUu5Jl6rHI0nuGqsWVXS1THqxS8T_jzy95drEx3O9djHQnlwB9u2oF2nkok0M-dLrsAEQVjXYgOSknS39aR_prfdQ17wt0htJnHbk153-R5cRhU1oTaRIp2hWwWDbFL4pOuXba3xTMmzpYubJocNdm4Ab7TwauZrqPCMV4LhhzGgpz4_kepKD-6jn-61UVdmoG9CcOuADSmobOr6QsvJeKFGmaBhivQ"><div class="flex-grow flex items-center bg-white/10 backdrop-blur-md rounded-full p-1 space-x-1"><button class="flex-grow flex items-center justify-center space-x-2 py-3 px-4 rounded-full text-white font-bold text-sm" style="background: linear-gradient(to right bottom, rgb(195, 36, 76), rgb(240, 42, 83), rgb(255, 62, 134));"><i class="fa-solid fa-fire"></i><span class="">Start chat</span></button><div class="w-px h-8 bg-white/20"></div><button class="w-12 h-12 flex items-center justify-center rounded-full text-white" style="background: linear-gradient(to right bottom, rgb(195, 36, 76), rgb(240, 42, 83), rgb(255, 62, 134));"><i class="fa-solid fa-heart text-xl"></i></button></div></div></main>
+<main class="pb-14" id="feed-info"><div class="mb-4"><h1 class="text-white text-3xl font-extrabold shadow-sm drop-shadow-md" id="feed-name"></h1><p class="text-white/90 text-sm leading-snug drop-shadow-sm px-1 mt-1" id="feed-about"></p></div><div class="flex items-center space-x-4"><div class="relative w-16 h-16"><div class="feed-skeleton absolute inset-0 rounded-full" id="feed-skeleton-avatar" style="display:none;" aria-hidden="true"></div><img alt="" class="w-16 h-16 rounded-full border-2 border-white/20 shadow-lg object-cover" id="feed-avatar" src=""></div><div class="flex-grow flex items-center bg-white/10 backdrop-blur-md rounded-full p-1 space-x-1"><button aria-label="Start chat" class="flex-grow flex items-center justify-center space-x-2 py-3 px-4 rounded-full text-white font-bold text-sm cursor-pointer" id="feed-chat-btn" style="background: linear-gradient(to right bottom, rgb(195, 36, 76), rgb(240, 42, 83), rgb(255, 62, 134));"><i class="fa-solid fa-fire"></i><span class="">Start chat</span></button><div class="w-px h-8 bg-white/20"></div><button aria-label="Love this character" class="w-12 h-12 flex items-center justify-center rounded-full text-white" id="feed-love-btn" style="background: linear-gradient(to right bottom, rgb(195, 36, 76), rgb(240, 42, 83), rgb(255, 62, 134));"><i class="fa-solid fa-heart text-xl"></i></button></div></div></main>
 <!-- END: ProfileInfo -->
 </div>
 <!-- BEGIN: Bottom Navigation (icon-only pill) — blurred & locked for guests -->
@@ -161,9 +386,86 @@
 <img src="https://i.ibb.co/kVrCvk98/user-1.png" alt="Profile" class="w-6 h-6 object-contain">
 </a>
 </nav>
-<!-- END: Bottom Navigation -->
+<!-- BEGIN: Swipe Guide Overlay -->
+<div aria-label="Swipe guide" id="swipe-guide" class="fixed inset-0 z-[60] flex items-center justify-center" role="dialog">
+<div class="absolute inset-0 bg-black/70 backdrop-blur-sm" data-guide-dismiss=""></div>
+<div class="relative z-10 mx-6 w-full max-w-[340px] rounded-3xl border border-white/10 bg-[#1e1e1e]/95 p-8 text-center shadow-2xl">
+<!-- Step 1: Swipe Right -->
+<div class="guide-step guide-active" data-guide-step="0">
+<div class="guide-stage">
+<div class="guide-trail guide-trail-right"></div>
+<i class="fa-solid fa-chevron-right guide-chevron guide-chevron-right"></i>
+<i class="fa-solid fa-hand-point-right guide-hand guide-hand-right"></i>
+</div>
+<h3 class="mt-5 text-lg font-bold text-white">Swipe right</h3>
+<p class="mt-2 text-sm leading-relaxed text-white/70">To discover more characters like this one</p>
+</div>
+<!-- Step 2: Swipe Left -->
+<div class="guide-step" data-guide-step="1">
+<div class="guide-stage">
+<div class="guide-trail guide-trail-left"></div>
+<i class="fa-solid fa-chevron-left guide-chevron guide-chevron-left"></i>
+<i class="fa-solid fa-hand-point-left guide-hand guide-hand-left"></i>
+</div>
+<h3 class="mt-5 text-lg font-bold text-white">Swipe left</h3>
+<p class="mt-2 text-sm leading-relaxed text-white/70">To discover a different variety of characters</p>
+</div>
+<!-- Progress Dots -->
+<div class="mt-6 flex items-center justify-center gap-2">
+<span class="guide-dot guide-dot-active"></span>
+<span class="guide-dot"></span>
+</div>
+<button class="mt-6 w-full rounded-full bg-white py-3 text-sm font-bold text-black transition-all hover:bg-gray-100 active:scale-95" id="guide-gotit" type="button">Got it</button>
+</div>
+</div>
+<!-- END: Swipe Guide Overlay -->
+<!-- BEGIN: Guest Sign-up Popup -->
+<div aria-label="Sign up to discover more" class="fixed inset-0 z-[70] hidden items-center justify-center" id="guest-signup-popup" role="dialog">
+<div class="absolute inset-0 bg-black/70 backdrop-blur-sm" data-popup-dismiss=""></div>
+<div class="relative z-10 mx-6 w-full max-w-[340px] rounded-3xl border border-white/10 bg-[#1e1e1e]/95 p-8 text-center shadow-2xl">
+<div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-[#ff5c35] to-[#bd0183]">
+<i class="fa-solid fa-fire text-2xl text-white"></i>
+</div>
+<h3 class="text-xl font-extrabold text-white">Discover more characters</h3>
+<p class="mt-2 text-sm leading-relaxed text-white/70">Sign up for free to keep swiping and unlock the full universe of characters.</p>
+<a class="mt-6 block w-full rounded-full bg-white py-3 text-sm font-bold text-black transition-all hover:bg-gray-100 active:scale-95" href="auth.html">Sign up for free</a>
+<button class="mt-3 w-full rounded-full border border-white/15 py-3 text-sm font-semibold text-white/80 transition-all hover:bg-white/10 active:scale-95" data-popup-dismiss="" type="button">Maybe later</button>
+</div>
+</div>
+<!-- END: Guest Sign-up Popup -->
+<!-- BEGIN: Bottom Navigation -->
 </div>
 <!-- END: AppContainer -->
+
+<!-- BEGIN: Filters Bottom Sheet (slides up from the bottom) -->
+<div class="fixed inset-0 z-[80] items-end justify-center" id="filter-sheet" style="display:none;">
+<div class="absolute inset-0 bg-black/70 backdrop-blur-sm" id="filter-sheet-backdrop"></div>
+<div class="relative w-full max-w-[420px] bg-[#161616] rounded-t-[32px] pt-4 pb-8 flex flex-col h-[80%] z-10 transition-transform duration-300 ease-out" id="filter-sheet-panel" style="transform: translateY(100%); box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);">
+<div class="flex items-center justify-between px-6">
+<div class="w-8"></div>
+<h2 class="text-xl font-bold text-white">Filters</h2>
+<button class="w-8 h-8 flex items-center justify-center rounded-full bg-gray-800 text-gray-400 hover:text-white transition-colors" id="filter-sheet-close" type="button" aria-label="Close">
+<i class="fa-solid fa-xmark text-lg"></i>
+</button>
+</div>
+<div class="flex-1 overflow-y-auto px-6 pb-6 no-scrollbar">
+<h3 class="filter-category-label">Age Range</h3>
+<div class="flex flex-wrap gap-2">
+<button class="filter-chip active" data-filter-group="age" data-filter-value="young" type="button">Young (18+)</button>
+<button class="filter-chip" data-filter-group="age" data-filter-value="mature" type="button">Mature</button>
+</div>
+<h3 class="filter-category-label">Art Style</h3>
+<div class="flex flex-wrap gap-2">
+<button class="filter-chip active" data-filter-group="style" data-filter-value="realistic" type="button">Realistic</button>
+<button class="filter-chip" data-filter-group="style" data-filter-value="anime" type="button">Anime</button>
+</div>
+</div>
+<div class="px-6 pt-3 border-t border-white/5">
+<button class="w-full bg-white text-black font-bold py-4 rounded-full text-lg transition-all" id="filter-apply" disabled type="button">Apply</button>
+</div>
+</div>
+</div>
+<!-- END: Filters Bottom Sheet -->
 
 <script>
   (function () {
@@ -223,6 +525,35 @@
     var demoMode = new URLSearchParams(window.location.search).get('demo');
     var savedDemo = localStorage.getItem('yours_demo_mode');
 
+    // ---- Free plan funnel: feed -> premium -> unlimited -> back to feed (once per session).
+    // Only authenticated users on the free plan get shown the upsell pages.
+    function maybeStartFunnel() {
+      try {
+        if (localStorage.getItem('yours_plan') !== 'pro' && sessionStorage.getItem('yours_prem_funnel') !== '1') {
+          sessionStorage.setItem('yours_prem_funnel', '1');
+          sessionStorage.setItem('yours_prev_page', 'index.html');
+          window.location.replace('premium-acess.html');
+        }
+      } catch (e) {}
+    }
+
+    // Bootstrap/refresh the user profile in the backend once per session. Passing
+    // the email lets the backend treat a Google OAuth sign-in with an existing
+    // email as a login (no duplicate user/profile created).
+    function bootstrapProfile(session) {
+      try {
+        if (!session || !session.user) return;
+        var u = session.user;
+        var meta = u.user_metadata || {};
+        YoursAPI.bootstrapProfile({
+          userId: u.id,
+          email: u.email || meta.email || '',
+          displayName: meta.full_name || meta.name || '',
+          avatarUrl: meta.avatar_url || meta.picture || null,
+        }).catch(function () {});
+      } catch (e) {}
+    }
+
     function resolveMode() {
       // A real signed-in session always wins over any demo/test override.
       if (supabase) {
@@ -231,6 +562,8 @@
           if (hasSession) {
             localStorage.removeItem('yours_demo_mode');
             applyMode(true);
+            bootstrapProfile(res.data.session);
+            maybeStartFunnel();
           } else if (demoMode === 'auth') {
             applyMode(true);
           } else if (demoMode === 'guest') {
@@ -249,6 +582,10 @@
           if (event === 'SIGNED_IN') {
             localStorage.removeItem('yours_demo_mode');
             applyMode(true);
+            supabase.auth.getSession().then(function (r) {
+              bootstrapProfile(r.data && r.data.session);
+            });
+            maybeStartFunnel();
           } else if (event === 'SIGNED_OUT') {
             applyMode(false);
           }
@@ -264,6 +601,891 @@
     }
 
     resolveMode();
+  })();
+</script>
+<script>
+  (function () {
+    // Swipe guide: cycles through the 3 hand-gesture steps, dismissible.
+    var guide = document.getElementById('swipe-guide');
+    if (!guide) return;
+    var steps = guide.querySelectorAll('.guide-step');
+    var dots = guide.querySelectorAll('.guide-dot');
+    var current = 0;
+    var timer = null;
+
+    function showStep(i) {
+      steps.forEach(function (s, idx) { s.classList.toggle('guide-active', idx === i); });
+      dots.forEach(function (d, idx) { d.classList.toggle('guide-dot-active', idx === i); });
+    }
+
+    function dismiss() {
+      if (timer) clearInterval(timer);
+      guide.classList.add('guide-hidden');
+      setTimeout(function () {
+        if (guide.parentNode) guide.parentNode.removeChild(guide);
+      }, 450);
+    }
+
+    // Auto-advance the steps so users see both hand gestures, then auto-dismiss
+    // once the last step has been shown so guests can start swiping.
+    function advance() {
+      if (current >= steps.length - 1) {
+        clearInterval(timer);
+        setTimeout(dismiss, 1600);
+        return;
+      }
+      current = current + 1;
+      showStep(current);
+    }
+    timer = setInterval(advance, 3000);
+
+    // Dismiss on "Got it" or by tapping the backdrop.
+    guide.addEventListener('click', function (e) {
+      if (e.target.closest('#guide-gotit') || e.target.closest('[data-guide-dismiss]')) dismiss();
+    });
+  })();
+</script>
+<script>
+  (function () {
+    // Guest-only preview characters. Signed-in users see the live feed, so
+    // the swipe swap is gated on body.is-guest (set by the auth script above).
+    // The preview deck is loaded from the live character API (filtered by the
+    // user's gender preference) and only falls back to these curated defaults
+    // when the backend cannot be reached.
+    var FALLBACK_CHARACTERS = {
+      'guest-brandy': {
+        name: 'Brandy, 56',
+        about: 'Marketing exec who believes the best things in life come with experience \uD83D\uDE09',
+        bg: 'https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/IMG_20260807_032009.png',
+        avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAki33uQl_aGSoN9936hLWBG_jJUu5Jl6rHI0nuGqsWVXS1THqxS8T_jzy95drEx3O9djHQnlwB9u2oF2nkok0M-dLrsAEQVjXYgOSknS39aR_prfdQ17wt0htJnHbk153-R5cRhU1oTaRIp2hWwWDbFL4pOuXba3xTMmzpYubJocNdm4Ab7TwauZrqPCMV4LhhzGgpz4_kepKD-6jn-61UVdmoG9CcOuADSmobOr6QsvJeKFGmaBhivQ'
+      },
+      'guest-jun': {
+        name: 'Jun, 22',
+        about: 'A sweet, soft-spoken gentleman who still opens doors, remembers your coffee order, and shows up with flowers on the first date \uD83C\uDF38',
+        bg: 'https://ik.imagekit.io/0a4t1zpln/file_00000000c1c0820887ceb77299eac938.png',
+        avatar: 'https://ik.imagekit.io/0a4t1zpln/file_00000000c1c0820887ceb77299eac938.png'
+      },
+      'guest-ananya': {
+        name: 'Ananya, 25',
+        about: 'A warm-hearted soul from the hills who sings in the rain, cooks with love, and believes in slow, steady love \u2614',
+        bg: 'https://ik.imagekit.io/0a4t1zpln/c062ce0b36e09377f2e0f25a6a701fa2.jpg',
+        avatar: 'https://ik.imagekit.io/0a4t1zpln/c062ce0b36e09377f2e0f25a6a701fa2.jpg'
+      }
+    };
+
+    // Deck state. GUEST_CHARACTERS maps character id -> display shape (the
+    // shape the messaging / profile pages understand); DECK holds the ids.
+    var GUEST_CHARACTERS = {};
+    var DECK = [];
+    var position = 0;
+    var seen = {};
+    var swapping = false;
+    var popup = document.getElementById('guest-signup-popup');
+
+    function toShape(c, feed) {
+      return {
+        id: c.id,
+        name: c.name + (c.age != null ? ', ' + c.age : ''),
+        age: c.age != null ? c.age : null,
+        about: c.about || '',
+        bg: (feed && feed.media_url) || c.circular_profile_image_url || '',
+        avatar: c.circular_profile_image_url || ''
+      };
+    }
+
+    function buildDeck(chars) {
+      var filtered = (chars || []).slice();
+      if (!filtered.length) filtered = chars || [];
+      // Keep the free preview small (sign-up teaser). Real ids when available.
+      filtered = filtered.slice(0, 8);
+      GUEST_CHARACTERS = {};
+      DECK = [];
+      for (var i = 0; i < filtered.length; i++) {
+        var id = filtered[i].id || ('guest-' + i);
+        GUEST_CHARACTERS[id] = toShape(filtered[i], filtered[i].character_feeds && filtered[i].character_feeds[0]);
+      }
+      seen = {};
+      DECK = Object.keys(GUEST_CHARACTERS);
+      for (var k = 0; k < DECK.length; k++) seen[DECK[k]] = false;
+      position = 0;
+      swapping = false;
+    }
+
+    function fallbackList() {
+      return Object.keys(FALLBACK_CHARACTERS).map(function (id) {
+        var c = FALLBACK_CHARACTERS[id];
+        var parts = c.name.split(',');
+        return {
+          id: id,
+          name: parts[0],
+          age: parts[1] ? (parseInt(parts[1], 10) || null) : null,
+          about: c.about,
+          gender: null,
+          circular_profile_image_url: c.avatar,
+          character_feeds: [{ media_type: 'image', media_url: c.bg }]
+        };
+      });
+    }
+
+    // Persist the currently-shown character for messaging / profile pages.
+    function setCurrentChar(id) {
+      var c = GUEST_CHARACTERS[id];
+      if (!c) return;
+      window.yoursCurrentCharacter = function () {
+        return {
+          id: c.id,
+          name: c.name,
+          age: c.age,
+          about: c.about,
+          circular_profile_image_url: c.avatar,
+          character_feeds: [{ media_type: 'image', media_url: c.bg }]
+        };
+      };
+      try { sessionStorage.setItem('yours_current_character', JSON.stringify(window.yoursCurrentCharacter())); } catch (e) {}
+    }
+
+    function showPopup() {
+      if (!popup) return;
+      popup.classList.remove('hidden');
+      popup.classList.add('flex');
+    }
+
+    function hidePopup() {
+      if (!popup) return;
+      popup.classList.add('hidden');
+      popup.classList.remove('flex');
+    }
+
+    function swapCharacter(id, done) {
+      var c = GUEST_CHARACTERS[id];
+      if (!c) return;
+      var bg = document.getElementById('feed-bg');
+      var info = document.getElementById('feed-info');
+      var name = document.getElementById('feed-name');
+      var about = document.getElementById('feed-about');
+      var avatar = document.getElementById('feed-avatar');
+      if (window.feedSkeleton) window.feedSkeleton.show();
+      [bg, info].forEach(function (el) { if (el) el.classList.add('feed-swap-out'); });
+      setTimeout(function () {
+        var prevBg = bg ? bg.getAttribute('src') || '' : '';
+        if (bg) { bg.src = c.bg; bg.alt = c.name + ' photo'; }
+        if (name) name.textContent = c.name;
+        if (about) about.textContent = c.about;
+        if (avatar) { avatar.src = c.avatar; avatar.alt = c.name + ' avatar'; }
+        // Track the currently-shown character in a shape the messaging /
+        // profile pages understand, and persist it across navigation.
+        setCurrentChar(id);
+        [bg, info].forEach(function (el) {
+          if (el) el.classList.remove('feed-swap-out');
+        });
+        var revealed = false;
+        function reveal() {
+          if (revealed) return;
+          revealed = true;
+          if (window.feedSkeleton) window.feedSkeleton.hide();
+          if (done) done();
+        }
+        if (bg && c.bg && c.bg !== prevBg) {
+          bg.addEventListener('load', reveal, { once: true });
+          bg.addEventListener('error', reveal, { once: true });
+          setTimeout(reveal, 3000);
+        } else {
+          reveal();
+        }
+      }, 250);
+    }
+
+    function handleSwipe(dir) {
+      if (!document.body.classList.contains('is-guest') || swapping) return;
+      var step = dir === 'left' ? -1 : 1;
+      var target = position + step;
+      var id;
+      if (target >= 0 && target < DECK.length) {
+        // Still inside the preview deck -> switch between the loaded defaults
+        // freely, including characters that were already viewed.
+        id = DECK[target];
+      } else {
+        // Past the end of the preview deck -> the guest wants more characters.
+        // Reveal an unrevealed character first if one exists; otherwise the
+        // guest has seen everything the preview offers -> sign up.
+        var unseen = DECK.filter(function (i) { return !seen[i]; });
+        if (unseen.length > 0) {
+          id = unseen[0];
+        } else {
+          showPopup();
+          return;
+        }
+      }
+      seen[id] = true;
+      position = DECK.indexOf(id);
+      swapping = true;
+      swapCharacter(id, function () { swapping = false; });
+    }
+
+    // Horizontal swipe detection on the feed layer (guest mode only).
+    var layer = document.querySelector('.content-layer');
+    var startX = null;
+    var startY = null;
+    if (layer) {
+      layer.addEventListener('touchstart', function (e) {
+        if (!document.body.classList.contains('is-guest')) return;
+        var t = e.touches[0];
+        startX = t.clientX;
+        startY = t.clientY;
+      }, { passive: true });
+      layer.addEventListener('touchend', function (e) {
+        if (startX === null) return;
+        var t = e.changedTouches[0];
+        var dx = t.clientX - startX;
+        var dy = t.clientY - startY;
+        startX = null;
+        startY = null;
+        if (Math.abs(dx) < 50) return; // tap, not a swipe
+        if (Math.abs(dx) < Math.abs(dy)) return; // vertical gesture
+        handleSwipe(dx < 0 ? 'left' : 'right');
+      }, { passive: true });
+    }
+
+    // Dismiss the sign-up popup via backdrop or 'Maybe later'.
+    document.addEventListener('click', function (e) {
+      if (e.target.closest && e.target.closest('[data-popup-dismiss]')) hidePopup();
+    });
+
+    // Render the initial guest character through JS (the HTML carries no
+    // placeholder content anymore) so the skeleton covers the image download.
+    // Only when there is no signed-in session — otherwise the live feed's
+    // skeleton handles the load.
+    function loadGuestDeck() {
+      var showFirst = function () {
+        if (!DECK.length) {
+          buildDeck(fallbackList());
+        }
+        setCurrentChar(DECK[position]);
+        swapCharacter(DECK[position], function () {});
+      };
+      var useFallback = function () { buildDeck(fallbackList()); showFirst(); };
+      if (window.YoursAPI && YoursAPI.getPublicCharacters) {
+        YoursAPI.getPublicCharacters()
+          .then(function (res) {
+            buildDeck((res && res.characters) || []);
+            if (!DECK.length) { useFallback(); } else { showFirst(); }
+          })
+          .catch(useFallback);
+      } else {
+        useFallback();
+      }
+    }
+
+    var guestHasSession = false;
+    try { guestHasSession = !!(window.YoursAPI && YoursAPI.getCurrentUser && YoursAPI.getCurrentUser()); } catch (e) {}
+    if (!guestHasSession && document.body.classList.contains('is-guest')) {
+      loadGuestDeck();
+    }
+  })();
+</script>
+<script>
+  (function () {
+    // ---- Floating love heart: spawns at the love button and floats up
+    // to the vertical center of the page. Works for both auth and guest. ----
+    function spawnLoveHeart(btn) {
+      // Respect reduced-motion preferences (same convention as animations.js).
+      if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      var rect = btn.getBoundingClientRect();
+      var startX = rect.left + rect.width / 2;
+      var startY = rect.top + rect.height / 2;
+      var targetY = window.innerHeight / 2;
+      var heart = document.createElement('i');
+      heart.className = 'fa-solid fa-heart love-float-heart';
+      heart.setAttribute('aria-hidden', 'true');
+      heart.style.left = startX + 'px';
+      heart.style.top = startY + 'px';
+      heart.style.setProperty('--dy', (startY - targetY) + 'px');
+      document.body.appendChild(heart);
+      // Quick pop feedback on the button itself.
+      btn.classList.add('love-btn-pop');
+      setTimeout(function () { btn.classList.remove('love-btn-pop'); }, 300);
+      // Trigger the float animation on the next frame.
+      requestAnimationFrame(function () { heart.classList.add('love-float-active'); });
+      setTimeout(function () {
+        if (heart.parentNode) heart.parentNode.removeChild(heart);
+      }, 1200);
+    }
+
+    var loveBtn = document.getElementById('feed-love-btn');
+    if (loveBtn) {
+      loveBtn.addEventListener('click', function () {
+        spawnLoveHeart(loveBtn);
+        // Signed-in users: record the like in Supabase (saved_characters).
+        if (!document.body.classList.contains('is-auth')) return;
+        try {
+          var me = (window.YoursAPI && YoursAPI.getCurrentUser) ? YoursAPI.getCurrentUser() : null;
+          var cur = window.yoursCurrentCharacter ? window.yoursCurrentCharacter() : null;
+          if (me && me.id && cur && cur.id && String(cur.id).indexOf('guest-') !== 0) {
+            loveBtn.classList.add('love-btn-liked');
+            YoursAPI.saveCharacter(me.id, cur.id)
+              .then(function () {
+                try {
+                  var liked = JSON.parse(sessionStorage.getItem('yours_liked_ids') || '[]');
+                  if (liked.indexOf(cur.id) === -1) liked.push(cur.id);
+                  sessionStorage.setItem('yours_liked_ids', JSON.stringify(liked));
+                } catch (e) {}
+              })
+              .catch(function () { loveBtn.classList.remove('love-btn-liked'); });
+          }
+        } catch (e) {}
+      });
+    }
+
+    // ---- Character avatar: auth users go to the character profile page;
+    // guests are prompted to sign up (same popup as the swipe gating). ----
+    var avatar = document.getElementById('feed-avatar');
+    if (avatar) {
+      avatar.addEventListener('click', function () {
+        if (document.body.classList.contains('is-auth')) {
+          persistCurrentCharacter();
+          window.location.href = 'character-profile.html';
+        } else {
+          var popup = document.getElementById('guest-signup-popup');
+          if (popup) {
+            popup.classList.remove('hidden');
+            popup.classList.add('flex');
+          }
+        }
+      });
+    }
+    // ---- Start chat: auth users open the character's messages page;
+    // guests are prompted to sign up. ----
+    var chatBtn = document.getElementById('feed-chat-btn');
+    if (chatBtn) {
+      chatBtn.addEventListener('click', function () {
+        if (document.body.classList.contains('is-auth')) {
+          persistCurrentCharacter();
+          window.location.href = 'messaging.html';
+        } else {
+          var popup = document.getElementById('guest-signup-popup');
+          if (popup) {
+            popup.classList.remove('hidden');
+            popup.classList.add('flex');
+          }
+        }
+      });
+    }
+
+    // Save the currently-shown character to sessionStorage so the messaging
+    // and character-profile pages open with the exact same avatar + backdrop.
+    function persistCurrentCharacter() {
+      var c = (window.yoursCurrentCharacter && window.yoursCurrentCharacter()) || null;
+      if (c) { try { sessionStorage.setItem('yours_current_character', JSON.stringify(c)); } catch (e) {} }
+    }
+    // ---- Filters bottom sheet ----
+    var filterSheet = document.getElementById('filter-sheet');
+    var filterPanel = document.getElementById('filter-sheet-panel');
+    var filterBtn = document.getElementById('feed-filters-btn');
+    var filterBackdrop = document.getElementById('filter-sheet-backdrop');
+    var filterClose = document.getElementById('filter-sheet-close');
+    var filterApply = document.getElementById('filter-apply');
+    var filterChips = document.querySelectorAll('.filter-chip');
+
+    function openFilterSheet() {
+      filterSheet.style.display = 'flex';
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+          filterPanel.style.transform = 'translateY(0)';
+        });
+      });
+    }
+    function closeFilterSheet() {
+      filterPanel.style.transform = 'translateY(100%)';
+      setTimeout(function () { filterSheet.style.display = 'none'; }, 300);
+    }
+    if (filterBtn) filterBtn.addEventListener('click', openFilterSheet);
+    if (filterBackdrop) filterBackdrop.addEventListener('click', closeFilterSheet);
+    if (filterClose) filterClose.addEventListener('click', closeFilterSheet);
+
+    var filterChanged = false;
+    for (var c = 0; c < filterChips.length; c++) {
+      (function (chip) {
+        chip.addEventListener('click', function () {
+          var group = chip.getAttribute('data-filter-group');
+          for (var c2 = 0; c2 < filterChips.length; c2++) {
+            if (filterChips[c2].getAttribute('data-filter-group') === group) {
+              filterChips[c2].classList.remove('active');
+            }
+          }
+          chip.classList.add('active');
+          filterChanged = true;
+          filterApply.classList.add('enabled');
+          filterApply.removeAttribute('disabled');
+        });
+      })(filterChips[c]);
+    }
+
+    // Restore previously applied filters so a reload keeps the user's choice
+    // instead of falling back to the defaults (Everyone / Young / Realistic).
+    function restoreSavedFilters() {
+      var saved = null;
+      try { saved = JSON.parse(localStorage.getItem('yours_feed_filters') || 'null'); } catch (e) { saved = null; }
+      if (!saved) return;
+      ['age', 'style'].forEach(function (group) {
+        var want = saved[group];
+        if (!want) return;
+        var matched = false;
+        for (var c2 = 0; c2 < filterChips.length; c2++) {
+          var chip = filterChips[c2];
+          if (chip.getAttribute('data-filter-group') !== group) continue;
+          var isActive = chip.getAttribute('data-filter-value') === want;
+          if (isActive) matched = true;
+          chip.classList.toggle('active', isActive);
+        }
+        // Unknown stored value → ignore it and keep the current default.
+        if (!matched) saved[group] = null;
+      });
+    }
+    restoreSavedFilters();
+
+    function saveCurrentFilters() {
+      var vals = {};
+      for (var c2 = 0; c2 < filterChips.length; c2++) {
+        if (!filterChips[c2].classList.contains('active')) continue;
+        var g = filterChips[c2].getAttribute('data-filter-group');
+        var v = filterChips[c2].getAttribute('data-filter-value');
+        if (g && v) vals[g] = v;
+      }
+      try { localStorage.setItem('yours_feed_filters', JSON.stringify(vals)); } catch (e) {}
+    }
+
+    if (filterApply) {
+      filterApply.addEventListener('click', function () {
+        if (filterApply.disabled) return;
+        closeFilterSheet();
+        saveCurrentFilters();
+        if (window.yoursApplyFilters) window.yoursApplyFilters();
+        filterChanged = false;
+        filterApply.classList.remove('enabled');
+        filterApply.setAttribute('disabled', 'disabled');
+      });
+    }
+  })();
+</script>
+<script>
+  (function () {
+    // ---- Live feed for signed-in users ----
+    // Loads active characters from Supabase, renders the first match into the
+    // feed deck, and lets the Filters sheet actually filter that deck.
+    var SUPABASE_URL = 'https://dgbxcakkqrgrapwsvrol.supabase.co';
+    var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRnYnhjYWtrcXJncmFwd3N2cm9sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYxOTM0NDksImV4cCI6MjEwMTc2OTQ0OX0.v2gOgC28bfXXVjRVki1lL0ulgCHVloUAv1eF5HVSzuk';
+    var supabase = null;
+    try { if (window.supabase) supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY); } catch (e) { supabase = null; }
+    if (!supabase) return;
+
+    var allChars = [];
+    var deck = [];
+    var index = 0;
+    var touchX = null;
+
+    var bgEl = document.getElementById('feed-bg');
+    var nameEl = document.getElementById('feed-name');
+    var aboutEl = document.getElementById('feed-about');
+    var avatarEl = document.getElementById('feed-avatar');
+    var skeletonBgEl = document.getElementById('feed-skeleton-bg');
+    var skeletonAvatarEl = document.getElementById('feed-skeleton-avatar');
+
+    // Shared feed skeleton: covers only the feed img, profile img, name and
+    // about (never the page's header/buttons/nav). Guest swipes call it too.
+    window.feedSkeleton = {
+      show: function () {
+        if (skeletonBgEl) skeletonBgEl.style.display = 'block';
+        if (bgEl) bgEl.style.opacity = '0';
+        if (skeletonAvatarEl) skeletonAvatarEl.style.display = 'block';
+        if (avatarEl) avatarEl.style.opacity = '0';
+        if (nameEl) nameEl.classList.add('feed-text-skeleton');
+        if (aboutEl) aboutEl.classList.add('feed-text-skeleton');
+      },
+      hide: function () {
+        if (skeletonBgEl) skeletonBgEl.style.display = 'none';
+        if (bgEl) bgEl.style.opacity = '';
+        if (skeletonAvatarEl) skeletonAvatarEl.style.display = 'none';
+        if (avatarEl) avatarEl.style.opacity = '';
+        if (nameEl) nameEl.classList.remove('feed-text-skeleton');
+        if (aboutEl) aboutEl.classList.remove('feed-text-skeleton');
+      }
+    };
+
+    // Feed character cache: the fetched deck (with feed media) is stored so a
+    // swipe between characters — or a revisit to this page — never re-queries
+    // the server within the session. Session cache is instant, localStorage
+    // copies with a 30 min TTL for navigations.
+    var FEED_CACHE_KEY = 'yours_feed_characters_v1';
+    var FEED_CACHE_TTL = 30 * 60 * 1000;
+    function readFeedCache() {
+      try {
+        var s = sessionStorage.getItem(FEED_CACHE_KEY);
+        if (s) { var arr = JSON.parse(s); if (Array.isArray(arr)) return arr; }
+        var l = localStorage.getItem(FEED_CACHE_KEY);
+        if (l) { var p = JSON.parse(l); if (Array.isArray(p.chars) && Date.now() - (p.ts || 0) < FEED_CACHE_TTL) return p.chars; }
+      } catch (e) {}
+      return null;
+    }
+    function writeFeedCache(chars) {
+      try { sessionStorage.setItem(FEED_CACHE_KEY, JSON.stringify(chars)); } catch (e) {}
+      try { localStorage.setItem(FEED_CACHE_KEY, JSON.stringify({ ts: Date.now(), chars: chars })); } catch (e) {}
+    }
+
+    function isAuth() { return document.body.classList.contains('is-auth'); }
+
+    function currentFilters() {
+      var f = { age: null, style: null };
+      var chips = document.querySelectorAll('.filter-chip.active');
+      for (var i = 0; i < chips.length; i++) {
+        var group = chips[i].getAttribute('data-filter-group');
+        var value = chips[i].getAttribute('data-filter-value');
+        if (group && value) f[group] = value;
+      }
+      return f;
+    }
+
+    function matches(c, f) {
+      if (f.pref && f.pref !== 'everyone' && c.gender && c.gender !== f.pref) return false;
+      if (f.style && c.art_style && c.art_style !== f.style) return false;
+      if (f.age === 'young' && c.age >= 35) return false;
+      if (f.age === 'mature' && c.age < 35) return false;
+      return true;
+    }
+
+    function render() {
+      if (!deck.length) {
+        if (nameEl) nameEl.textContent = 'No matches yet';
+        if (aboutEl) aboutEl.textContent = 'Try adjusting your filters — new characters are added every day.';
+        if (avatarEl) avatarEl.src = '';
+        if (bgEl) bgEl.src = '';
+        return;
+      }
+      var c = deck[index];
+      var feedMedia = c.character_feeds && c.character_feeds.length ? c.character_feeds[0] : null;
+      if (bgEl) {
+        var bgUrl = (feedMedia && feedMedia.media_type === 'image') ? feedMedia.media_url : (c.circular_profile_image_url || '');
+        if (!bgUrl && feedMedia) bgUrl = feedMedia.media_url;
+        bgEl.src = bgUrl;
+      }
+      if (nameEl) nameEl.textContent = c.name + ', ' + c.age;
+      if (aboutEl) aboutEl.textContent = c.about || '';
+      if (avatarEl) avatarEl.src = c.circular_profile_image_url || '';
+      avatarEl.alt = c.name + ' avatar';
+      avatarEl.setAttribute('data-char-id', c.id);
+      bgEl.setAttribute('data-char-id', c.id);
+      // Reflect whether this character is already liked by the user.
+      var likedBtn = document.getElementById('feed-love-btn');
+      if (likedBtn) {
+        var likedIds = [];
+        try { likedIds = JSON.parse(sessionStorage.getItem('yours_liked_ids') || '[]'); } catch (e) {}
+        likedBtn.classList.toggle('love-btn-liked', likedIds.indexOf(c.id) !== -1);
+      }
+      // Persist the currently-shown character so messaging.html and
+      // character-profile.html load the same avatar + backdrop.
+      window.yoursCurrentCharacter = function () { return c; };
+      try { sessionStorage.setItem('yours_current_character', JSON.stringify(c)); } catch (e) {}
+    }
+
+    function applyFilters() {
+      var f = currentFilters();
+      deck = allChars.filter(function (c) { return matches(c, f); });
+      index = 0;
+      render();
+    }
+    window.yoursApplyFilters = applyFilters;
+
+    function go(step) {
+      if (!deck.length) return;
+      index = (index + step + deck.length) % deck.length;
+      var c = deck[index];
+
+      window.feedSkeleton.show();
+
+      var feedMedia = c.character_feeds && c.character_feeds.length ? c.character_feeds[0] : null;
+      var bgUrl = (feedMedia && feedMedia.media_type === 'image') ? feedMedia.media_url : (c.circular_profile_image_url || '');
+      if (!bgUrl && feedMedia) bgUrl = feedMedia.media_url;
+      var avatarUrl = c.circular_profile_image_url || '';
+
+      var prevBg = bgEl.getAttribute('data-feed-src') || '';
+      var prevAv = avatarEl.getAttribute('data-feed-avatar') || '';
+      bgEl.setAttribute('data-feed-src', bgUrl || '');
+      avatarEl.setAttribute('data-feed-avatar', avatarUrl || '');
+
+      render();
+
+      // Reveal once the new feed image (and avatar) finish loading, so the
+      // skeleton stays up while assets download.
+      var pending = 0;
+      function onLoaded() {
+        pending--;
+        if (pending <= 0) requestAnimationFrame(function () { window.feedSkeleton.hide(); });
+      }
+      if (bgUrl && bgUrl !== prevBg) {
+        pending++;
+        bgEl.addEventListener('load', onLoaded, { once: true });
+        bgEl.addEventListener('error', onLoaded, { once: true });
+      }
+      if (avatarUrl && avatarUrl !== prevAv) {
+        pending++;
+        avatarEl.addEventListener('load', onLoaded, { once: true });
+        avatarEl.addEventListener('error', onLoaded, { once: true });
+      }
+      if (pending === 0) {
+        requestAnimationFrame(function () { window.feedSkeleton.hide(); });
+      } else {
+        // Safety net: never leave the skeleton stuck if a load event is missed.
+        setTimeout(function () { requestAnimationFrame(function () { window.feedSkeleton.hide(); }); }, 3000);
+      }
+    }
+
+    function revealAfterRender() {
+      var pending = 0;
+      function done() {
+        pending--;
+        if (pending <= 0) requestAnimationFrame(function () { if (window.feedSkeleton) window.feedSkeleton.hide(); });
+      }
+      var bgUrl = bgEl ? bgEl.getAttribute('src') || '' : '';
+      var avUrl = avatarEl ? avatarEl.getAttribute('src') || '' : '';
+      if (bgUrl) { pending++; bgEl.addEventListener('load', done, { once: true }); bgEl.addEventListener('error', done, { once: true }); }
+      if (avUrl) { pending++; avatarEl.addEventListener('load', done, { once: true }); avatarEl.addEventListener('error', done, { once: true }); }
+      if (pending === 0) {
+        requestAnimationFrame(function () { if (window.feedSkeleton) window.feedSkeleton.hide(); });
+      } else {
+        setTimeout(function () { requestAnimationFrame(function () { if (window.feedSkeleton) window.feedSkeleton.hide(); }); }, 3000);
+      }
+    }
+
+    async function load() {
+      var cached = readFeedCache();
+      if (cached && cached.length) {
+        allChars = cached;
+        applyFilters();
+        revealAfterRender();
+        return;
+      }
+      if (window.feedSkeleton) window.feedSkeleton.show();
+      var { data: chars, error } = await supabase
+        .from('characters')
+        .select('id,name,age,about,gender,personality,message_style,art_style,voice_id,circular_profile_image_url,character_feeds(media_url,media_type)')
+        .eq('is_active', true);
+      if (error) {
+        console.warn('feed load failed', error.message);
+        if (window.feedSkeleton) window.feedSkeleton.hide();
+        return;
+      }
+      allChars = chars || [];
+      writeFeedCache(allChars);
+      applyFilters();
+      revealAfterRender();
+    }
+
+    // Swipe between deck cards (auth mode only; guest deck has its own handler).
+    var layer = document.querySelector('.content-layer');
+    if (layer) {
+      layer.addEventListener('touchstart', function (e) {
+        if (!isAuth()) return;
+        touchX = e.touches[0].clientX;
+      }, { passive: true });
+      layer.addEventListener('touchend', function (e) {
+        if (touchX === null || !isAuth()) return;
+        var dx = e.changedTouches[0].clientX - touchX;
+        touchX = null;
+        if (Math.abs(dx) < 50) return;
+        go(dx < 0 ? 1 : -1);
+      }, { passive: true });
+    }
+    document.addEventListener('keydown', function (e) {
+      if (!isAuth()) return;
+      if (e.key === 'ArrowLeft') go(-1);
+      if (e.key === 'ArrowRight') go(1);
+    });
+
+    // Start when signed in (covers both live sessions and the ?demo=auth override).
+    function maybeStart() {
+      if (isAuth()) load();
+    }
+    maybeStart();
+    if (supabase.auth) {
+      supabase.auth.onAuthStateChange(function (event) {
+        if (event === 'SIGNED_IN' || event === 'SIGNED_OUT') maybeStart();
+      });
+    }
+    // Demo override toggles body classes without auth events — watch them.
+    var observer = new MutationObserver(function () {
+      if (isAuth()) load();
+    });
+    observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+  })();
+</script>
+<!-- Daily reward disk popup (bottom sheet, blurs the feed behind it) -->
+<div class="fixed inset-0 z-[95] items-end justify-center" id="reward-sheet" style="display:none;" role="dialog" aria-modal="true">
+  <div class="absolute inset-0 bg-black/60 backdrop-blur-md" id="reward-backdrop"></div>
+  <div class="relative w-full max-w-[440px] bg-[#1a1a1a] rounded-t-[32px] shadow-2xl px-6 pt-3 pb-8"
+       id="reward-panel" style="transition: transform .35s cubic-bezier(0.22,1,0.36,1); transform: translateY(100%);">
+    <div class="w-12 h-1 bg-gray-600 rounded-full mx-auto mb-4"></div>
+    <header class="text-center mt-4 mb-1">
+      <h2 class="text-3xl font-extrabold text-white leading-tight">Your Daily<br>Reward</h2>
+    </header>
+    <div class="relative h-[300px] overflow-hidden flex items-center justify-center" style="margin-top:2px;margin-bottom:6px;">
+      <img alt="Love tokens" class="h-[528px] w-[528px] object-contain drop-shadow-xl max-w-none" id="disk-center-img"
+           src="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/37.74908936625081.png">
+    </div>
+    <section class="flex space-x-3 overflow-x-auto pb-4" id="reward-days" style="scrollbar-width:none;-ms-overflow-style:none;"></section>
+    <footer class="flex space-x-3 mt-2">
+      <button class="flex-1 bg-[#3a3a3a] text-white font-bold text-base py-4 rounded-2xl active:scale-95 transition-transform cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              id="reward-claim-free-btn" type="button">Claim</button>
+      <button class="flex-1 bg-white text-black font-bold text-base py-4 rounded-2xl active:scale-95 transition-transform cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              id="reward-claim-pro-btn" type="button">2x PRO</button>
+    </footer>
+  </div>
+</div>
+<script>
+  (function () {
+    var API = window.YoursAPI;
+    var sheet = document.getElementById('reward-sheet');
+    var panel = document.getElementById('reward-panel');
+    var daysEl = document.getElementById('reward-days');
+    var freeBtn = document.getElementById('reward-claim-free-btn');
+    var proBtn = document.getElementById('reward-claim-pro-btn');
+    var centerImg = document.getElementById('disk-center-img');
+    if (!sheet || !API || !API.getDailyReward) return;
+
+    var TOKEN_IMG = 'https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/slazzer-preview-z0bt9.png';
+    var DISK_IMG = 'https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/37.74908936625081.png';
+    var state = null;
+
+    function open() {
+      sheet.style.display = 'flex';
+      requestAnimationFrame(function () { panel.style.transform = 'translateY(0)'; });
+    }
+    function close() {
+      panel.style.transform = 'translateY(100%)';
+      setTimeout(function () { sheet.style.display = 'none'; }, 350);
+    }
+
+    function user() {
+      try { return API.getCurrentUser(); } catch (e) { return null; }
+    }
+    function isPro() {
+      try { return localStorage.getItem('yours_plan') === 'pro'; } catch (e) { return false; }
+    }
+
+    function renderDays() {
+      var rewards = state.rewards || [25, 25, 25, 50, 50, 75, 100];
+      daysEl.innerHTML = '';
+      for (var i = 1; i <= 7; i++) {
+        var amount = rewards[i - 1];
+        var claimed = i <= state.claimedCount;
+        var current = !state.claimedToday && i === state.cycleDay;
+        var card = document.createElement('div');
+        card.className = 'flex-none w-[88px] rounded-2xl p-3 flex flex-col items-center justify-center transition-all ' +
+          (claimed ? 'bg-[#2a2a2a] border border-gray-700 opacity-50'
+           : current ? 'bg-white border border-white shadow-lg scale-105'
+           : 'bg-[#2a2a2a] border border-gray-700 opacity-70');
+        card.innerHTML =
+          '<span class="text-xs font-bold mb-1 ' + (current ? 'text-black' : 'text-white') + '">Day ' + i + '</span>' +
+          '<div class="flex items-center justify-center gap-1 mb-1">' +
+            (claimed
+              ? '<i class="fa-solid fa-check text-green-400"></i>'
+              : '<span class="text-2xl font-extrabold ' + (current ? 'text-black' : 'text-white') + '">' + amount + '</span>' +
+                '<img alt="" class="w-5 h-5 object-contain" src="' + TOKEN_IMG + '">') +
+          '</div>' +
+          '<span class="text-[10px] font-bold text-center leading-tight ' + (current ? 'text-black' : 'text-[#888888]') + '">' +
+            (claimed ? 'Claimed' : 'Tokens') +
+          '</span>';
+        daysEl.appendChild(card);
+      }
+      var canClaim = state.canClaim;
+      freeBtn.disabled = !canClaim;
+      proBtn.disabled = !canClaim;
+      if (canClaim) {
+        var amount = rewards[state.cycleDay - 1];
+        freeBtn.textContent = 'Claim ' + amount + ' Tokens';
+        proBtn.textContent = 'Claim ' + (amount * 2) + ' PRO';
+      } else {
+        freeBtn.textContent = 'Claimed for Today';
+        proBtn.textContent = 'Claimed for Today';
+      }
+    }
+
+    function updateBalance(res) {
+      var bal = document.getElementById('feed-wallet-balance');
+      if (res && res.wallet && res.wallet.credits != null && bal) {
+        bal.textContent = Math.floor(Number(res.wallet.credits)).toLocaleString();
+      }
+    }
+
+    function loadBalance() {
+      var me = user();
+      if (!me || !me.id || !API.getWallet) return;
+      API.getWallet(me.id).then(function (res) {
+        updateBalance(res);
+      }).catch(function () {});
+    }
+
+    function claimAs(pro) {
+      var me = user();
+      if (!me || !me.id) return;
+      var btn = pro ? proBtn : freeBtn;
+      btn.disabled = true;
+      API.claimDailyReward(me.id, pro).then(function (res) {
+        updateBalance(res);
+        if (res && res.claimed) {
+          var info = document.createElement('div');
+          info.className = 'w-full text-center text-white font-extrabold py-4 rounded-2xl bg-green-600/80';
+          info.textContent = 'Claimed! +' + res.claimed.amount + ' Tokens';
+          var ft = btn.parentNode;
+          ft.innerHTML = '';
+          ft.appendChild(info);
+          setTimeout(close, 900);
+        } else {
+          btn.disabled = false;
+        }
+      }).catch(function () { btn.disabled = false; });
+    }
+
+    function openPremium() {
+      try {
+        sessionStorage.setItem('yours_prev_page', 'index.html');
+      } catch (e) {}
+      window.location.href = 'premium-acess.html';
+    }
+
+    freeBtn.addEventListener('click', function () {
+      if (state && state.canClaim) claimAs(false);
+    });
+
+    proBtn.addEventListener('click', function () {
+      if (!state || !state.canClaim) return;
+      if (isPro()) {
+        claimAs(true);
+      } else {
+        // Free user: send them to the premium page. On return the popup
+        // re-opens because the day's reward is still unclaimed (maybeShow
+        // re-checks on every page load).
+        openPremium();
+      }
+    });
+
+    function maybeShow() {
+      var me = user();
+      if (!me || !me.id) return;
+      loadBalance();
+      API.getDailyReward(me.id).then(function (res) {
+        if (!res || !res.reward) return;
+        state = res.reward;
+        if (!state.canClaim) return;
+        renderDays();
+        setTimeout(open, 1500);
+      }).catch(function () {});
+    }
+
+    maybeShow();
+    if (window.supabase && supabase.auth) {
+      supabase.auth.onAuthStateChange(function (e) {
+        if (e === 'SIGNED_IN') maybeShow();
+      });
+    }
   })();
 </script>
 <script src="js/animations.js"></script>

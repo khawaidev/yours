@@ -1,0 +1,145 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport">
+<title>Relationship Settings</title>
+<link href="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/file_000000003704823093c6cccb8ba71cd1.png" rel="icon" type="image/png">
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link rel="stylesheet" href="css/app.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+<style>
+  body { font-family: 'Inter', sans-serif; background-color: #131313; color: white; }
+  .tick { width: 24px; height: 24px; border-radius: 9999px; border: 2px solid #4b4b4b; display:flex; align-items:center; justify-content:center; transition:all .15s ease; flex-shrink:0; }
+  .tick svg { display:none; width:12px; height:12px; color:#fff; }
+  .tick-row.selected .tick { background:#ff7e5f; border-color:#ff7e5f; }
+  .tick-row.selected .tick svg { display:block; }
+  .tick-row.selected .row-label { color:#fff; }
+  input[type=range] { -webkit-appearance:none; appearance:none; width:100%; height:8px; border-radius:9999px; background:#3a3a3a; outline:none; cursor:pointer; }
+  input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; appearance:none; width:8px; height:8px; border-radius:9999px; background:#ff7e5f; cursor:pointer; }
+  input[type=range]::-moz-range-thumb { width:8px; height:8px; border-radius:9999px; background:#ff7e5f; cursor:pointer; border:none; }
+  .btn-chip { padding:10px 18px; border-radius:9999px; background:#201f1f; border:1px solid #3a3a3a; color:#d1d1d1; font-size:14px; font-weight:500; transition:all .15s ease; cursor:pointer; }
+  .btn-chip.selected { background:#ff7e5f; border-color:#ff7e5f; color:#fff; }
+  .apply-enabled { background:#ff7e5f !important; opacity:1 !important; pointer-events:auto !important; }
+</style>
+</head>
+<body class="antialiased app-page">
+<main class="min-h-screen flex flex-col pb-28">
+<div class="px-6 pt-6 flex items-center justify-between relative">
+<button aria-label="Go back" class="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center text-white hover:bg-white/20 transition-colors cursor-pointer" onclick="window.location.href = 'character-profile.html#about';">
+<i class="fa-solid fa-chevron-left text-lg"></i>
+</button>
+<h1 class="text-xl font-bold absolute left-1/2 -translate-x-1/2">Relationship</h1>
+<div class="w-10"></div>
+</div>
+<div class="px-6 mt-8 flex flex-col gap-8">
+<section>
+<h2 class="text-base font-bold mb-4">Start as</h2>
+<div class="flex flex-col gap-3">
+<button class="tick-row w-full bg-surface-container hover:bg-surface-container-high transition-colors p-4 flex items-center justify-between border border-white/10 rounded-2xl" type="button" onclick="selectTick(this)">
+<span class="row-label font-medium text-gray-300">Strangers</span>
+<span class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+</button>
+<button class="tick-row w-full bg-surface-container hover:bg-surface-container-high transition-colors p-4 flex items-center justify-between border border-white/10 rounded-2xl" type="button" onclick="selectTick(this)">
+<span class="row-label font-medium text-gray-300">Friends</span>
+<span class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+</button>
+<button class="tick-row w-full bg-surface-container hover:bg-surface-container-high transition-colors p-4 flex items-center justify-between border border-white/10 rounded-2xl" type="button" onclick="selectTick(this)">
+<span class="row-label font-medium text-gray-300">Friends with benefits</span>
+<span class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+</button>
+<button class="tick-row w-full bg-surface-container hover:bg-surface-container-high transition-colors p-4 flex items-center justify-between border border-white/10 rounded-2xl" type="button" onclick="selectTick(this)">
+<span class="row-label font-medium text-gray-300">Dating</span>
+<span class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+</button>
+<button class="tick-row w-full bg-surface-container hover:bg-surface-container-high transition-colors p-4 flex items-center justify-between border border-white/10 rounded-2xl" type="button" onclick="selectTick(this)">
+<span class="row-label font-medium text-gray-300">Affair</span>
+<span class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+</button>
+<button class="tick-row w-full bg-surface-container hover:bg-surface-container-high transition-colors p-4 flex items-center justify-between border border-white/10 rounded-2xl" type="button" onclick="selectTick(this)">
+<span class="row-label font-medium text-gray-300">Married</span>
+<span class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+</button>
+</div>
+</section>
+<section>
+<h2 class="text-base font-bold mb-4">Hard to get</h2>
+<input type="range" min="0" max="100" value="50" id="hard-slider" aria-label="Hard to get">
+<div class="flex justify-between mt-2 text-sm text-gray-400">
+<span>Very Easy</span>
+<span>Very hard</span>
+</div>
+</section>
+<section>
+<h2 class="text-base font-bold mb-4">Roleplay settings</h2>
+<div class="flex flex-wrap gap-3">
+<button class="btn-chip" type="button" onclick="toggleChip(this)">Submissive</button>
+<button class="btn-chip" type="button" onclick="toggleChip(this)">Dominant</button>
+<button class="btn-chip" type="button" onclick="toggleChip(this)">Nurse</button>
+<button class="btn-chip" type="button" onclick="toggleChip(this)">Step mother</button>
+<button class="btn-chip" type="button" onclick="toggleChip(this)">Step father</button>
+<button class="btn-chip" type="button" onclick="toggleChip(this)">Step sister</button>
+<button class="btn-chip" type="button" onclick="toggleChip(this)">Step brother</button>
+<button class="btn-chip" type="button" onclick="toggleChip(this)">Forbidden/taboo</button>
+<button class="btn-chip" type="button" onclick="toggleChip(this)">Secret</button>
+<button class="btn-chip" type="button" onclick="toggleChip(this)">Arranged</button>
+</div>
+</section>
+</div>
+</main>
+<div class="fixed bottom-0 inset-x-0 px-6 pb-8 pt-4 bg-gradient-to-t from-[#131313] via-[#131313] to-transparent">
+<button id="apply-btn" class="w-full py-4 rounded-full bg-gray-800 text-white font-bold text-lg shadow-lg pointer-events-none opacity-60 cursor-not-allowed" disabled type="button" onclick="applySettings()">Apply</button>
+</div>
+<script>
+var applies = {
+  startAs: null,
+  slider: 50,
+  roleplay: {}
+};
+var chips = document.querySelectorAll('.btn-chip');
+var tickRows = document.querySelectorAll('.tick-row');
+for (var i = 0; i < chips.length; i++) applies.roleplay[i] = false;
+var slider = document.getElementById('hard-slider');
+var applyBtn = document.getElementById('apply-btn');
+slider.addEventListener('input', function () {
+  slider.style.background = 'linear-gradient(to right, #ff7e5f ' + slider.value + '%, #3a3a3a ' + slider.value + '%)';
+  refreshApply();
+});
+function selectTick(row) {
+  var sel = null;
+  for (var i = 0; i < tickRows.length; i++) {
+    if (tickRows[i] === row) { tickRows[i].classList.add('selected'); sel = i; }
+    else tickRows[i].classList.remove('selected');
+  }
+  applies.startAs = sel;
+  refreshApply();
+}
+function toggleChip(btn) { btn.classList.toggle('selected'); refreshApply(); }
+function refreshApply() {
+  var changed = applies.startAs !== null || parseInt(slider.value, 10) !== 50;
+  if (!changed) {
+    for (var i = 0; i < chips.length; i++) {
+      if (chips[i].classList.contains('selected') !== applies.roleplay[i]) { changed = true; break; }
+    }
+  }
+  if (changed) { applyBtn.disabled = false; applyBtn.classList.add('apply-enabled'); applyBtn.classList.remove('cursor-not-allowed'); }
+  else { applyBtn.disabled = true; applyBtn.classList.remove('apply-enabled'); applyBtn.classList.add('cursor-not-allowed'); }
+}
+function applySettings() {
+  window.YoursPlanGate.apply(function () {
+    var roleplay = [];
+    for (var i = 0; i < chips.length; i++) {
+      if (chips[i].classList.contains('selected')) roleplay.push(chips[i].textContent.trim());
+    }
+    var charSettings = {};
+    try { charSettings = JSON.parse(sessionStorage.getItem('yours_char_settings') || '{}'); } catch (e) {}
+    charSettings.startAs = applies.startAs;
+    charSettings.hardToGet = parseInt(slider.value, 10);
+    charSettings.roleplay = roleplay;
+    try { sessionStorage.setItem('yours_char_settings', JSON.stringify(charSettings)); } catch (e) {}
+    history.back();
+  });
+}
+</script>
+<script src="js/api-client.js"></script>
+<script src="js/plan-gate.js"></script>
+</body></html>

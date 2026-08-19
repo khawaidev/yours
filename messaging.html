@@ -1,23 +1,64 @@
 <!DOCTYPE html><html lang="en" style=""><head>
 <meta charset="utf-8">
-<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, interactive-widget=resizes-content" name="viewport">
 <title>Chat Interface</title>
+<link href="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/file_000000003704823093c6cccb8ba71cd1.png" rel="icon" type="image/png">
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link rel="stylesheet" href="css/app.css">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 <style data-purpose="custom-styles">
     body {
-      background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBKZ-JbzvLuDg7Ys03ZJDIcsMYJbJaDhR_J5AU54WqH8GT3gAPf36MIy_ELrtECtHjI_bGVWCG1Rkkcg9oOv6_7IOCm7Q_rpvz8FCstIHrRIDkLTyLZpf4B1katO7YSKW7CJCx7V_YFgCjQdNEmloApBhVt_lGvX1Qmvg4ggu2FZ0HS1FnMwWks6Wuzs2KWYgEUiTlDnbbaSS_m7v5AWPDx0s8IuLfjue7RbvqixmDf9Zxd45F2zaHAYo9Yv-GxcypUIzc');
-      background-size: cover;
-      background-position: center;
-      background-attachment: fixed;
+      background: #0e0e0e;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      touch-action: manipulation; /* disables double-tap-to-zoom on mobile */
+      -webkit-text-size-adjust: 100%;
+    }
+
+    /* Prevent the whole page being pushed/paned when the device keyboard opens */
+    html, body {
+      overscroll-behavior: none;
+    }
+
+    /* Fixed full-viewport background layer (mobile-safe: background-attachment:fixed
+       isn't reliable on mobile and lets the image move/scale when the keyboard opens).
+       No placeholder image — it's set from the selected character once loaded. */
+    .chat-bg {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      background-color: #0e0e0e;
+      background-size: cover;
+      background-position: center center;
+      background-repeat: no-repeat;
+      pointer-events: none;
+    }
+
+    /* ---- Pre-render skeleton loading state ---- */
+    .skeleton-block {
+      background: linear-gradient(90deg, #1e1e1e 25%, #2b2b2b 50%, #1e1e1e 75%);
+      background-size: 200% 100%;
+      animation: skeletonShimmer 1.4s ease-in-out infinite;
+    }
+    @keyframes skeletonShimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    /* ---- Gap between UI and the top screen edge (safe-area aware) ---- */
+    .chat-header {
+      padding: calc(0.5rem + env(safe-area-inset-top, 0px)) 1rem 0.5rem;
+      background: rgba(0, 0, 0, 0.35);
+      -webkit-backdrop-filter: blur(7px);
+      backdrop-filter: blur(7px);
+      border-bottom-left-radius: 1.25rem;
+      border-bottom-right-radius: 1.25rem;
     }
     
     .glass-effect {
-      background: rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.5);
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.3);
     }
     
     .gradient-pro {
@@ -36,9 +77,243 @@
       -ms-overflow-style: none;
       scrollbar-width: none;
     }
+
+    /* ---- Gap between UI and the bottom screen edge (safe-area aware) ---- */
+    .chat-footer {
+      padding-bottom: calc(3.5rem + env(safe-area-inset-bottom, 0px));
+    }
+    #chat-area {
+      padding-bottom: calc(11rem + env(safe-area-inset-bottom, 0px)); /* keeps the latest bubble clear of the taller floating footer */
+    }
+
+    /* ---- Chat message bubbles ---- */
+    .msg-row {
+      display: flex;
+      flex-direction: column;
+    }
+    .msg-row-user {
+      align-items: flex-end;
+    }
+    .msg-row-ai {
+      align-items: flex-start;
+    }
+    .msg-bubble {
+      max-width: 78%;
+      border-radius: 1.25rem;
+      padding: 0.7rem 1rem;
+      font-size: 0.9rem;
+      line-height: 1.5;
+      word-break: break-word;
+    }
+    .msg-bubble-user {
+      background: linear-gradient(to right bottom, rgb(195, 36, 76), rgb(240, 42, 83), rgb(255, 62, 134));
+      color: #fff;
+      border-bottom-right-radius: 0.4rem;
+    }
+    .msg-bubble-ai {
+      background: rgba(18, 18, 18, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      color: #fff;
+      border-bottom-left-radius: 0.4rem;
+    }
+    .msg-bubble em {
+      font-style: italic;
+      color: rgba(255, 255, 255, 0.55);
+    }
+
+    /* ---- Typing indicator ---- */
+    .typing-indicator {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.85rem 1.5rem;
+      font-size: 0.9rem;
+      white-space: nowrap;
+      width: fit-content;
+      min-width: 14rem;
+      max-width: 88%;
+    }
+    .typing-shimmer {
+      background: linear-gradient(90deg, rgba(255,255,255,0.45) 25%, #ffffff 50%, rgba(255,255,255,0.45) 75%);
+      background-size: 200% 100%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      color: transparent;
+      animation: shimmerText 1.6s linear infinite;
+    }
+    @keyframes shimmerText {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    /* ---- Voice message bubble ----
+       Rectangular bubble: a darker, smaller player bar (play/pause + audio
+       UI) sits on top; below it, in the same lighter container, the
+       transcript (first 25 chars + ellipsis). */
+    .voice-bubble {
+      max-width: 100%;
+      width: 88%;
+      padding: 0.55rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+      background: rgba(30, 30, 30, 0.92);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 1.25rem;
+      border-bottom-left-radius: 0.4rem;
+    }
+    .voice-player {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      background: rgba(10, 10, 10, 0.9);
+      border-radius: 0.85rem;
+      padding: 0.5rem 0.7rem;
+      width: 100%;
+    }
+    .voice-play-btn {
+      width: 2.1rem;
+      height: 2.1rem;
+      border-radius: 9999px;
+      background: linear-gradient(to right bottom, rgb(195, 36, 76), rgb(240, 42, 83), rgb(255, 62, 134));
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      border: none;
+      cursor: pointer;
+    }
+    .voice-play-btn:active { transform: scale(0.9); }
+    .voice-audio-ui {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+    }
+    .voice-progress {
+      height: 0.3rem;
+      border-radius: 9999px;
+      background: rgba(255, 255, 255, 0.18);
+      overflow: hidden;
+    }
+    .voice-progress-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: 9999px;
+      background: linear-gradient(to right, rgb(240, 42, 83), rgb(255, 62, 134));
+      transition: width 0.2s linear;
+    }
+    .voice-time {
+      font-size: 0.65rem;
+      color: rgba(255, 255, 255, 0.6);
+      font-variant-numeric: tabular-nums;
+    }
+    .voice-transcript {
+      font-size: 0.8rem;
+      line-height: 1.35;
+      color: rgba(255, 255, 255, 0.85);
+      padding: 0 0.3rem 0.15rem;
+    }
+
+    /* ---- Three-dots dropdown ---- */
+    .chat-dropdown {
+      position: absolute;
+      right: 0;
+      top: calc(100% + 0.6rem);
+      min-width: 12.5rem;
+      background: #121212;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 1rem;
+      padding: 0.4rem;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
+      z-index: 60;
+      animation: dropdownIn 0.18s ease-out;
+    }
+    @keyframes dropdownIn {
+      from { opacity: 0; transform: translateY(-6px) scale(0.97); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .chat-dropdown-item {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      width: 100%;
+      padding: 0.65rem 0.8rem;
+      border-radius: 0.75rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: #fff;
+      text-align: left;
+      transition: background 0.15s ease;
+    }
+    .chat-dropdown-item:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+    .chat-dropdown-item i {
+      width: 1.25rem;
+      text-align: center;
+      color: #fff;
+    }
+
+    /* ---- Gift popup category tabs ---- */
+    .gift-tab {
+      color: #9ca3af;
+      font-weight: 600;
+      position: relative;
+      padding-bottom: 0.5rem;
+      font-size: 1.125rem;
+      white-space: nowrap;
+      transition: color 0.15s ease;
+    }
+    .gift-tab.active {
+      color: #fff;
+      font-weight: 700;
+    }
+    .gift-tab .gift-tab-line {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: #ef4444;
+      border-radius: 9999px;
+      opacity: 0;
+      transition: opacity 0.15s ease;
+    }
+    .gift-tab.active .gift-tab-line {
+      opacity: 1;
+    }
+
+    /* ---- Gift popup: transparent cards, selection + send button state ---- */
+    .gift-box {
+      border-radius: 1rem;
+      overflow: hidden;
+    }
+    .gift-item.selected .gift-box {
+      outline: 2px solid #ff4d6d;
+      outline-offset: 2px;
+    }
+    #gift-send-btn:disabled {
+      opacity: 0.4;
+      cursor: default;
+      box-shadow: none;
+    }
+
+    /* ---- Send icon state ---- */
+    .send-btn-active {
+      color: #fff !important;
+    }
+    .send-btn-active i {
+      color: #fff;
+    }
   </style>
 </head>
-<body class="text-white h-screen flex flex-col overflow-hidden bg-black/60" style="background-image: url(&quot;https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/ChatGPT%20Image%20Aug%207%2C%202026%2C%2002_52_19%20AM.png&quot;); background-size: cover; background-position: center center; background-attachment: fixed; font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif;">
+<body class="text-white h-screen flex flex-col overflow-hidden bg-black/60 app-page" style="font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif;">
+<!-- Fixed background layer (mobile-safe; stays pinned when the keyboard opens) -->
+<div class="chat-bg" aria-hidden="true"></div>
 <!-- BEGIN: Custom skeleton loader (mirrors page layout) -->
 <div id="page-skeleton" style="position:fixed;inset:0;z-index:9999;background:#0e0e0e;display:flex;flex-direction:column;align-items:center">
 <div style="width:100%;max-width:28rem;height:100%;padding:1rem 1.25rem;display:flex;flex-direction:column">
@@ -50,7 +325,6 @@
 <div class="skeleton-block" style="height:1.25rem;width:4rem;border-radius:.375rem"></div>
 </div>
 <div style="display:flex;gap:.75rem">
-<div class="skeleton-block" style="width:2.5rem;height:2.5rem;border-radius:9999px"></div>
 <div class="skeleton-block" style="width:2.5rem;height:2.5rem;border-radius:9999px"></div>
 </div>
 </div>
@@ -82,74 +356,1535 @@
 </div>
 <!-- END: Custom skeleton loader -->
 <!-- BEGIN: Header -->
-<header class="flex items-center justify-between px-4 pb-4 z-10 relative pt-4">
+<header class="chat-header flex items-center justify-between z-10 relative">
 <div class="flex items-center gap-3">
-<button class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm">
-<i class="fa-solid fa-chevron-left"></i>
+<button aria-label="Go back" class="w-9 h-9 flex items-center justify-center text-white/80 hover:text-white active:scale-95 transition-all cursor-pointer bg-transparent" id="chat-back-btn" type="button">
+<i class="fa-solid fa-chevron-left text-lg"></i>
 </button>
 <div class="relative">
-<img alt="Elsa Profile" class="w-12 h-12 rounded-full object-cover border-2 border-transparent" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA8W8C6ozSv-X3_dsYCoFEdI23dQEZXr2pLYztz_LZlP41w6_bEDaQeDRptfw1NRtFdXMcpo_PVzS0Zywfj-ORdgRlgHfRjWAgJ81RGiGmf5sc3jx8PxvqJaInfO4nM2l2u-Qfu1dKhFj5PhwZXc0CRDqIWpFe8ohZLzKD00v9hh3N3pKCrVVKSAjVJ7zWmwghrZm8uVW2gkaWfrVOuyMkvm8yQKI1F90SJe87CEDT-7YTvns1VcTBiOQ">
+<button aria-label="Open profile" class="block relative active:scale-95 transition-transform cursor-pointer" id="chat-avatar-btn" type="button">
+<img alt="Profile" class="w-12 h-12 rounded-full object-cover border-2 border-transparent" src="">
 <div class="absolute inset-0 rounded-full border-2 border-white/50 animate-pulse"></div>
+</button>
 </div>
-<h1 class="text-xl font-bold">Elsa</h1>
+<button class="text-left cursor-pointer bg-transparent border-0 p-0" id="chat-name-btn" type="button" aria-label="Open profile"><h1 class="text-xl font-bold"></h1></button>
 </div>
 <div class="flex items-center gap-3">
-<button class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm">
-<i class="fa-solid fa-wand-magic-sparkles"></i>
+<button aria-label="Start voice call" class="w-9 h-9 flex items-center justify-center text-white/80 hover:text-white active:scale-95 transition-all cursor-pointer bg-transparent" id="chat-call-btn" type="button">
+<i class="fa-solid fa-phone text-lg"></i>
 </button>
-<button class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm">
-<i class="fa-solid fa-ellipsis"></i>
+<div class="relative">
+<button aria-label="Options" class="w-9 h-9 flex items-center justify-center text-white/80 hover:text-white active:scale-95 transition-all cursor-pointer bg-transparent" id="chat-menu-btn" type="button">
+<i class="fa-solid fa-ellipsis-vertical text-lg"></i>
 </button>
+<!-- Options dropdown -->
+<div class="hidden chat-dropdown" id="chat-dropdown">
+<button class="chat-dropdown-item" data-action="profile" type="button"><i class="fa-regular fa-user"></i><span id="menu-profile-label">&nbsp;'s profile</span></button>
+<button class="chat-dropdown-item" data-action="photos" type="button"><i class="fa-regular fa-images"></i><span id="menu-photos-label">&nbsp;'s Photos</span></button>
+<button class="chat-dropdown-item" data-action="reset" type="button"><i class="fa-solid fa-rotate-right"></i><span>Reset chat session</span></button>
+</div>
 </div>
 </header>
 <!-- END: Header -->
 <!-- BEGIN: Chat Area -->
-<main class="flex-1 overflow-y-auto p-4 flex flex-col gap-4 relative z-0 no-scrollbar gap-6"></main>
+<main class="flex-1 overflow-y-auto px-4 flex flex-col gap-4 relative z-0 no-scrollbar" id="chat-area"></main>
 <!-- END: Chat Area -->
 <!-- BEGIN: Bottom Controls -->
-<footer class="absolute bottom-0 left-0 right-0 p-4 pb-8 bg-gradient-to-t from-black/80 to-transparent z-20 flex flex-col gap-3">
-<!-- Action Buttons -->
-<div class="flex items-center gap-4 pl-2">
-<button class="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-lg">
-<i class="fa-solid fa-heart text-red-500 text-xl"></i>
-</button>
-<button class="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-lg">
-<i class="fa-solid fa-thumbs-down text-yellow-500 text-xl"></i>
-</button>
-<button class="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-lg">
-<i class="fa-solid fa-rotate text-black text-lg"></i>
-</button>
-</div>
+<footer class="chat-footer absolute bottom-0 left-0 right-0 px-4 pt-4 bg-gradient-to-t from-black/80 to-transparent z-20 flex flex-col gap-3">
 <!-- Quick Actions Scroll -->
 <div class="flex gap-2 overflow-x-auto no-scrollbar pb-1">
-<button class="glass-effect rounded-full py-2 px-4 flex items-center gap-2 text-sm font-medium whitespace-nowrap">
+<button class="glass-effect rounded-full py-2 px-4 flex items-center gap-2 text-sm font-medium whitespace-nowrap" id="quick-pic" type="button">
 <i class="fa-regular fa-image"></i> Quick pic
       </button>
-<button class="glass-effect rounded-full py-2 px-4 flex items-center gap-2 text-sm font-medium whitespace-nowrap">
+<button class="glass-effect rounded-full py-2 px-4 flex items-center gap-2 text-sm font-medium whitespace-nowrap" id="quick-video" type="button">
 <i class="fa-solid fa-video"></i> Custom video
       </button>
-<button class="glass-effect rounded-full py-2 px-4 flex items-center gap-2 text-sm font-medium whitespace-nowrap">
+<button class="glass-effect rounded-full py-2 px-4 flex items-center gap-2 text-sm font-medium whitespace-nowrap" id="quick-voice" type="button">
 <i class="fa-solid fa-microphone"></i> Voice
       </button>
 </div>
 <!-- Message Input -->
 <div class="flex items-center gap-3">
-<div class="glass-effect flex-1 rounded-full flex items-center px-4 py-3 relative">
-<input class="bg-transparent border-none outline-none w-full text-white placeholder-white/70 focus:ring-0 p-0 text-base" placeholder="Message" type="text">
+<div class="glass-effect flex-1 rounded-3xl flex items-center px-4 py-3 relative">
+<input readonly="" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" class="bg-transparent border-none outline-none w-full min-w-0 text-white placeholder-white/70 focus:ring-0 p-0 pr-12 text-base" id="chat-input" placeholder="Message" type="text" data-1p-ignore="true" data-lpignore="true" data-form-type="other" name="chat_message" aria-autocomplete="none">
 <div class="flex items-center gap-3 absolute right-4">
-<button class="text-white/80 hover:text-white"><i class="fa-solid fa-bolt"></i></button>
-<button class="text-white/80 hover:text-white"><i class="fa-regular fa-image"></i></button>
+<input accept="image/*" class="hidden" id="chat-image-input" type="file">
+<button aria-label="Attach" class="text-white/80 hover:text-white" id="chat-send-btn" type="button"><i class="fa-solid fa-plus text-lg" id="chat-send-icon"></i></button>
 </div>
 </div>
-<button class="w-12 h-12 rounded-full glass-effect flex items-center justify-center flex-shrink-0">
-<i class="fa-solid fa-gift text-yellow-400 text-xl"></i>
+<button class="w-12 h-12 rounded-full glass-effect flex items-center justify-center flex-shrink-0" id="chat-gift-btn" type="button" aria-label="Send gift">
+<i class="fa-solid fa-gift text-yellow-400 text-xl" id="chat-gift-icon"></i>
 </button>
 </div>
 </footer>
 <!-- END: Bottom Controls -->
 
+<!-- BEGIN: Image attach preview (shown inside the footer above the input bar) -->
+<div id="image-preview-bar" class="absolute bottom-[8.5rem] left-0 right-0 px-4 z-30 hidden" style="display:none;">
+<div class="glass-effect rounded-2xl px-3 py-2 flex items-center gap-3 max-w-[280px]">
+<img alt="Attached image preview" class="w-14 h-14 rounded-xl object-cover flex-shrink-0" id="image-preview-thumb">
+<span class="text-sm text-white/80 truncate flex-1" id="image-preview-name">Image attached</span>
+<button aria-label="Remove image" class="w-8 h-8 rounded-full bg-black/30 flex items-center justify-center active:scale-95 transition-transform" id="image-preview-remove" type="button"><i class="fa-solid fa-xmark"></i></button>
+</div>
+</div>
 
+<!-- BEGIN: Gifts bottom sheet (pops up from the bottom) -->
+<div class="fixed inset-0 z-50 items-end justify-center" id="gift-sheet" style="display:none;">
+<div class="absolute inset-0 bg-black/60 backdrop-blur-sm" id="gift-sheet-backdrop"></div>
+<div class="relative w-full max-w-[420px] bg-[#161616] rounded-t-[32px] pt-4 pb-8 flex flex-col h-[85%] z-10 transition-transform duration-300 ease-out" id="gift-sheet-panel" style="transform: translateY(100%); box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);">
+<div class="flex items-center justify-between px-6 mb-6">
+<a href="recharge.html" class="bg-gray-800 rounded-full py-2 px-4 flex items-center space-x-2 active:scale-95 transition-transform" aria-label="Recharge">
+<img alt="Cash" class="w-4 h-4 object-contain" src="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/slazzer-preview-z0bt9.png">
+<span class="font-bold text-sm" id="gift-wallet-balance">50</span>
+<i class="fa-solid fa-plus text-white text-xs"></i>
+</a>
+<h2 class="text-xl font-bold text-white absolute left-1/2 transform -translate-x-1/2">Gifts</h2>
+<button class="w-8 h-8 flex items-center justify-center rounded-full bg-gray-800 text-gray-400 hover:text-white transition-colors" id="gift-sheet-close" type="button" aria-label="Close">
+<i class="fa-solid fa-xmark text-lg"></i>
+</button>
+</div>
+<div class="px-6 mb-8 overflow-x-auto no-scrollbar">
+<div class="flex space-x-6 min-w-max">
+<button class="gift-tab active" data-tab="all" type="button">All gifts<span class="gift-tab-line"></span></button>
+<button class="gift-tab" data-tab="valentine" type="button">Valentine<span class="gift-tab-line"></span></button>
+<button class="gift-tab" data-tab="treats" type="button">Treats<span class="gift-tab-line"></span></button>
+<button class="gift-tab" data-tab="accessories" type="button">Accessories<span class="gift-tab-line"></span></button>
+<button class="gift-tab" data-tab="drinks" type="button">Drinks<span class="gift-tab-line"></span></button>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto px-6 pb-24 no-scrollbar">
+<div class="grid grid-cols-3 gap-y-8 gap-x-4" id="gift-grid">
+<div class="gift-item flex flex-col items-center group cursor-pointer" data-category="valentine">
+<div class="gift-box relative w-full aspect-square rounded-2xl mb-3 p-2 flex items-center justify-center transition-transform group-hover:scale-105">
+<img alt="Browny Teddy" class="w-full h-full object-contain drop-shadow-xl" src="https://ik.imagekit.io/0a4t1zpln/6.761073908251913.png">
+</div>
+<span class="font-semibold text-gray-200 text-sm text-center leading-tight">Browny Teddy</span>
+<div class="flex items-center space-x-1 mt-1">
+<img alt="Cash" class="w-3 h-3 object-contain" src="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/slazzer-preview-z0bt9.png">
+<span class="text-white font-bold text-sm">400</span>
+</div>
+<div class="mt-1 text-[10px] font-bold text-pink-400/90">+38 Charisma</div>
+</div>
+<div class="gift-item flex flex-col items-center group cursor-pointer" data-category="valentine">
+<div class="gift-box relative w-full aspect-square rounded-2xl mb-3 p-2 flex items-center justify-center transition-transform group-hover:scale-105">
+<img alt="Labubu Pinky" class="w-full h-full object-contain drop-shadow-xl" src="https://ik.imagekit.io/0a4t1zpln/0.9710809464664405.png">
+</div>
+<span class="font-semibold text-gray-200 text-sm text-center leading-tight">Labubu Pinky</span>
+<div class="flex items-center space-x-1 mt-1">
+<img alt="Cash" class="w-3 h-3 object-contain" src="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/slazzer-preview-z0bt9.png">
+<span class="text-white font-bold text-sm">350</span>
+</div>
+<div class="mt-1 text-[10px] font-bold text-pink-400/90">+33 Charisma</div>
+</div>
+<div class="gift-item flex flex-col items-center group cursor-pointer" data-category="valentine">
+<div class="gift-box relative w-full aspect-square rounded-2xl mb-3 p-2 flex items-center justify-center transition-transform group-hover:scale-105">
+<img alt="Blitz Roses" class="w-full h-full object-contain drop-shadow-xl" src="https://ik.imagekit.io/0a4t1zpln/20.5958001862112.png">
+</div>
+<span class="font-semibold text-gray-200 text-sm text-center leading-tight">Blitz Roses</span>
+<div class="flex items-center space-x-1 mt-1">
+<img alt="Cash" class="w-3 h-3 object-contain" src="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/slazzer-preview-z0bt9.png">
+<span class="text-white font-bold text-sm">200</span>
+</div>
+<div class="mt-1 text-[10px] font-bold text-pink-400/90">+18 Charisma</div>
+</div>
+<div class="gift-item flex flex-col items-center group cursor-pointer" data-category="valentine">
+<div class="gift-box relative w-full aspect-square rounded-2xl mb-3 p-2 flex items-center justify-center transition-transform group-hover:scale-105">
+<img alt="Star Roses" class="w-full h-full object-contain drop-shadow-xl" src="https://ik.imagekit.io/0a4t1zpln/25.946434126945817.png">
+</div>
+<span class="font-semibold text-gray-200 text-sm text-center leading-tight">Star Roses</span>
+<div class="flex items-center space-x-1 mt-1">
+<img alt="Cash" class="w-3 h-3 object-contain" src="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/slazzer-preview-z0bt9.png">
+<span class="text-white font-bold text-sm">400</span>
+</div>
+<div class="mt-1 text-[10px] font-bold text-pink-400/90">+38 Charisma</div>
+</div>
+<div class="gift-item flex flex-col items-center group cursor-pointer" data-category="valentine">
+<div class="gift-box relative w-full aspect-square rounded-2xl mb-3 p-2 flex items-center justify-center transition-transform group-hover:scale-105">
+<img alt="Missy Scent" class="w-full h-full object-contain drop-shadow-xl" src="https://ik.imagekit.io/0a4t1zpln/1000168454.png">
+</div>
+<span class="font-semibold text-gray-200 text-sm text-center leading-tight">Missy Scent</span>
+<div class="flex items-center space-x-1 mt-1">
+<img alt="Cash" class="w-3 h-3 object-contain" src="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/slazzer-preview-z0bt9.png">
+<span class="text-white font-bold text-sm">500</span>
+</div>
+<div class="mt-1 text-[10px] font-bold text-pink-400/90">+45 Charisma</div>
+</div>
+<div class="gift-item flex flex-col items-center group cursor-pointer" data-category="accessories">
+<div class="gift-box relative w-full aspect-square rounded-2xl mb-3 p-2 flex items-center justify-center transition-transform group-hover:scale-105">
+<div class="absolute -top-2 -right-2 bg-yellow-400 text-black text-[10px] font-bold px-2 py-1 rounded-full z-10 shadow-lg">VIP</div>
+<img alt="Vacheron Constantin" class="w-full h-full object-contain drop-shadow-xl" src="https://ik.imagekit.io/0a4t1zpln/30.024515123596718.png">
+</div>
+<span class="font-semibold text-gray-200 text-sm text-center">Vacheron Constantin</span>
+<div class="flex items-center space-x-1 mt-1">
+<img alt="Cash" class="w-3 h-3 object-contain" src="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/slazzer-preview-z0bt9.png">
+<span class="text-white font-bold text-sm">2000</span>
+</div>
+<div class="mt-1 text-[10px] font-bold text-pink-400/90">+93 Charisma</div>
+</div>
+<div class="gift-item flex flex-col items-center group cursor-pointer" data-category="accessories">
+<div class="gift-box relative w-full aspect-square rounded-2xl mb-3 p-2 flex items-center justify-center transition-transform group-hover:scale-105">
+<img alt="Vastic" class="w-full h-full object-contain drop-shadow-xl" src="https://ik.imagekit.io/0a4t1zpln/92.40117195084416.png">
+</div>
+<span class="font-semibold text-gray-200 text-sm text-center">Vastic</span>
+<div class="flex items-center space-x-1 mt-1">
+<img alt="Cash" class="w-3 h-3 object-contain" src="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/slazzer-preview-z0bt9.png">
+<span class="text-white font-bold text-sm">1000</span>
+</div>
+<div class="mt-1 text-[10px] font-bold text-pink-400/90">+78 Charisma</div>
+</div>
+<div class="gift-item flex flex-col items-center group cursor-pointer" data-category="accessories">
+<div class="gift-box relative w-full aspect-square rounded-2xl mb-3 p-2 flex items-center justify-center transition-transform group-hover:scale-105">
+<img alt="Cartier Trinity ring" class="w-full h-full object-contain drop-shadow-xl" src="https://ik.imagekit.io/0a4t1zpln/78.07736997402874.png">
+</div>
+<span class="font-semibold text-gray-200 text-sm text-center">Cartier Trinity ring</span>
+<div class="flex items-center space-x-1 mt-1">
+<img alt="Cash" class="w-3 h-3 object-contain" src="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/slazzer-preview-z0bt9.png">
+<span class="text-white font-bold text-sm">1000</span>
+</div>
+<div class="mt-1 text-[10px] font-bold text-pink-400/90">+78 Charisma</div>
+</div>
+<div class="gift-item flex flex-col items-center group cursor-pointer" data-category="accessories">
+<div class="gift-box relative w-full aspect-square rounded-2xl mb-3 p-2 flex items-center justify-center transition-transform group-hover:scale-105">
+<div class="absolute -top-2 -right-2 bg-yellow-400 text-black text-[10px] font-bold px-2 py-1 rounded-full z-10 shadow-lg">VIP</div>
+<img alt="Rolex" class="w-full h-full object-contain drop-shadow-xl" src="https://ik.imagekit.io/0a4t1zpln/81.69001848351866.png">
+</div>
+<span class="font-semibold text-gray-200 text-sm text-center">Rolex</span>
+<div class="flex items-center space-x-1 mt-1">
+<img alt="Cash" class="w-3 h-3 object-contain" src="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/slazzer-preview-z0bt9.png">
+<span class="text-white font-bold text-sm">3000</span>
+</div>
+<div class="mt-1 text-[10px] font-bold text-pink-400/90">+98 Charisma</div>
+</div>
+<div class="gift-item flex flex-col items-center group cursor-pointer" data-category="accessories">
+<div class="gift-box relative w-full aspect-square rounded-2xl mb-3 p-2 flex items-center justify-center transition-transform group-hover:scale-105">
+<div class="absolute -top-2 -right-2 bg-yellow-400 text-black text-[10px] font-bold px-2 py-1 rounded-full z-10 shadow-lg">VIP</div>
+<img alt="Gucci bag" class="w-full h-full object-contain drop-shadow-xl" src="https://ik.imagekit.io/0a4t1zpln/14.19562059959577.png">
+</div>
+<span class="font-semibold text-gray-200 text-sm text-center">Gucci bag</span>
+<div class="flex items-center space-x-1 mt-1">
+<img alt="Cash" class="w-3 h-3 object-contain" src="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/slazzer-preview-z0bt9.png">
+<span class="text-white font-bold text-sm">1800</span>
+</div>
+<div class="mt-1 text-[10px] font-bold text-pink-400/90">+85 Charisma</div>
+</div>
+<div class="gift-item flex flex-col items-center group cursor-pointer" data-category="accessories">
+<div class="gift-box relative w-full aspect-square rounded-2xl mb-3 p-2 flex items-center justify-center transition-transform group-hover:scale-105">
+<div class="absolute -top-2 -right-2 bg-yellow-400 text-black text-[10px] font-bold px-2 py-1 rounded-full z-10 shadow-lg">VIP</div>
+<img alt="Richard Mille" class="w-full h-full object-contain drop-shadow-xl" src="https://ik.imagekit.io/0a4t1zpln/53.81349441696425.png">
+</div>
+<span class="font-semibold text-gray-200 text-sm text-center">Richard Mille</span>
+<div class="flex items-center space-x-1 mt-1">
+<img alt="Cash" class="w-3 h-3 object-contain" src="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/slazzer-preview-z0bt9.png">
+<span class="text-white font-bold text-sm">3500</span>
+</div>
+<div class="mt-1 text-[10px] font-bold text-pink-400/90">+99 Charisma</div>
+</div>
+<div class="gift-item flex flex-col items-center group cursor-pointer" data-category="accessories">
+<div class="gift-box relative w-full aspect-square rounded-2xl mb-3 p-2 flex items-center justify-center transition-transform group-hover:scale-105">
+<div class="absolute -top-2 -right-2 bg-yellow-400 text-black text-[10px] font-bold px-2 py-1 rounded-full z-10 shadow-lg">VIP</div>
+<img alt="Emeron ring" class="w-full h-full object-contain drop-shadow-xl" src="https://ik.imagekit.io/0a4t1zpln/62.53589931471226.png">
+</div>
+<span class="font-semibold text-gray-200 text-sm text-center">Emeron ring</span>
+<div class="flex items-center space-x-1 mt-1">
+<img alt="Cash" class="w-3 h-3 object-contain" src="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/slazzer-preview-z0bt9.png">
+<span class="text-white font-bold text-sm">2200</span>
+</div>
+<div class="mt-1 text-[10px] font-bold text-pink-400/90">+95 Charisma</div>
+</div>
+<div class="gift-item flex flex-col items-center group cursor-pointer" data-category="treats">
+<div class="gift-box relative w-full aspect-square rounded-2xl mb-3 p-2 flex items-center justify-center transition-transform group-hover:scale-105">
+<img alt="Peach Cupcake" class="w-full h-full object-contain drop-shadow-xl" src="https://ik.imagekit.io/0a4t1zpln/82.31047529212468.png">
+</div>
+<span class="font-semibold text-gray-200 text-sm text-center">Peach Cupcake</span>
+<div class="flex items-center space-x-1 mt-1">
+<img alt="Cash" class="w-3 h-3 object-contain" src="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/slazzer-preview-z0bt9.png">
+<span class="text-white font-bold text-sm">50</span>
+</div>
+<div class="mt-1 text-[10px] font-bold text-pink-400/90">+5 Charisma</div>
+</div>
+<div class="gift-item flex flex-col items-center group cursor-pointer" data-category="treats">
+<div class="gift-box relative w-full aspect-square rounded-2xl mb-3 p-2 flex items-center justify-center transition-transform group-hover:scale-105">
+<img alt="Chambel Choco" class="w-full h-full object-contain drop-shadow-xl" src="https://ik.imagekit.io/0a4t1zpln/32.88508859558659.png">
+</div>
+<span class="font-semibold text-gray-200 text-sm text-center">Chambel Choco</span>
+<div class="flex items-center space-x-1 mt-1">
+<img alt="Cash" class="w-3 h-3 object-contain" src="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/slazzer-preview-z0bt9.png">
+<span class="text-white font-bold text-sm">100</span>
+</div>
+<div class="mt-1 text-[10px] font-bold text-pink-400/90">+10 Charisma</div>
+</div>
+<div class="gift-item flex flex-col items-center group cursor-pointer" data-category="treats">
+<div class="gift-box relative w-full aspect-square rounded-2xl mb-3 p-2 flex items-center justify-center transition-transform group-hover:scale-105">
+<img alt="Peach Ice Cream" class="w-full h-full object-contain drop-shadow-xl" src="https://ik.imagekit.io/0a4t1zpln/73.28870279816203.png">
+</div>
+<span class="font-semibold text-gray-200 text-sm text-center">Peach Ice cream</span>
+<div class="flex items-center space-x-1 mt-1">
+<img alt="Cash" class="w-3 h-3 object-contain" src="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/slazzer-preview-z0bt9.png">
+<span class="text-white font-bold text-sm">100</span>
+</div>
+<div class="mt-1 text-[10px] font-bold text-pink-400/90">+10 Charisma</div>
+</div>
+<div class="gift-item flex flex-col items-center group cursor-pointer" data-category="treats">
+<div class="gift-box relative w-full aspect-square rounded-2xl mb-3 p-2 flex items-center justify-center transition-transform group-hover:scale-105">
+<img alt="Macha Pollo" class="w-full h-full object-contain drop-shadow-xl" src="https://ik.imagekit.io/0a4t1zpln/54.6213859335515.png">
+</div>
+<span class="font-semibold text-gray-200 text-sm text-center">Macha Pollo</span>
+<div class="flex items-center space-x-1 mt-1">
+<img alt="Cash" class="w-3 h-3 object-contain" src="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/slazzer-preview-z0bt9.png">
+<span class="text-white font-bold text-sm">150</span>
+</div>
+<div class="mt-1 text-[10px] font-bold text-pink-400/90">+12 Charisma</div>
+</div>
+<div class="gift-item flex flex-col items-center group cursor-pointer" data-category="drinks">
+<div class="gift-box relative w-full aspect-square rounded-2xl mb-3 p-2 flex items-center justify-center transition-transform group-hover:scale-105">
+<img alt="Chandlon Iced" class="w-full h-full object-contain drop-shadow-xl" src="https://ik.imagekit.io/0a4t1zpln/78.02313497546743.png">
+</div>
+<span class="font-semibold text-gray-200 text-sm text-center">Chandlon Iced</span>
+<div class="flex items-center space-x-1 mt-1">
+<img alt="Cash" class="w-3 h-3 object-contain" src="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/slazzer-preview-z0bt9.png">
+<span class="text-white font-bold text-sm">500</span>
+</div>
+<div class="mt-1 text-[10px] font-bold text-pink-400/90">+45 Charisma</div>
+</div>
+<div class="gift-item flex flex-col items-center group cursor-pointer" data-category="drinks">
+<div class="gift-box relative w-full aspect-square rounded-2xl mb-3 p-2 flex items-center justify-center transition-transform group-hover:scale-105">
+<img alt="Champagne Shots" class="w-full h-full object-contain drop-shadow-xl" src="https://ik.imagekit.io/0a4t1zpln/13.642391061220582.png">
+</div>
+<span class="font-semibold text-gray-200 text-sm text-center">Champagne Shots</span>
+<div class="flex items-center space-x-1 mt-1">
+<img alt="Cash" class="w-3 h-3 object-contain" src="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/slazzer-preview-z0bt9.png">
+<span class="text-white font-bold text-sm">200</span>
+</div>
+<div class="mt-1 text-[10px] font-bold text-pink-400/90">+18 Charisma</div>
+</div>
+</div>
+</div>
+<div class="absolute bottom-0 left-0 w-full px-6 pb-8 pt-4 bg-gradient-to-t from-[#161616] via-[#161616] to-transparent">
+<button class="w-full bg-gray-800 hover:bg-gray-700 text-white font-bold py-4 rounded-3xl text-lg transition-colors shadow-lg" disabled id="gift-send-btn" type="button">Send a gift</button>
+</div>
+</div>
+</div>
+<!-- END: Gifts bottom sheet -->
 
+<!-- BEGIN: Reset chat confirmation modal -->
+<div id="reset-chat-modal" class="fixed inset-0 z-[9999] items-center justify-center px-6" style="display:none;" role="dialog" aria-modal="true">
+<div id="reset-chat-backdrop" class="absolute inset-0 bg-black/60" style="backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);"></div>
+<div class="relative w-full max-w-[340px] bg-[#161616] rounded-[28px] border border-white/10 px-6 py-7 text-center" id="reset-chat-panel" style="transition: opacity .25s ease, transform .25s ease; opacity:0; transform: scale(.92);">
+<div class="w-14 h-14 rounded-full bg-gradient-to-br from-[#f02853] to-[#ff3e86] flex items-center justify-center mx-auto mb-4 shadow-lg">
+<i class="fa-solid fa-rotate-right text-white text-xl"></i>
+</div>
+<h3 class="text-lg font-bold text-white mb-2">Restart conversation?</h3>
+<p class="text-sm text-gray-400 leading-relaxed mb-6" id="reset-chat-desc">This will clear the chat and start a completely new conversation.</p>
+<button class="w-full bg-gradient-to-br from-[#c3244c] via-[#f02853] to-[#ff3e86] text-white font-semibold py-3.5 rounded-3xl mb-3 shadow-lg active:scale-95 transition-transform" id="reset-chat-confirm" type="button">Yes, start fresh</button>
+<button class="w-full text-gray-300 font-medium py-3 rounded-3xl bg-white/5 active:scale-95 transition-transform" id="reset-chat-cancel" type="button">Cancel</button>
+</div>
+</div>
+<!-- END: Reset chat confirmation modal -->
 
+<!-- BEGIN: Private album modal -->
+<div id="album-modal" class="fixed inset-0 z-[9995] items-start justify-center px-4 pt-14 pb-6" style="display:none;" role="dialog" aria-modal="true">
+<div id="album-backdrop" class="absolute inset-0 bg-black/70" style="backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);"></div>
+<div class="relative w-full max-w-[360px] bg-[#161616] rounded-[28px] border border-white/10 overflow-hidden flex flex-col" id="album-panel" style="max-height:84%; transition: opacity .25s ease, transform .25s ease; opacity:0; transform: scale(.95);">
+<div class="flex items-center justify-between px-5 pt-5 pb-3">
+<h3 class="text-lg font-bold text-white" id="album-title">Photos</h3>
+<button class="w-8 h-8 flex items-center justify-center rounded-full bg-white/10 text-white/70 hover:text-white transition-colors" id="album-close" type="button" aria-label="Close"><i class="fa-solid fa-xmark text-lg"></i></button>
+</div>
+<div class="px-5 pb-2">
+<p class="text-xs text-gray-400" id="album-subtitle">Private — only you can see these</p>
+</div>
+<div class="flex-1 overflow-y-auto no-scrollbar px-5 pb-5">
+<div class="grid grid-cols-2 gap-3" id="album-grid"></div>
+<p class="text-sm text-center text-gray-500 py-10 hidden" id="album-empty">No photos yet. Ask in chat for a pic and it shows up here. ✨</p>
+</div>
+</div>
+</div>
+<!-- END: Private album modal -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/api-client.js"></script>
+<script>
+(function () {
+  var chatArea = document.getElementById('chat-area');
+  var input = document.getElementById('chat-input');
+  var sendBtn = document.getElementById('chat-send-btn');
+  var sendIcon = document.getElementById('chat-send-icon');
+  var imageInput = document.getElementById('chat-image-input');
+  var backBtn = document.getElementById('chat-back-btn');
+  var avatarBtn = document.getElementById('chat-avatar-btn');
+  var menuBtn = document.getElementById('chat-menu-btn');
+  var callBtn = document.getElementById('chat-call-btn');
+  var dropdown = document.getElementById('chat-dropdown');
+  var quickPic = document.getElementById('quick-pic');
+  var quickVideo = document.getElementById('quick-video');
+  var quickVoice = document.getElementById('quick-voice');
+  var giftBtn = document.getElementById('chat-gift-btn');
+  var giftIcon = document.getElementById('chat-gift-icon');
+  var giftSheet = document.getElementById('gift-sheet');
+  var giftPanel = document.getElementById('gift-sheet-panel');
+  var giftBackdrop = document.getElementById('gift-sheet-backdrop');
+  var giftClose = document.getElementById('gift-sheet-close');
+
+  var CHARACTER = {
+    id: null,
+    name: 'Elsa',
+    avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuA8W8C6ozSv-X3_dsYCoFEdI23dQEZXr2pLYztz_LZlP41w6_bEDaQeDRptfw1NRtFdXMcpo_PVzS0Zywfj-ORdgRlgHfRjWAgJ81RGiGmf5sc3jx8PxvqJaInfO4nM2l2u-Qfu1dKhFj5PhwZXc0CRDqIWpFe8ohZLzKD00v9hh3N3pKCrVVKSAjVJ7zWmwghrZm8uVW2gkaWfrVOuyMkvm8yQKI1F90SJe87CEDT-7YTvns1VcTBiOQ'
+  };
+
+  // ---- Load the character chosen on the feed / profile / chat list ----
+  var SUPABASE_URL = 'https://dgbxcakkqrgrapwsvrol.supabase.co';
+  var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRnYnhjYWtrcXJncmFwd3N2cm9sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYxOTM0NDksImV4cCI6MjEwMTc2OTQ0OX0.v2gOgC28bfXXVjRVki1lL0ulgCHVloUAv1eF5HVSzuk';
+  var supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  var profileHeader = document.querySelector('header.chat-header h1');
+  var avatarImg = document.querySelector('#chat-avatar-btn img');
+
+  // ---- Pre-render skeleton: keep it up until the character's backdrop is
+  // downloaded AND the chat messages are rendered, then reveal the page. ----
+  function showSkeleton() {
+    var s = document.getElementById('page-skeleton');
+    if (s) s.style.display = 'flex';
+  }
+  function hideSkeleton() {
+    var s = document.getElementById('page-skeleton');
+    if (s) s.style.display = 'none';
+  }
+  function preloadBg(url, done) {
+    var finished = false;
+    function finish() { if (!finished) { finished = true; done(); } }
+    if (!url) { finish(); return; }
+    var img = new Image();
+    img.onload = finish;
+    img.onerror = finish;
+    img.src = url;
+    setTimeout(finish, 6000); // safety net: never leave the skeleton stuck
+  }
+  var ready = { bg: false, msgs: false };
+  function markReady(kind) {
+    ready[kind] = true;
+    if (ready.bg && ready.msgs) requestAnimationFrame(hideSkeleton);
+  }
+
+  function applyCharacter(c) {
+    if (!c) return;
+    CHARACTER.id = c.id || CHARACTER.id || null;
+    CHARACTER.name = c.name || CHARACTER.name;
+    CHARACTER.avatar = c.circular_profile_image_url || CHARACTER.avatar;
+    if (profileHeader) profileHeader.textContent = CHARACTER.name;
+    if (avatarImg) { avatarImg.src = CHARACTER.avatar; avatarImg.alt = CHARACTER.name + ' Profile'; avatarImg.setAttribute('aria-label', 'Open ' + CHARACTER.name + "'s profile"); }
+    var regenDesc = document.getElementById('reset-chat-desc');
+    if (regenDesc) regenDesc.textContent = 'This will clear the chat and start a completely new conversation with ' + CHARACTER.name + '.';
+    refreshMenuLabels();
+    // Use the character's feed media as the chat backdrop (same image as the feed).
+    var feedMedia = c.character_feeds && c.character_feeds.length ? c.character_feeds[0] : null;
+    var bgUrl = feedMedia ? feedMedia.media_url : (c.circular_profile_image_url || '');
+    if (feedMedia && feedMedia.media_type === 'video') bgUrl = c.circular_profile_image_url || feedMedia.media_url;
+    if (bgUrl && bgUrl.indexOf('undefined') === -1) {
+      var chatBg = document.querySelector('.chat-bg');
+      if (chatBg) chatBg.style.backgroundImage = 'url(' + bgUrl + ')';
+      preloadBg(bgUrl, function () { markReady('bg'); });
+    } else {
+      markReady('bg');
+    }
+    // Personalize the seed conversation (rendered at the end of this script).
+    seed();
+  }
+
+  var REPLIES = [
+    'That sounds lovely, darling! Tell me more. 😊',
+    'Oh, I was just thinking about you... how is your day going?',
+    'You always know how to make me smile. 💕',
+    'Hmm, I love that idea! What do you have in mind?',
+    'Come closer, let me whisper something to you...'
+  ];
+
+  function scrollBottom() {
+    if (chatArea) chatArea.scrollTop = chatArea.scrollHeight;
+  }
+
+  // Escape HTML, then wrap *action* runs in <em> (italic, dimmer) and drop the asterisks.
+  function renderMessageText(text) {
+    var esc = String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    return esc.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+  }
+
+  function addUserMessage(text, imageSrc) {
+    var row = document.createElement('div');
+    row.className = 'msg-row msg-row-user';
+    var bubble = document.createElement('div');
+    bubble.className = 'msg-bubble msg-bubble-user';
+    if (imageSrc) {
+      var img = document.createElement('img');
+      img.src = imageSrc;
+      img.alt = 'Attached image';
+      img.className = 'rounded-xl max-w-[240px] max-h-64 object-contain';
+      bubble.appendChild(img);
+    }
+    if (text) {
+      var txt = document.createElement('span');
+      txt.innerHTML = renderMessageText(text);
+      if (imageSrc) txt.style.marginTop = '0.35rem';
+      bubble.appendChild(txt);
+    }
+    row.appendChild(bubble);
+    chatArea.appendChild(row);
+    scrollBottom();
+    return row;
+  }
+
+  function addCharacterMessage(text, withActions) {
+    var row = document.createElement('div');
+    row.className = 'msg-row msg-row-ai';
+    var body = document.createElement('div');
+    body.className = 'flex items-start gap-2';
+    var bubble = document.createElement('div');
+    bubble.className = 'msg-bubble msg-bubble-ai';
+    bubble.innerHTML = renderMessageText(text);
+    body.appendChild(bubble);
+    row.appendChild(body);
+    chatArea.appendChild(row);
+    scrollBottom();
+    return row;
+  }
+
+  function showTyping(mode) {
+    var row = document.createElement('div');
+    row.className = 'msg-row msg-row-ai';
+    row.id = 'typing-row';
+    var body = document.createElement('div');
+    body.className = 'flex items-start gap-2';
+    var bubble = document.createElement('div');
+    bubble.className = 'msg-bubble msg-bubble-ai typing-indicator';
+    var firstName = (CHARACTER.name || '').trim().split(/\s+/)[0] || 'Character';
+    var label = mode === 'picture' ? (firstName + ' is taking picture')
+      : (mode === 'voice' ? (firstName + ' is recording her voice') : (firstName + ' is typing'));
+    bubble.innerHTML =
+      '<div class="typing-shimmer">' + label + '</div>';
+    body.appendChild(bubble);
+    row.appendChild(body);
+    chatArea.appendChild(row);
+    scrollBottom();
+  }
+
+  function hideTyping() {
+    var row = document.getElementById('typing-row');
+    if (row && row.parentNode) row.parentNode.removeChild(row);
+  }
+
+  // ---- Real backend wiring (replaces simulated replies) ----
+  var USER_ID = null;
+  var CONVERSATION_ID = null;
+  var sending = false;
+  var pendingImage = null;      // data URL of an image attached to the input bar
+  var viewportKeyboard = false; // set by visualViewport shrink detection
+
+  // ---- AI portrait generation (DeAPI) ----
+  // Phrases that should trigger a portrait generation instead of a text reply.
+  var IMAGE_REQUEST_PATTERNS = [
+    /send me a pic(?:ture)?/i,
+    /send me a photo/i,
+    /take a pic(?:ture)?/i,
+    /take a photo/i,
+    /show me a pic(?:ture)?/i,
+    /show me a photo/i,
+    /pic of you/i,
+    /photo of you/i,
+    /picture of you/i,
+    /send (?:me )?your pic/i,
+    /snap(?: a)? (?:pic|picture|photo)/i,
+  ];
+
+  function isImageRequest(text) {
+    if (!text) return false;
+    for (var i = 0; i < IMAGE_REQUEST_PATTERNS.length; i++) {
+      if (IMAGE_REQUEST_PATTERNS[i].test(text)) return true;
+    }
+    return false;
+  }
+
+  // ---- AI voice-note generation (Fish TTS via OpenRouter) ----
+  var VOICE_REQUEST_PATTERNS = [
+    /voice message/i,
+    /voice note/i,
+    /voice memo/i,
+    /send (?:me )?a voice/i,
+    /send (?:me )?an? audio/i,
+    /record (?:a |your )?voice/i,
+    /leave (?:me )?a voice/i,
+    /hear (?:your|you) voice/i,
+    /say something/i,
+  ];
+
+  function isVoiceRequest(text) {
+    if (!text) return false;
+    for (var i = 0; i < VOICE_REQUEST_PATTERNS.length; i++) {
+      if (VOICE_REQUEST_PATTERNS[i].test(text)) return true;
+    }
+    return false;
+  }
+
+  // Only one voice note plays at a time across the whole chat.
+  var activeVoiceAudio = null;
+  var activeVoiceBubble = null;
+
+  function formatVoiceTime(sec) {
+    if (!isFinite(sec) || sec <= 0) return '0:00';
+    sec = Math.floor(sec);
+    var m = Math.floor(sec / 60);
+    var s = sec % 60;
+    return m + ':' + (s < 10 ? '0' : '') + s;
+  }
+
+  // Voice-note bubble: dark player bar on top (play/pause + progress + time)
+  // and the transcript (first 100 chars then "…") below it in the same bubble.
+  function addVoiceMessage(audioUrl, transcript) {
+    var row = document.createElement('div');
+    row.className = 'msg-row msg-row-ai';
+    var body = document.createElement('div');
+    body.className = 'flex items-start gap-2';
+    var bubble = document.createElement('div');
+    bubble.className = 'msg-bubble-ai voice-bubble';
+
+    var player = document.createElement('div');
+    player.className = 'voice-player';
+
+    var playBtn = document.createElement('button');
+    playBtn.type = 'button';
+    playBtn.className = 'voice-play-btn';
+    playBtn.setAttribute('aria-label', 'Play voice message');
+    playBtn.innerHTML = '<i class="fa-solid fa-play text-xs"></i>';
+
+    var audioUi = document.createElement('div');
+    audioUi.className = 'voice-audio-ui';
+    var progress = document.createElement('div');
+    progress.className = 'voice-progress';
+    var progressFill = document.createElement('div');
+    progressFill.className = 'voice-progress-fill';
+    progress.appendChild(progressFill);
+    var time = document.createElement('span');
+    time.className = 'voice-time';
+    time.textContent = '0:00';
+    audioUi.appendChild(progress);
+    audioUi.appendChild(time);
+
+    player.appendChild(playBtn);
+    player.appendChild(audioUi);
+
+    var clean = (transcript || '').replace(/\[[^\]]*\]/g, ' ').replace(/\s+/g, ' ').trim();
+    var transcriptEl = document.createElement('div');
+    transcriptEl.className = 'voice-transcript';
+    transcriptEl.textContent = clean.length > 100 ? clean.slice(0, 100) + '…' : clean;
+
+    bubble.appendChild(player);
+    bubble.appendChild(transcriptEl);
+    body.appendChild(bubble);
+    row.appendChild(body);
+    chatArea.appendChild(row);
+
+    var audio = new Audio(audioUrl);
+    audio.preload = 'metadata';
+    audio.addEventListener('loadedmetadata', function () {
+      time.textContent = formatVoiceTime(audio.duration);
+    });
+    audio.addEventListener('timeupdate', function () {
+      var d = audio.duration || 0;
+      progressFill.style.width = (d ? (audio.currentTime / d) * 100 : 0) + '%';
+      time.textContent = formatVoiceTime(audio.currentTime);
+    });
+    audio.addEventListener('ended', function () {
+      playBtn.innerHTML = '<i class="fa-solid fa-play text-xs"></i>';
+      progressFill.style.width = '0%';
+      time.textContent = formatVoiceTime(audio.duration);
+    });
+    playBtn.addEventListener('click', function () {
+      if (audio.paused) {
+        if (activeVoiceAudio && activeVoiceAudio !== audio) {
+          activeVoiceAudio.pause();
+          if (activeVoiceBubble) {
+            var otherBtn = activeVoiceBubble.querySelector('.voice-play-btn');
+            if (otherBtn) otherBtn.innerHTML = '<i class="fa-solid fa-play text-xs"></i>';
+          }
+        }
+        audio.play().catch(function () {});
+        playBtn.innerHTML = '<i class="fa-solid fa-pause text-xs"></i>';
+        activeVoiceAudio = audio;
+        activeVoiceBubble = bubble;
+      } else {
+        audio.pause();
+        playBtn.innerHTML = '<i class="fa-solid fa-play text-xs"></i>';
+      }
+    });
+
+    scrollBottom();
+    return row;
+  }
+
+  function sendVoiceRequest(text) {
+    sending = true;
+    showTyping('voice');
+    ensureConversation()
+      .then(function () {
+        return YoursAPI.generateVoiceMessage(CHARACTER.id, text, USER_ID, CONVERSATION_ID);
+      })
+      .then(function (data) {
+        sending = false;
+        hideTyping();
+        if (!data || !data.audioUrl) {
+          addCharacterMessage("My voice recorder's being shy — try again in a moment. 💕", true);
+          return;
+        }
+        addVoiceMessage(data.audioUrl, data.transcript);
+      })
+      .catch(function (err) {
+        sending = false;
+        hideTyping();
+        console.error('voice generation failed:', err);
+        var rlMsg = isRateLimitedError(err) && err.message ? err.message : null;
+        var detail = err && err.message ? err.message : String(err);
+        if (rlMsg) addCharacterMessage(rlMsg, true);
+        else addCharacterMessage(
+          "Hmm, my mic just cut out — give me a second and try again. 💕" + (window._debugErrors ? (' (' + detail + ')') : ''),
+          true
+        );
+      });
+  }
+
+  // Generated image bubble: blurred until tapped, tap again to maximize.
+  function addGeneratedImage(imageDataUrl) {
+    var row = document.createElement('div');
+    row.className = 'msg-row msg-row-ai';
+    var body = document.createElement('div');
+    body.className = 'flex items-start gap-2';
+    var bubble = document.createElement('div');
+    bubble.className = 'msg-bubble msg-bubble-ai';
+    bubble.style.padding = '0';
+    bubble.style.overflow = 'hidden';
+
+    var wrap = document.createElement('div');
+    wrap.className = 'relative';
+    wrap.style.maxWidth = '260px';
+
+    var img = document.createElement('img');
+    img.src = imageDataUrl;
+    img.alt = CHARACTER.name + ' photo';
+    img.className = 'w-full max-h-80 object-cover transition-all duration-300';
+    img.style.filter = 'blur(14px)';
+    img.style.transform = 'scale(1.05)';
+
+    var overlay = document.createElement('div');
+    overlay.className = 'absolute inset-0 flex items-center justify-center bg-black/30 cursor-pointer';
+    var hint = document.createElement('div');
+    hint.className = 'glass-effect rounded-full px-4 py-2 text-sm font-semibold text-white flex items-center gap-2';
+    hint.innerHTML = '<i class="fa-solid fa-eye"></i> Tap to unblur';
+    overlay.appendChild(hint);
+
+    wrap.appendChild(img);
+    wrap.appendChild(overlay);
+    bubble.appendChild(wrap);
+    body.appendChild(bubble);
+    row.appendChild(body);
+    chatArea.appendChild(row);
+    scrollBottom();
+
+    var revealed = false;
+    var maximized = false;
+    var fullscreen = null;
+
+    overlay.addEventListener('click', function () {
+      if (!revealed) {
+        revealed = true;
+        img.style.filter = 'none';
+        img.style.transform = 'scale(1)';
+        overlay.style.background = 'transparent';
+        overlay.classList.add('cursor-zoom-in');
+        hint.style.display = 'none';
+        return;
+      }
+      // Revealed → tap to maximize into a fullscreen viewer.
+      if (maximized) { closeViewer(); return; }
+      maximized = true;
+      fullscreen = document.createElement('div');
+      fullscreen.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.95);display:flex;align-items:center;justify-content:center;';
+      var fsImg = document.createElement('img');
+      fsImg.src = imageDataUrl;
+      fsImg.style.cssText = 'max-width:94%;max-height:94%;object-fit:contain;border-radius:0.75rem;';
+      fullscreen.appendChild(fsImg);
+      fullscreen.addEventListener('click', closeViewer);
+      document.body.appendChild(fullscreen);
+    });
+
+    function closeViewer() {
+      if (fullscreen && fullscreen.parentNode) fullscreen.parentNode.removeChild(fullscreen);
+      fullscreen = null;
+      maximized = false;
+    }
+
+    albumCacheAdd({ media_url: imageDataUrl, created_at: new Date().toISOString() });
+    return row;
+  }
+
+  function sendPortraitRequest(text) {
+    var firstName = (CHARACTER.name || '').trim().split(/\s+/)[0] || 'Character';
+    sending = true;
+    showTyping('picture');
+
+    ensureConversation()
+      .then(function () {
+        return YoursAPI.generateCharacterImage(CHARACTER.id, text, USER_ID, CONVERSATION_ID);
+      })
+      .then(function (data) {
+        sending = false;
+        hideTyping();
+        if (!data || (!data.imageDataUrl && !data.imageUrl)) {
+          addCharacterMessage("Sorry, I couldn't take that picture right now — try again in a moment. 💕", true);
+          return;
+        }
+        addGeneratedImage(data.imageUrl || data.imageDataUrl);
+        // After the photo is delivered, the character "thinks" for a moment,
+        // then sends a random flirty follow-up.
+        showTyping();
+        setTimeout(function () {
+          hideTyping();
+          addCharacterMessage(pickPictureReaction(), true);
+        }, 1600);
+      })
+      .catch(function (err) {
+        sending = false;
+        hideTyping();
+        console.error('portrait generation failed:', err);
+        var rlMsg = isRateLimitedError(err) && err.message ? err.message : null;
+        var detail = err && err.message ? err.message : String(err);
+        if (rlMsg) addCharacterMessage(rlMsg, true);
+        else addCharacterMessage("Hmm, the camera's being fussy — give me a moment and try again. 💕" + (window._debugErrors ? (' (' + detail + ')') : ''), true);
+      });
+  }
+
+  // Random flirty line sent right after a generated picture is delivered.
+  var PICTURE_REACTIONS = [
+    'Hope you like it! 😊',
+    'How do I look? 👀',
+    'Be honest… how\'s the pic? 😏',
+    'Do you like this one? 🥰',
+    'I kinda love how this turned out 😌',
+    'What do you think? ❤️',
+    'Okay… rate this one 1–10 👀',
+    'Is this a good look for me? 😚',
+    'I was feeling cute, so… here you go 🙈',
+    'Did I get your attention? 😉',
+    'Should I send you another one? 👀',
+    'Tell me what you think 😌',
+    'I hope this made you smile 🥰',
+    'Do you like me like this? 💕',
+    'I couldn\'t resist sending you this 😏',
+    'Your turn… what do you think? 👀',
+    'Was this worth the wait? 😜',
+    'I wonder what you\'re thinking right now…',
+    'Did you miss seeing me? 🥺❤️',
+    'So… was I cute enough? 😘'
+  ];
+
+  function pickPictureReaction() {
+    return PICTURE_REACTIONS[Math.floor(Math.random() * PICTURE_REACTIONS.length)];
+  }
+
+  function isRateLimitedError(err) {
+    var msg = String((err && err.message) || '').toLowerCase();
+    return msg.indexOf('rate limit') !== -1 || msg.indexOf('429') !== -1 || msg.indexOf('resource_exhausted') !== -1;
+  }
+
+  function ensureConversation() {
+    var characterStored = null;
+    try { characterStored = JSON.parse(sessionStorage.getItem('yours_current_character') || 'null'); } catch (e) { characterStored = null; }
+    var characterId = (characterStored && characterStored.id) || CHARACTER.id;
+    return Promise.resolve()
+      .then(function () {
+        if (USER_ID) return;
+        return supabase.auth.getSession().then(function (res) {
+          var session = res.data && res.data.session;
+          if (!session || !session.user) throw new Error('You need to sign in to chat.');
+          USER_ID = session.user.id;
+        });
+      })
+      .then(function () {
+        return YoursAPI.getOrCreateConversation(USER_ID, characterId);
+      })
+      .then(function (data) {
+        CONVERSATION_ID = data.conversation.id;
+      });
+  }
+
+  function loadExistingMessages() {
+    return Promise.resolve()
+      .then(function () {
+        if (!CONVERSATION_ID) return null;
+        return YoursAPI.getMessages(CONVERSATION_ID, USER_ID);
+      })
+      .then(function (data) {
+        if (!data || !data.messages) return;
+        chatArea.innerHTML = '';
+        var messages = data.messages;
+        for (var i = 0; i < messages.length; i++) {
+          var m = messages[i];
+          if (m.sender_type === 'user') {
+            addUserMessage(m.content);
+          } else if (m.message_type === 'voice' && (m.media_url || m.content)) {
+            addVoiceMessage(m.media_url, m.content);
+          } else if (m.message_type === 'image' && (m.media_url || m.content)) {
+            addGeneratedImage(m.media_url || m.content);
+          } else {
+            addCharacterMessage(m.content, false);
+          }
+        }
+        scrollBottom();
+      });
+  }
+
+  function sendMessage() {
+    var text = input.value.trim();
+    var image = pendingImage;
+
+    // AI voice-note request (text only, no attached image).
+    if (text && !image && isVoiceRequest(text)) {
+      input.value = '';
+      updateSendIcon();
+      addUserMessage(text);
+      sendVoiceRequest(text);
+      return;
+    }
+
+    // AI portrait generation request (text only, no attached image).
+    if (text && !image && isImageRequest(text)) {
+      input.value = '';
+      updateSendIcon();
+      addUserMessage(text);
+      sendPortraitRequest(text);
+      return;
+    }
+
+    if ((!text && !image) || sending) return;
+    input.value = '';
+    clearPendingImage();
+    updateSendIcon();
+    addUserMessage(text, image);
+    sending = true;
+    showTyping();
+
+    ensureConversation()
+      .then(function () {
+        return YoursAPI.sendMessage(CONVERSATION_ID, USER_ID, CHARACTER.id || undefined, text, image);
+      })
+      .then(function (data) {
+        sending = false;
+        hideTyping();
+        var reply = (data && data.aiMessage && data.aiMessage.content) || "I'm right here with you.";
+        addCharacterMessage(reply, true);
+      })
+      .catch(function (err) {
+        sending = false;
+        hideTyping();
+        console.error('send message failed:', err);
+        if (isRateLimitedError(err)) {
+          var rlMsg = (err && err.message) ? err.message : "I'm feeling a bit distant right now, but I'm here for you! Tell me more.";
+          addCharacterMessage(rlMsg, true);
+        } else {
+          var detail = err && err.message ? err.message : String(err);
+          addCharacterMessage("Something went wrong on my end — give me a moment and try again. 💕" + (window._debugErrors ? (' (' + detail + ')') : ''), true);
+        }
+      });
+  }
+
+  // ---- Attached image preview (input bar) ----
+  var imagePreviewBar = document.getElementById('image-preview-bar');
+  var imagePreviewThumb = document.getElementById('image-preview-thumb');
+  var imagePreviewName = document.getElementById('image-preview-name');
+  var imagePreviewRemove = document.getElementById('image-preview-remove');
+
+  function showPendingImage(dataUrl, fileName) {
+    pendingImage = dataUrl;
+    if (imagePreviewThumb) imagePreviewThumb.src = dataUrl;
+    if (imagePreviewName) imagePreviewName.textContent = fileName || 'Image attached';
+    if (imagePreviewBar) imagePreviewBar.style.display = 'flex';
+    updateSendIcon();
+  }
+  function clearPendingImage() {
+    pendingImage = null;
+    if (imagePreviewBar) imagePreviewBar.style.display = 'none';
+    if (imagePreviewThumb) imagePreviewThumb.src = '';
+    updateSendIcon();
+  }
+  if (imagePreviewRemove) {
+    imagePreviewRemove.addEventListener('click', clearPendingImage);
+  }
+
+  // User image bubble (picked from the device gallery).
+  function addUserImage(src) {
+    var row = document.createElement('div');
+    row.className = 'msg-row msg-row-user';
+    var bubble = document.createElement('div');
+    bubble.className = 'msg-bubble msg-bubble-user';
+    bubble.style.padding = '0';
+    bubble.style.background = 'transparent';
+    bubble.style.border = 'none';
+    bubble.style.borderRadius = '0';
+    var img = document.createElement('img');
+    img.src = src;
+    img.alt = 'Uploaded image';
+    img.className = 'rounded-xl max-w-[240px] max-h-64 object-contain';
+    bubble.appendChild(img);
+    row.appendChild(bubble);
+    chatArea.appendChild(row);
+    scrollBottom();
+    return row;
+  }
+
+  // ---- Send button state ----
+  // The img icon always stays a media icon (opens the gallery). The gift icon
+  // swaps to a send button while the keyboard is open, so the user can send a
+  // message (with or without an attached image).
+  function updateSendIcon() {
+    var sendMode = viewportKeyboard || pendingImage;
+    // Icon: always a plus/attach icon, never a send icon.
+    sendIcon.className = 'fa-solid fa-plus';
+    sendIcon.style.fontSize = '1.05rem';
+    if (sendMode) {
+      giftIcon.className = 'fa-solid fa-paper-plane text-white text-xl';
+      giftBtn.classList.add('send-btn-active');
+      giftBtn.setAttribute('aria-label', 'Send message');
+    } else {
+      giftIcon.className = 'fa-solid fa-gift text-yellow-400 text-xl';
+      giftBtn.classList.remove('send-btn-active');
+      giftBtn.setAttribute('aria-label', 'Send gift');
+    }
+  }
+
+  // ---- Keyboard detection via visualViewport shrink ----
+  function setupKeyboardDetection() {
+    if (!window.visualViewport || !input) return;
+    var baseline = window.visualViewport.height;
+    var lastKeyboard = false;
+    function refresh() {
+      var vh = window.visualViewport.height;
+      // A large height drop = on-screen keyboard covering the bottom.
+      var open = vh < baseline - 120;
+      if (open !== lastKeyboard) {
+        lastKeyboard = open;
+        viewportKeyboard = open;
+        updateSendIcon();
+      }
+    }
+    window.visualViewport.addEventListener('resize', refresh);
+    input.addEventListener('focus', function () {
+      viewportKeyboard = true;
+      updateSendIcon();
+    });
+    input.addEventListener('blur', function () {
+      setTimeout(function () {
+        viewportKeyboard = false;
+        updateSendIcon();
+      }, 200);
+    });
+  }
+
+  // ---- Header wiring ----
+  if (backBtn) {
+    backBtn.addEventListener('click', function () {
+      if (window.history.length > 1) window.history.back();
+      else window.location.href = 'index.html';
+    });
+  }
+  if (avatarBtn) {
+    avatarBtn.addEventListener('click', function () {
+      window.location.href = 'character-profile.html';
+    });
+  }
+  var nameBtn = document.getElementById('chat-name-btn');
+  if (nameBtn) {
+    nameBtn.addEventListener('click', function () {
+      window.location.href = 'character-profile.html';
+    });
+  }
+
+  // ---- Options menu (… dropdown) ----
+  function characterFirstName() {
+    return (CHARACTER.name || '').trim().split(/\s+/)[0] || 'Character';
+  }
+
+  function refreshMenuLabels() {
+    var first = characterFirstName();
+    var p = document.getElementById('menu-profile-label');
+    var ph = document.getElementById('menu-photos-label');
+    if (p) p.textContent = first + '\u2019s profile';
+    if (ph) ph.textContent = first + '\u2019s Photos';
+  }
+
+  // -- Private album (only the current user's generated photos) --
+  var albumModal = document.getElementById('album-modal');
+  var albumPanel = document.getElementById('album-panel');
+  var albumBackdrop = document.getElementById('album-backdrop');
+  var albumClose = document.getElementById('album-close');
+  var albumGrid = document.getElementById('album-grid');
+  var albumEmpty = document.getElementById('album-empty');
+  var albumTitle = document.getElementById('album-title');
+  var albumSubtitle = document.getElementById('album-subtitle');
+
+  var ALBUM_CACHE_KEY = function () {
+    return 'yours_album_' + USER_ID + '_' + CHARACTER.id;
+  };
+  var ALBUM_TTL = 60 * 60 * 1000;
+
+  function albumCacheRead() {
+    try {
+      var raw = sessionStorage.getItem(ALBUM_CACHE_KEY());
+      if (!raw) return null;
+      var cached = JSON.parse(raw);
+      if (!cached || !cached.ts || (Date.now() - cached.ts) > ALBUM_TTL) return null;
+      return cached.items || null;
+    } catch (e) { return null; }
+  }
+
+  function albumCacheWrite(items) {
+    try {
+      sessionStorage.setItem(ALBUM_CACHE_KEY(), JSON.stringify({ ts: Date.now(), items: items }));
+    } catch (e) {}
+  }
+
+  function albumCacheAdd(item) {
+    try {
+      var list = albumCacheRead() || [];
+      var exists = list.some(function (m) { return m.media_url === item.media_url; });
+      if (!exists) { list.unshift(item); albumCacheWrite(list); }
+    } catch (e) {}
+  }
+
+  function openAlbumModal() {
+    if (!albumModal || !albumPanel) return;
+    albumModal.style.display = 'flex';
+    requestAnimationFrame(function () {
+      albumPanel.style.opacity = '1';
+      albumPanel.style.transform = 'scale(1)';
+    });
+  }
+
+  function closeAlbumModal() {
+    if (!albumPanel) return;
+    albumPanel.style.opacity = '0';
+    albumPanel.style.transform = 'scale(.95)';
+    setTimeout(function () {
+      if (albumModal) albumModal.style.display = 'none';
+    }, 250);
+  }
+
+  function renderAlbum(items) {
+    if (!albumGrid) return;
+    albumGrid.innerHTML = '';
+    var hasItems = items && items.length > 0;
+    if (albumEmpty) albumEmpty.classList.toggle('hidden', hasItems);
+    if (!hasItems) return;
+    for (var i = 0; i < items.length; i++) {
+      var url = items[i].media_url;
+      if (!url) continue;
+      var wrap = document.createElement('div');
+      wrap.style.cssText = 'position:relative;aspect-ratio:1/1;border-radius:1rem;overflow:hidden;background:#0e0e0e;cursor:pointer;';
+      var img = document.createElement('img');
+      img.src = url;
+      img.alt = 'Private photo';
+      img.loading = 'lazy';
+      img.style.cssText = 'width:100%;height:100%;object-fit:cover;';
+      wrap.appendChild(img);
+      wrap.addEventListener('click', function () {
+        var f = document.createElement('div');
+        f.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.95);display:flex;align-items:center;justify-content:center;';
+        var big = document.createElement('img');
+        big.src = this.querySelector('img').src;
+        big.style.cssText = 'max-width:94%;max-height:94%;object-fit:contain;border-radius:.75rem;';
+        f.appendChild(big);
+        f.addEventListener('click', function () { document.body.removeChild(f); });
+        document.body.appendChild(f);
+      });
+      albumGrid.appendChild(wrap);
+    }
+  }
+
+  function openAlbum() {
+    var uid = USER_ID;
+    if (!uid) { showToast('Please sign in to view your photos.'); return; }
+    if (albumTitle) albumTitle.textContent = characterFirstName() + '\u2019s Photos';
+    if (albumSubtitle) albumSubtitle.textContent = 'Private — only you can see these';
+    openAlbumModal();
+    renderAlbum([]);
+    var cached = albumCacheRead();
+    if (cached) { renderAlbum(cached); return; }
+    YoursAPI.getCharacterChatMedia(CHARACTER.id, uid)
+      .then(function (data) {
+        var items = (data && data.media) || [];
+        albumCacheWrite(items);
+        renderAlbum(items);
+      })
+      .catch(function (err) {
+        console.error('album fetch failed:', err);
+        if (albumEmpty) albumEmpty.textContent = 'Could not load photos. Try again.';
+      });
+  }
+
+  function showToast(msg) {
+    var t = document.createElement('div');
+    t.textContent = msg;
+    t.style.cssText = 'position:fixed;bottom:2rem;left:50%;transform:translateX(-50%);background:#262626;color:#fff;padding:.8rem 1.2rem;border-radius:9999px;z-index:9999;box-shadow:0 8px 24px rgba(0,0,0,.4);';
+    document.body.appendChild(t);
+    setTimeout(function () { t.remove(); }, 3500);
+  }
+
+  if (menuBtn && dropdown) {
+    menuBtn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      dropdown.classList.toggle('hidden');
+    });
+    document.addEventListener('click', function (e) {
+      if (!e.target.closest('#chat-menu-btn') && !e.target.closest('#chat-dropdown') && !dropdown.classList.contains('hidden')) {
+        dropdown.classList.add('hidden');
+      }
+    });
+    dropdown.addEventListener('click', function (e) {
+      var item = e.target.closest('.chat-dropdown-item');
+      if (!item) return;
+      var action = item.getAttribute('data-action');
+      dropdown.classList.add('hidden');
+      if (action === 'profile') {
+        window.location.href = 'character-profile.html';
+      } else if (action === 'photos') {
+        openAlbum();
+      } else if (action === 'reset') {
+        openResetModal();
+      }
+    });
+  }
+
+  // ---- Start an AI voice call ----
+  if (callBtn) {
+    callBtn.addEventListener('click', function () {
+      if (menuBtn && dropdown) dropdown.classList.add('hidden');
+      // Ensure we know which conversation this call belongs to.
+      ensureConversation().then(function () {
+        try {
+          sessionStorage.setItem('yours_current_character', JSON.stringify(CHARACTER));
+        } catch (e) {}
+        try {
+          if (CONVERSATION_ID) sessionStorage.setItem('yours_conversation_id', CONVERSATION_ID);
+        } catch (e) {}
+        window.location.href = 'call.html';
+      }).catch(function (err) {
+        showToast((err && err.message) || 'Please sign in first.');
+      });
+    });
+  }
+
+  // ---- Reset conversation confirmation modal ----
+  var resetModal = document.getElementById('reset-chat-modal');
+  var resetPanel = document.getElementById('reset-chat-panel');
+  var resetBackdrop = document.getElementById('reset-chat-backdrop');
+  var resetCancel = document.getElementById('reset-chat-cancel');
+  var resetConfirm = document.getElementById('reset-chat-confirm');
+
+  function openResetModal() {
+    resetModal.style.display = 'flex';
+    requestAnimationFrame(function () {
+      resetPanel.style.opacity = '1';
+      resetPanel.style.transform = 'scale(1)';
+    });
+  }
+  function closeResetModal() {
+    resetPanel.style.opacity = '0';
+    resetPanel.style.transform = 'scale(.92)';
+    setTimeout(function () { resetModal.style.display = 'none'; }, 250);
+  }
+
+  if (resetModal) {
+    if (resetCancel) resetCancel.addEventListener('click', closeResetModal);
+    if (resetBackdrop) resetBackdrop.addEventListener('click', closeResetModal);
+    if (resetConfirm) resetConfirm.addEventListener('click', function () {
+      var convId = CONVERSATION_ID;
+      var finish = function () {
+        chatArea.innerHTML = '';
+        addCharacterMessage('Fresh start... what shall we talk about? \u2728', true);
+        closeResetModal();
+      };
+      if (convId && USER_ID && window.YoursAPI && YoursAPI.resetConversation) {
+        resetConfirm.disabled = true;
+        YoursAPI.resetConversation(convId, USER_ID).then(finish).catch(finish).then(function () {
+          resetConfirm.disabled = false;
+        });
+      } else {
+        finish();
+      }
+    });
+  }
+
+  if (albumModal) {
+    if (albumClose) albumClose.addEventListener('click', closeAlbumModal);
+    if (albumBackdrop) albumBackdrop.addEventListener('click', closeAlbumModal);
+  }
+
+  // ---- Input / send ----
+  // The field starts `readonly` so the browser's autofill / passkey bar never
+  // attaches above the keyboard; we clear readonly as soon as the user focuses it.
+  if (input) {
+    var unlockInput = function () {
+      if (input.hasAttribute('readonly')) {
+        input.removeAttribute('readonly');
+      }
+    };
+    ['focus', 'touchstart', 'pointerdown', 'click'].forEach(function (evt) {
+      input.addEventListener(evt, unlockInput);
+    });
+  }
+  if (input) input.addEventListener('input', updateSendIcon);
+  if (input) {
+    input.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') sendMessage();
+    });
+  }
+  setupKeyboardDetection();
+  if (sendBtn) {
+    sendBtn.addEventListener('click', function () {
+      // Always the media icon → open the device gallery.
+      if (imageInput) imageInput.click();
+    });
+  }
+  if (imageInput) {
+    imageInput.addEventListener('change', function () {
+      var file = imageInput.files && imageInput.files[0];
+      if (!file) return;
+      if (file.type.indexOf('image/') !== 0) {
+        imageInput.value = '';
+        return;
+      }
+      var reader = new FileReader();
+      reader.onload = function (e) {
+        // Attach to the input bar — do NOT auto-send.
+        showPendingImage(e.target.result, file.name || '');
+        if (input) input.focus();
+      };
+      reader.readAsDataURL(file);
+      imageInput.value = '';
+    });
+  }
+
+  // ---- Quick action chips auto-fill the input ----
+  function setQuickText(text) {
+    input.value = text;
+    updateSendIcon();
+    if (input) input.focus();
+  }
+  if (quickPic) quickPic.addEventListener('click', function () { setQuickText('send me a pic of you'); });
+  if (quickVideo) quickVideo.addEventListener('click', function () { setQuickText('send me a video of you'); });
+  if (quickVoice) quickVoice.addEventListener('click', function () { setQuickText('send me a voice message of you'); });
+
+  // ---- Gifts bottom sheet (slides up from the bottom) ----
+  var giftBalanceEl = document.getElementById('gift-wallet-balance');
+
+  function updateGiftBalance(credits) {
+    if (giftBalanceEl && credits != null) {
+      giftBalanceEl.textContent = Math.floor(Number(credits)).toLocaleString();
+    }
+  }
+  function loadGiftSheetBalance() {
+    if (!USER_ID || !window.YoursAPI || !YoursAPI.getWallet) return;
+    YoursAPI.getWallet(USER_ID).then(function (res) {
+      if (res && res.wallet) updateGiftBalance(res.wallet.credits);
+    }).catch(function () {});
+  }
+  function openGiftSheet() {
+    clearGiftSelection();
+    loadGiftSheetBalance();
+    giftSheet.style.display = 'flex';
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () {
+        giftPanel.style.transform = 'translateY(0)';
+      });
+    });
+  }
+  function closeGiftSheet() {
+    giftPanel.style.transform = 'translateY(100%)';
+    setTimeout(function () { giftSheet.style.display = 'none'; }, 300);
+  }
+  if (giftBtn) {
+    giftBtn.addEventListener('click', function () {
+      // Keyboard open (or an image attached) → the gift icon is the send button.
+      if (viewportKeyboard || pendingImage) {
+        sendMessage();
+        return;
+      }
+      openGiftSheet();
+    });
+  }
+  if (giftClose) giftClose.addEventListener('click', closeGiftSheet);
+  if (giftBackdrop) giftBackdrop.addEventListener('click', closeGiftSheet);
+
+  // ---- Gift popup category tabs (valentine / treats / accessories) ----
+  var giftTabs = document.querySelectorAll('#gift-sheet [data-tab]');
+  var giftGrid = document.getElementById('gift-grid');
+  function selectGiftTab(category) {
+    var items = giftGrid.querySelectorAll('[data-category]');
+    for (var i = 0; i < items.length; i++) {
+      items[i].style.display = (category === 'all' || items[i].getAttribute('data-category') === category) ? '' : 'none';
+    }
+    for (var j = 0; j < giftTabs.length; j++) {
+      if (giftTabs[j].getAttribute('data-tab') === category) giftTabs[j].classList.add('active');
+      else giftTabs[j].classList.remove('active');
+    }
+  }
+  for (var g = 0; g < giftTabs.length; g++) {
+    (function (tab) {
+      tab.addEventListener('click', function () {
+        selectGiftTab(tab.getAttribute('data-tab'));
+      });
+    })(giftTabs[g]);
+  }
+
+  // ---- Gift selection + send button state ----
+  var giftItems = giftGrid.querySelectorAll('[data-category]');
+  var giftSendBtn = document.getElementById('gift-send-btn');
+  var selectedGift = null;
+  function updateSendBtn() {
+    if (selectedGift) {
+      giftSendBtn.disabled = false;
+      giftSendBtn.classList.add('bg-gray-700');
+    } else {
+      giftSendBtn.disabled = true;
+      giftSendBtn.classList.remove('bg-gray-700');
+    }
+  }
+  function clearGiftSelection() {
+    for (var i = 0; i < giftItems.length; i++) giftItems[i].classList.remove('selected');
+    selectedGift = null;
+    updateSendBtn();
+  }
+  for (var s = 0; s < giftItems.length; s++) {
+    (function (item) {
+      item.addEventListener('click', function () {
+        for (var i = 0; i < giftItems.length; i++) giftItems[i].classList.remove('selected');
+        item.classList.add('selected');
+        var img = item.querySelector('img');
+        var priceEl = item.querySelector('span.text-sm');
+        var price = priceEl ? (parseInt(priceEl.textContent, 10) || 0) : 0;
+        selectedGift = {
+          name: img ? (img.alt || item.textContent.trim()) : item.textContent.trim(),
+          img: img ? img.src : null,
+          price: price
+        };
+        updateSendBtn();
+      });
+    })(giftItems[s]);
+  }
+
+  // Persist the sent gift so the character's About page shows what THIS user
+  // sent to THIS character. Deducts the gift's token cost from the wallet
+  // first (atomic ledger); only on success is the gift recorded. Writes to the
+  // Supabase gifts table via the API and mirrors to sessionStorage as a
+  // fast/offline fallback. Returns a Promise.
+  function recordGift(gift) {
+    var uid = (USER_ID || 'guest');
+    var cid = (CHARACTER.id || 'unknown');
+    var spend = Promise.resolve(null);
+    if (uid !== 'guest' && gift && gift.price > 0 && window.YoursAPI && YoursAPI.spend) {
+      spend = YoursAPI.spend(uid, gift.price, 'Gift: ' + gift.name)
+        .catch(function (err) {
+          var msg = String((err && err.message) || '').toLowerCase();
+          if (msg.indexOf('insufficient') !== -1) {
+            showToast('Not enough tokens for this gift. Recharge and try again.');
+            return 'abort';
+          }
+          showToast('Gift sent! Wallet charge pending \u2014 check your balance.');
+          return 'proceed';
+        });
+    }
+    return spend.then(function (res) {
+      if (res === 'abort') return null;
+      try {
+        var key = 'yours_gifts_' + uid + '_' + cid;
+        var list = [];
+        try { list = JSON.parse(sessionStorage.getItem(key) || '[]'); } catch (e) {}
+        if (!Array.isArray(list)) list = [];
+        list.push({ name: gift.name, img: gift.img, at: new Date().toISOString() });
+        sessionStorage.setItem(key, JSON.stringify(list));
+        try { sessionStorage.setItem('yours_gifts_key', key); } catch (e2) {}
+      } catch (e) {}
+      // Best-effort DB write (only when signed in and a character is set).
+      if (window.YoursAPI && YoursAPI.sendGift) {
+        window.YoursAPI.sendGift(uid, cid, gift.name, gift.img)
+          .catch(function () { /* keep the local fallback */ });
+      }
+      if (res && res.wallet && res.wallet.credits != null) {
+        updateGiftBalance(res.wallet.credits);
+        showToast('Gift sent! Balance: ' + Math.floor(Number(res.wallet.credits)).toLocaleString() + ' tokens');
+      }
+      return res;
+    });
+  }
+
+  if (giftSendBtn) {
+    giftSendBtn.addEventListener('click', function () {
+      if (giftSendBtn.disabled) return;
+      var gift = selectedGift;
+      closeGiftSheet();
+      clearGiftSelection();
+      if (gift) recordGift(gift).catch(function () {});
+    });
+  }
+  updateSendBtn();
+
+  // ---- Keep the UI (and fixed background) stable when the keyboard opens/closes ----
+  if (window.visualViewport && chatArea) {
+    var lastVH = window.visualViewport.height;
+    window.visualViewport.addEventListener('resize', function () {
+      var vh = window.visualViewport.height;
+      if (vh !== lastVH) {
+        lastVH = vh;
+        scrollBottom();
+      }
+    });
+  }
+
+  // ---- Seed / restore the conversation ----
+  var seeded = false;
+  function seed() {
+    if (seeded) return;
+    seeded = true;
+    ensureConversation()
+      .then(function () { return loadExistingMessages(); })
+      .then(function () {
+        if (!chatArea.childNodes.length) {
+          addCharacterMessage('Hey, I\'m ' + CHARACTER.name + '. I\'m so happy you found me — tell me about your day! 💕', true);
+        }
+      })
+      .catch(function () {
+        addCharacterMessage('Hey, I\'m ' + CHARACTER.name + '. I\'m so happy you found me — tell me about your day! 💕', true);
+      })
+      .then(function () { markReady('msgs'); });
+  }
+
+  // ---- Pick up the character from sessionStorage set by feed/profile/chat ----
+  function initCharacter() {
+    var stored = null;
+    try { stored = JSON.parse(sessionStorage.getItem('yours_current_character') || 'null'); } catch (e) { stored = null; }
+    if (stored) { applyCharacter(stored); return; }
+    // Fallback: first active character, so the page never shows an empty shell.
+    supabase
+      .from('characters')
+      .select('id,name,age,about,gender,personality,art_style,voice_id,circular_profile_image_url,character_feeds(media_url,media_type)')
+      .eq('is_active', true)
+      .order('created_at', { ascending: true })
+      .limit(1)
+      .then(function (res) {
+        if (res.data && res.data[0]) applyCharacter(res.data[0]);
+        else { markReady('bg'); seed(); }
+      })
+      .catch(function () { markReady('bg'); seed(); });
+  }
+  showSkeleton();
+  initCharacter();
+  // Safety net: never let the skeleton linger if something hangs.
+  setTimeout(hideSkeleton, 10000);
+})();
+</script>
 <script src="js/animations.js"></script>
 </body></html>

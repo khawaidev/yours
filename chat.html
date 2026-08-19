@@ -1,10 +1,12 @@
 <!DOCTYPE html><html class="dark" lang="en" style=""><head>
 <meta charset="utf-8">
-<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport">
 <title>Chats - Blush</title>
+<link href="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/file_000000003704823093c6cccb8ba71cd1.png" rel="icon" type="image/png">
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link rel="stylesheet" href="css/app.css">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Be+Vietnam+Pro:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
 <script id="tailwind-config">
         tailwind.config = {
@@ -58,7 +60,11 @@
                       "background": "#131313",
                       "primary-fixed": "#ffdad2",
                       "primary-fixed-dim": "#ffb4a3",
-                      "surface-tint": "#ffb4a3"
+                      "surface-tint": "#ffb4a3",
+                      "app-surface": "#252525",
+                      "app-primary": "#E2E2E2",
+                      "app-secondary": "#A0A0A0",
+                      "app-accent": "#3A3A3A"
               },
               "borderRadius": {
                       "DEFAULT": "1rem",
@@ -156,20 +162,13 @@
         }
     </script>
 <style>
-        .no-scrollbar::-webkit-scrollbar {
-            display: none;
-        }
-        .no-scrollbar {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
         .blur-msg {
             filter: blur(4px);
             user-select: none;
         }
     </style>
 </head>
-<body class="bg-background text-on-background antialiased pb-32">
+<body class="bg-background text-on-background antialiased pb-32 app-page">
 <!-- BEGIN: Custom skeleton loader (mirrors page layout) -->
 <div id="page-skeleton" style="position:fixed;inset:0;z-index:9999;background:#0e0e0e;overflow-y:auto">
 <div style="width:100%;max-width:28rem;margin:0 auto;padding:1rem 1.5rem 4rem">
@@ -178,20 +177,14 @@
 <div class="skeleton-block" style="height:2rem;width:6rem;border-radius:.5rem"></div>
 <div class="skeleton-block" style="width:4.5rem;height:2.25rem;border-radius:9999px"></div>
 </div>
-<!-- Story circles -->
-<div style="display:flex;gap:1.25rem;margin-bottom:2rem">
-<div style="display:flex;flex-direction:column;align-items:center;gap:.5rem"><div class="skeleton-block" style="width:4rem;height:4rem;border-radius:9999px"></div><div class="skeleton-block" style="height:.75rem;width:3rem;border-radius:9999px"></div></div>
-<div style="display:flex;flex-direction:column;align-items:center;gap:.5rem"><div class="skeleton-block" style="width:4rem;height:4rem;border-radius:9999px"></div><div class="skeleton-block" style="height:.75rem;width:3rem;border-radius:9999px"></div></div>
-<div style="display:flex;flex-direction:column;align-items:center;gap:.5rem"><div class="skeleton-block" style="width:4rem;height:4rem;border-radius:9999px"></div><div class="skeleton-block" style="height:.75rem;width:3rem;border-radius:9999px"></div></div>
-<div style="display:flex;flex-direction:column;align-items:center;gap:.5rem"><div class="skeleton-block" style="width:4rem;height:4rem;border-radius:9999px"></div><div class="skeleton-block" style="height:.75rem;width:3rem;border-radius:9999px"></div></div>
-</div>
-<!-- Tabs -->
-<div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #353534;margin-bottom:1.5rem;padding-bottom:1rem">
-<div style="display:flex;gap:2rem">
-<div class="skeleton-block" style="height:1.25rem;width:4.5rem;border-radius:.375rem"></div>
-<div class="skeleton-block" style="height:1.25rem;width:4.5rem;border-radius:.375rem"></div>
-</div>
-<div class="skeleton-block" style="height:1.5rem;width:1.5rem;border-radius:.375rem"></div>
+<!-- Search bar -->
+<div class="skeleton-block" style="height:2.75rem;border-radius:9999px;margin-bottom:1rem"></div>
+<!-- Filter pills -->
+<div style="display:flex;align-items:center;gap:.5rem;margin-bottom:1.5rem">
+<div class="skeleton-block" style="height:2.25rem;width:4rem;border-radius:9999px"></div>
+<div class="skeleton-block" style="height:2.25rem;width:6rem;border-radius:9999px"></div>
+<div style="flex:1"></div>
+<div class="skeleton-block" style="height:2.25rem;width:2.25rem;border-radius:9999px"></div>
 </div>
 <!-- Chat list -->
 <div style="display:flex;flex-direction:column;gap:1.25rem">
@@ -228,79 +221,47 @@
 </div>
 <!-- END: Custom skeleton loader -->
 <!-- Top App Bar -->
-<header class="sticky top-0 z-40 w-full pt-gutter pb-4 px-container-margin flex justify-between items-center">
-<h1 class="text-primary dark:text-primary font-headline-lg-mobile text-headline-lg-mobile tracking-tighter">Chats</h1>
-<div class="flex items-center gap-2 bg-surface-container-high py-2 px-4 rounded-full border border-outline/20">
-<span class="material-symbols-outlined text-tertiary" style="font-variation-settings: &quot;FILL&quot; 1;">monetization_on</span>
-<span class="font-label-md text-label-md text-on-surface">50</span>
-</div>
+<header class="sticky top-0 z-40 w-full pt-gutter pb-4 px-container-margin flex justify-between items-center border-b border-surface-variant/50 bg-background/95 backdrop-blur-xl">
+<h1 class="text-white font-headline-lg-mobile text-headline-lg-mobile tracking-tighter">Chats</h1>
+<a href="recharge.html" class="flex items-center gap-2 bg-surface-container-high py-2 px-4 rounded-full border border-outline/20 active:scale-95 transition-transform" aria-label="Recharge">
+<img alt="Cash" class="w-4 h-4 object-contain" src="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/slazzer-preview-z0bt9.png">
+<span class="font-label-md text-label-md text-white" id="chat-coin-balance">50</span>
+<span class="material-symbols-outlined text-white text-lg leading-none">add</span>
+</a>
 </header>
 <main class="w-full">
 <!-- Tabs -->
 
-<!-- Horizontal Scroll Section -->
-<section class="mb-section-gap">
-
-<div class="flex gap-4 overflow-x-auto no-scrollbar px-container-margin pb-4">
-<!-- Story Item 1 -->
-<div class="flex flex-col items-center gap-2 shrink-0 w-[72px]">
-<div class="w-16 h-16 rounded-full p-[2px] bg-gradient-to-tr from-primary via-secondary to-tertiary">
-<img class="w-full h-full rounded-full border-2 border-surface object-cover" data-alt="A futuristic, vibrant 3D portrait of an elegant AI companion with glowing neon accents set against a dark premium backdrop." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCCJIdP1SGBDfL91s3Vl-MumQeTm86vjtC1JP-hfLdAYp4UrzTtQbDK9b8i53-EAQpbAIrVgGDMFrJLiOjsTICrRl3VxIJrFvs6opQeXq8w9n561dmtQpoTaR-Gvt9p_KUad3BCmYC0Wg5kFgvUfCqvv8dagEUi1MVaFcXj0ORS38R1x-9Af5-G1h-MLnB-yf2C1mqTdXEblivzrpzVrIA1johsyRW_xEmSh8lhNuuucimEj6Pdwqz_eA">
+<!-- Search Bar -->
+<section class="px-container-margin mb-3 w-full">
+<div class="relative">
+<div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+<i class="fa-solid fa-search text-app-secondary"></i>
 </div>
-<span class="font-label-sm text-label-sm text-center truncate w-full">Luna</span>
+<input aria-label="Search for a character" class="w-full bg-app-surface text-app-primary placeholder-app-secondary rounded-full py-3 pl-11 pr-4 border-none focus:ring-1 focus:ring-gray-500 text-base shadow-sm" id="chat-search" placeholder="Search for a character" type="search">
 </div>
-<!-- Story Item 2 -->
-<div class="flex flex-col items-center gap-2 shrink-0 w-[72px]">
-<div class="w-16 h-16 rounded-full p-[2px] bg-gradient-to-tr from-primary via-secondary to-tertiary">
-<img class="w-full h-full rounded-full border-2 border-surface object-cover" data-alt="A stylized 3D avatar of a sophisticated, sharply dressed male AI assistant with subtle pink rim lighting in a sleek dark environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAe2OEvAxUzwZVmXYJO3LjqH6XVCeIBXc1QdHqULSaiQNZ_uDY9xRO8CPDzLdxYPEC7EST3nkzGP8yBJhAGSuaaFsgwFS8BhEC4CSkFw295hq5P9ow_wfvGfAmo-5mzs2YYJkGqf9aFnrq-QImvgPEpixQiFLuDjMAtm90m16WXmrZqyJfXRHvyoLb42e2H40LRuJosZv6RrLHSwB7iJkit3sQbPdBJdhEE9OCAkv6ptcHMV_MgazCyEw">
+</section>
+<!-- Filter Pills -->
+<section class="px-container-margin flex items-center gap-2 mb-4 w-full" id="chat-filters">
+<button class="px-5 py-2 rounded-full bg-white/50 text-white font-label-md text-label-md font-bold active:scale-95 transition-all" data-filter-pill data-pill="all" type="button">All</button>
+<button class="px-5 py-2 rounded-full text-white/60 font-label-md text-label-md active:scale-95 transition-all" data-filter-pill data-pill="favorites" type="button">Favorites</button>
+<span class="flex-1"></span>
+<button class="w-10 h-10 rounded-full bg-surface-container-high text-white flex items-center justify-center active:scale-95 transition-transform" aria-label="New chat" id="new-chat-btn" type="button">
+<span class="material-symbols-outlined">add</span>
+</button>
+</section>
+<!-- Search results (live DB search) -->
+<section class="flex flex-col px-2 gap-2" id="chat-results" style="display:none;">
+<div class="py-8 text-center" id="chat-results-empty" style="display:none;">
+<p class="text-white/70 font-body-md text-body-md">No characters found</p>
 </div>
-<span class="font-label-sm text-label-sm text-center truncate w-full">Felix</span>
-</div>
-<!-- Story Item 3 -->
-<div class="flex flex-col items-center gap-2 shrink-0 w-[72px]">
-<div class="w-16 h-16 rounded-full p-[2px] bg-surface-variant">
-<img class="w-full h-full rounded-full border-2 border-surface object-cover" data-alt="A soft, glassmorphic 3D rendering of a friendly robotic companion with gentle curved edges and warm orange lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDub9EvMPJcW7bUmAnAwB3IVTMah3zksrFBuw2GY06Ssqz24xNuv6nk76a2vLGKxLggYX7PTeJ73_suFQxcR1Nai0GDxRZlCc7t3kdAAYnzvrNJS-jKfOcGJOZTSYHBH-QRu-rz17g6RXEVVoPuE_CPiUiRSGZ9DHjDhpBCpN44-rQVNuLFYd_nenuqlQK6MhBEaZuRsnBoNA_xvRGGTMWnrgQS5jRPtW42hq7enZqFucm_sXiF519JNQ">
-</div>
-<span class="font-label-sm text-label-sm text-center truncate w-full">Nova</span>
-</div>
-<!-- Story Item 4 -->
-<div class="flex flex-col items-center gap-2 shrink-0 w-[72px]">
-
-
-</div>
-</div>
-</section><div class="px-container-margin flex justify-between items-center border-b border-surface-variant mb-stack-md w-full">
-  <div class="flex flex-1">
-    <button class="flex-1 pb-2 border-b-2 border-primary text-primary font-label-md text-label-md text-center">All chats</button>
-    <button class="flex-1 pb-2 border-b-2 border-transparent text-on-surface-variant hover:text-on-surface transition-colors font-label-md text-label-md text-center">Favorites</button>
-  </div>
-  <button class="pb-2 px-4 text-primary hover:text-secondary transition-colors text-on-surface-variant">
-    <span class="material-symbols-outlined">add</span>
-  </button>
-</div>
+</section>
 <!-- Chat List -->
-<section class="flex flex-col px-container-margin gap-2">
-<!-- Chat Item 1 -->
-
-<!-- Chat Item 2 (Blush News) -->
-
-<!-- Chat Item 3 -->
-<div class="flex items-center gap-4 p-4 rounded-xl hover:bg-surface-container transition-colors cursor-pointer relative">
-<img class="w-[60px] h-[60px] rounded-full object-cover" data-alt="A highly detailed 3D render of a cute, artistic AI persona with pastel hair and a casual, welcoming smile, set against a dark ambient background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBng3IhR4ocx565rR_mB5iuXrtcy4iidFnAvhW7AO0tw4laoQhFtG_YBCbkdjMJMQ6WUFqePyG1ny0_m1XH7VgNnEC9bugdIb_PtgiZKMpaN3oVWGkA_aKlzsuw9qCneBbMT2cnEtzQdImpOLt3bx4YUB5A_YfH13mg1fB3fQtoR8NIbp6WOdYTS-McSG5rwt8Y2Yh6Jkvhjx5RKLtl4VK6hKpRcCMcmXuC3tVLVKtKJVzY684IuRXxwQ">
-<div class="flex-1 min-w-0">
-<div class="flex justify-between items-baseline mb-1">
-<h3 class="font-label-md text-label-md text-on-surface truncate pr-2">Harper</h3>
-<span class="font-label-sm text-label-sm text-on-surface-variant shrink-0">Yesterday</span>
+<section class="flex flex-col px-2 gap-2" id="chat-list">
+<div class="py-16 text-center" id="chat-list-empty" style="display:none;">
+<p class="text-white/70 font-body-md text-body-md">No chats yet</p>
+<p class="text-white/50 font-label-sm text-label-sm mt-2">Start chatting with a character to see them here.</p>
 </div>
-<p class="font-body-md text-body-md text-on-surface-variant truncate"><span style="text-align: center; white-space: normal; background-color: rgb(19, 19, 19);" class="">Unleash the power of AI art and craft unique characters to fall in love with!</span></p>
-</div>
-</div>
-<!-- Chat Item 4 (Blurred) -->
-
-<!-- Chat Item 5 (Blurred) -->
-
-<!-- Chat Item 6 (Blurred) -->
-
 </section>
 </main>
 <!-- Bottom Nav Bar -->
@@ -324,5 +285,245 @@
 
 
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/api-client.js"></script>
+<script src="js/api-client.js"></script>
+<script>
+(function () {
+  // Same project config as auth.html / feed.html
+  var SUPABASE_URL = 'https://dgbxcakkqrgrapwsvrol.supabase.co';
+  var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRnYnhjYWtrcXJncmFwd3N2cm9sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYxOTM0NDksImV4cCI6MjEwMTc2OTQ0OX0.v2gOgC28bfXXVjRVki1lL0ulgCHVloUAv1eF5HVSzuk';
+  var supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  var list = document.getElementById('chat-list');
+  var emptyEl = document.getElementById('chat-list-empty');
+  var searchInput = document.getElementById('chat-search');
+  var allConversations = [];
+
+  // ---- Filter pills (All / Favorites) ----
+  var pills = document.querySelectorAll('[data-filter-pill]');
+  var activePill = 'all';
+  for (var i = 0; i < pills.length; i++) {
+    pills[i].addEventListener('click', function () {
+      for (var j = 0; j < pills.length; j++) {
+        pills[j].classList.remove('bg-white/50', 'text-white', 'font-bold');
+        pills[j].classList.add('text-white/60');
+      }
+      this.classList.add('bg-white/50', 'text-white', 'font-bold');
+      this.classList.remove('text-white/60');
+      activePill = this.getAttribute('data-pill');
+      render();
+    });
+  }
+
+  // "All" shows every character; "Favorites" shows the ones the user has sent
+  // a gift to / leveled up with (persisted per-user charisma).
+  function isFavorite(c) {
+    if (!c.charisma) return false;
+    return c.charisma.some(function (row) { return row.level > 0; });
+  }
+
+  function openChat(c) {
+    sessionStorage.setItem('yours_current_character', JSON.stringify(c));
+    window.location.href = 'messaging.html';
+  }
+
+  // "x" minutes ago style relative time.
+  function timeAgo(iso) {
+    if (!iso) return '';
+    var diff = Date.now() - new Date(iso).getTime();
+    if (isNaN(diff) || diff < 0) return '';
+    var m = Math.floor(diff / 60000);
+    if (m < 1) return 'now';
+    if (m < 60) return m + 'm';
+    var h = Math.floor(m / 60);
+    if (h < 24) return h + 'h';
+    var d = Math.floor(h / 24);
+    if (d < 7) return d + 'd';
+    var w = Math.floor(d / 7);
+    if (w < 5) return w + 'w';
+    var mo = Math.floor(d / 30);
+    if (mo < 12) return mo + 'mo';
+    return Math.floor(d / 365) + 'y';
+  }
+
+  // Shorten long messages for the row subtitle.
+  function preview(text) {
+    var original = (text || '').trim();
+    if (!original) return 'Say hi and start a conversation.';
+    // Drop roleplay/action segments wrapped in asterisks (e.g. "*smiles*").
+    text = original.replace(/\*[^*]+(\*|$)/g, ' ').replace(/\s+/g, ' ').trim();
+    if (!text) return '';
+    return text.length > 55 ? text.slice(0, 55) + '…' : text;
+  }
+
+  function render() {
+    var q = (searchInput.value || '').trim().toLowerCase();
+    var visible = allConversations.filter(function (conv) {
+      var c = conv.character || {};
+      if (activePill === 'favorites' && !isFavorite(c)) return false;
+      if (c.gender === 'men') return false;
+      if (q && c.name && c.name.toLowerCase().indexOf(q) === -1) return false;
+      return true;
+    });
+
+    list.querySelectorAll('.chat-row:not(#chat-list-empty)').forEach(function (el) { el.remove(); });
+    if (!visible.length) {
+      emptyEl.style.display = 'block';
+      return;
+    }
+    emptyEl.style.display = 'none';
+    visible.forEach(function (conv) {
+      var c = conv.character || {};
+      var lastMsgs = Array.isArray(conv.last_message) ? conv.last_message : [];
+      var lastMsg = lastMsgs.slice().sort(function (a, b) {
+        return new Date(b.created_at) - new Date(a.created_at);
+      })[0] || null;
+      var ts = (lastMsg && lastMsg.created_at) || conv.last_message_at;
+      var isUser = lastMsg && lastMsg.sender_type === 'user';
+      var sub = lastMsg ? (isUser ? 'You: ' : '') + preview(lastMsg.content) : preview('');
+      var row = document.createElement('div');
+      row.className = 'chat-row flex items-center gap-3 py-3 px-2 rounded-2xl hover:bg-surface-container transition-colors cursor-pointer relative';
+      row.innerHTML =
+        '<button class="relative shrink-0 rounded-full p-[2.5px] bg-gradient-to-r from-[#ff7e5f] to-[#ff4d6d] active:scale-95 transition-transform" data-avatar-btn="1" type="button"><span class="block bg-[#131313] rounded-full p-[2.5px]"><img class="w-[56px] h-[56px] rounded-full object-cover" alt="' + (c.name || '') + ' avatar" src="' + (c.circular_profile_image_url || '') + '"></span></button>' +
+        '<div class="flex-1 min-w-0" data-msg-btn="1"><div class="flex justify-between items-baseline mb-1">' +
+        '<h3 class="font-label-md text-label-md text-white truncate pr-2">' + (c.name || 'Unknown') + '</h3>' +
+        '<span class="font-label-sm text-label-sm text-white/40 shrink-0">' + timeAgo(ts) + '</span></div>' +
+        '<p class="font-body-md text-body-md text-white/70 truncate">' + sub + '</p></div>';
+      row.addEventListener('click', function (e) {
+        var avatar = e.target.closest('[data-avatar-btn="1"]');
+        if (avatar) {
+          e.stopPropagation();
+          sessionStorage.setItem('yours_current_character', JSON.stringify(c));
+          window.location.href = 'character-profile.html';
+        } else {
+          openChat(c);
+        }
+      });
+      list.appendChild(row);
+    });
+  }
+
+  var newChatBtn = document.getElementById('new-chat-btn');
+  if (newChatBtn) newChatBtn.addEventListener('click', function () { window.location.href = 'index.html'; });
+
+  // ---- Search: live results from the DB character catalog ----
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (m) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m];
+    });
+  }
+
+  var allCharsCache = null;
+  function getAllChars() {
+    if (allCharsCache) return Promise.resolve(allCharsCache);
+    return window.YoursAPI.getPublicCharacters().then(function (res) {
+      allCharsCache = (res && res.characters) || [];
+      return allCharsCache;
+    }).catch(function () { return []; });
+  }
+
+  function avatarImage(c) {
+    if (c.circular_profile_image_url) return c.circular_profile_image_url;
+    if (c.character_feeds && c.character_feeds.length) return c.character_feeds[0].media_url || '';
+    return '';
+  }
+
+  var searchEl = document.getElementById('chat-search');
+  var resultsEl = document.getElementById('chat-results');
+  var resultsEmpty = document.getElementById('chat-results-empty');
+  var filtersSection = document.getElementById('chat-filters');
+  var listSection = document.getElementById('chat-list');
+
+  function renderSearchResults(chars) {
+    resultsEl.querySelectorAll('.chat-row').forEach(function (el) { el.remove(); });
+    if (!chars || !chars.length) {
+      resultsEmpty.style.display = 'block';
+      return;
+    }
+    resultsEmpty.style.display = 'none';
+    chars.forEach(function (c) {
+      var row = document.createElement('div');
+      row.className = 'chat-row flex items-center gap-3 py-3 px-2 rounded-2xl hover:bg-surface-container transition-colors cursor-pointer relative';
+      var nameAge = (c.name || 'Unknown') + (c.age ? ', ' + c.age : '');
+      var sub = (c.about || c.description || c.personality || '').replace(/\s+/g, ' ').trim() || 'Tap to start a chat';
+      var img = avatarImage(c);
+      row.innerHTML =
+        '<button class="relative shrink-0 rounded-full p-[2.5px] bg-gradient-to-r from-[#ff7e5f] to-[#ff4d6d] active:scale-95 transition-transform" type="button"><span class="block bg-[#131313] rounded-full p-[2.5px]"><img class="w-[56px] h-[56px] rounded-full object-cover" alt="' + esc(c.name || '') + ' avatar" src="' + esc(img) + '"></span></button>' +
+        '<div class="flex-1 min-w-0"><h3 class="font-label-md text-label-md text-white truncate pr-2">' + esc(nameAge) + '</h3>' +
+        '<p class="font-body-md text-body-md text-white/70 truncate">' + esc(preview(sub)) + '</p></div>';
+      row.addEventListener('click', function () { openChat(c); });
+      resultsEl.appendChild(row);
+    });
+  }
+
+  function setSearchMode(active) {
+    resultsEl.style.display = active ? 'flex' : 'none';
+    if (filtersSection) filtersSection.style.display = active ? 'none' : '';
+    if (listSection) listSection.style.display = active ? 'none' : '';
+    if (!active && emptyEl) emptyEl.style.display = 'none';
+  }
+
+  if (searchEl) {
+    searchEl.addEventListener('input', function () {
+      var q = (searchEl.value || '').trim().toLowerCase();
+      if (!q) {
+        setSearchMode(false);
+        render();
+        return;
+      }
+      setSearchMode(true);
+      getAllChars().then(function (list) {
+        var filtered = list.filter(function (c) {
+          if (c.gender === 'men') return false;
+          var hay = [c.name || '', c.age != null ? String(c.age) : '', c.about || '', c.description || '', c.personality || '', c.gender || '', c.art_style || '', c.message_style || ''].join(' ').toLowerCase();
+          return hay.indexOf(q) !== -1;
+        });
+        renderSearchResults(filtered);
+      });
+    });
+  }
+
+  // Load only the characters this user has actually talked to (via the backend
+  // conversations API, which includes each conversation's last message).
+  var sessionPromise = supabase.auth.getSession().then(function (res) { return res.data.session || null; }).catch(function () { return null; });
+
+  void (async function () {
+    var session = await sessionPromise;
+    if (!session) { render(); return; }
+    try {
+      var resp = await window.YoursAPI.request('/conversations?userId=' + encodeURIComponent(session.user.id));
+      allConversations = resp.conversations || [];
+
+      var balEl = document.getElementById('chat-coin-balance');
+      try {
+        var walletRes = await window.YoursAPI.getWallet(session.user.id);
+        if (walletRes && walletRes.wallet && walletRes.wallet.credits != null && balEl) {
+          balEl.textContent = Math.floor(Number(walletRes.wallet.credits)).toLocaleString();
+        }
+      } catch (e) {
+        console.warn('load wallet balance failed', e);
+      }
+
+      var ids = allConversations.map(function (c) { return c.character_id; }).filter(Boolean);
+      if (ids.length) {
+        var { data: charisma } = await supabase
+          .from('user_charisma')
+          .select('character_id, level')
+          .eq('user_id', session.user.id)
+          .in('character_id', ids);
+        var byId = {};
+        (charisma || []).forEach(function (row) { byId[row.character_id] = row.level; });
+        allConversations.forEach(function (conv) {
+          if (conv.character && byId[conv.character_id] > 0) conv.character.charisma = [{ level: byId[conv.character_id] }];
+        });
+      }
+    } catch (e) {
+      console.warn('load chats failed', e);
+    }
+    render();
+  })();
+})();
+</script>
 <script src="js/animations.js"></script>
 </body></html>

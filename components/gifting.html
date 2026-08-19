@@ -1,8 +1,9 @@
 <!DOCTYPE html><html lang="en"><head>
 <meta charset="utf-8">
-<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport">
 <title>Blush Gifts Modal</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link rel="stylesheet" href="../css/app.css">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 <style data-purpose="custom-fonts">
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
@@ -23,7 +24,7 @@
     }
   </style>
 </head>
-<body class="bg-gray-900 text-white min-h-screen flex items-end sm:items-center justify-center">
+<body class="bg-gray-900 text-white min-h-screen flex items-end sm:items-center justify-center app-page">
 <!-- BEGIN: MainContainer -->
 <!-- Container for the entire mobile app view area, set to a mobile width for demonstration -->
 <div class="w-full max-w-[420px] h-[100dvh] sm:h-[850px] relative bg-cover bg-center overflow-hidden flex flex-col justify-end" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAIQWg5S9jv-Y6gLZou0Y62Gu1_BOX37k71XR43ieihQ_lxXowmnQ5tuedoaArabwTqJMvOo2WRDBQOs2eMi74etDl1B8bzGWnJaX46XPTn1DGBmOyUWkXIcXHXJblr7Gns6OMKVaXO6I36rt-1hNjWPaWnUobYEHkCwhELgNR6T2jnup5ZjTKi74GU776qZmdNbVHzAMMW-nSUA-oT0vvPDNdE0zXHKIq5CvbvkHqabI6NArGoRH95Hg');">
@@ -34,10 +35,11 @@
 <!-- BEGIN: ModalHeader -->
 <div class="flex items-center justify-between px-6 mb-6">
 <!-- Currency Balance -->
-<div class="bg-gray-800 rounded-full py-2 px-4 flex items-center space-x-2">
-<i class="fa-solid fa-money-bill-wave text-green-500 text-sm"></i>
+<a href="../recharge.html" class="bg-gray-800 rounded-full py-2 px-4 flex items-center space-x-2 active:scale-95 transition-transform" aria-label="Recharge">
+<img alt="Cash" class="w-4 h-4 object-contain" src="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/slazzer-preview-z0bt9.png">
 <span class="font-bold text-sm">50</span>
-</div>
+<i class="fa-solid fa-plus text-white text-xs"></i>
+</a>
 <!-- Modal Title -->
 <h2 class="text-xl font-bold text-white absolute left-1/2 transform -translate-x-1/2">Gifts</h2>
 <!-- Close Button -->
@@ -69,7 +71,7 @@
 </div>
 <span class="font-semibold text-gray-200 text-sm text-center">Rose</span>
 <div class="flex items-center space-x-1 mt-1">
-<i class="fa-solid fa-money-bill-wave text-green-500 text-[10px]"></i>
+<img alt="Cash" class="w-3 h-3 object-contain" src="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/slazzer-preview-z0bt9.png">
 <span class="text-white font-bold text-sm">200</span>
 </div>
 </div>
@@ -82,7 +84,7 @@
 </div>
 <span class="font-semibold text-gray-200 text-sm text-center">Royal Rose</span>
 <div class="flex items-center space-x-1 mt-1">
-<i class="fa-solid fa-money-bill-wave text-green-500 text-[10px]"></i>
+<img alt="Cash" class="w-3 h-3 object-contain" src="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/slazzer-preview-z0bt9.png">
 <span class="text-white font-bold text-sm">200</span>
 </div>
 </div>
@@ -93,7 +95,7 @@
 </div>
 <span class="font-semibold text-gray-200 text-sm text-center leading-tight">Teddy bear</span>
 <div class="flex items-center space-x-1 mt-1">
-<i class="fa-solid fa-money-bill-wave text-green-500 text-[10px]"></i>
+<img alt="Cash" class="w-3 h-3 object-contain" src="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/slazzer-preview-z0bt9.png">
 <span class="text-white font-bold text-sm">400</span>
 </div>
 </div>
@@ -106,7 +108,7 @@
 </div>
 <span class="font-semibold text-gray-200 text-sm text-center">Rosy Bear</span>
 <div class="flex items-center space-x-1 mt-1">
-<i class="fa-solid fa-money-bill-wave text-green-500 text-[10px]"></i>
+<img alt="Cash" class="w-3 h-3 object-contain" src="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/slazzer-preview-z0bt9.png">
 <span class="text-white font-bold text-sm">400</span>
 </div>
 </div>
@@ -117,7 +119,7 @@
 </div>
 <span class="font-semibold text-gray-200 text-sm text-center">Moon Ring</span>
 <div class="flex items-center space-x-1 mt-1">
-<i class="fa-solid fa-money-bill-wave text-green-500 text-[10px]"></i>
+<img alt="Cash" class="w-3 h-3 object-contain" src="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/slazzer-preview-z0bt9.png">
 <span class="text-white font-bold text-sm">700</span>
 </div>
 </div>
@@ -130,7 +132,7 @@
 </div>
 <span class="font-semibold text-gray-200 text-sm text-center">Ruby Ring</span>
 <div class="flex items-center space-x-1 mt-1">
-<i class="fa-solid fa-money-bill-wave text-green-500 text-[10px]"></i>
+<img alt="Cash" class="w-3 h-3 object-contain" src="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/slazzer-preview-z0bt9.png">
 <span class="text-white font-bold text-sm">700</span>
 </div>
 </div>

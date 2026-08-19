@@ -1,0 +1,108 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport">
+<title>Voice Options</title>
+<link href="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/file_000000003704823093c6cccb8ba71cd1.png" rel="icon" type="image/png">
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link rel="stylesheet" href="css/app.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+<style>
+  body { font-family: 'Inter', sans-serif; background-color: #131313; color: white; }
+  .accent { color: #ff7e5f; }
+  .tick {
+    width: 24px; height: 24px; border-radius: 9999px;
+    border: 2px solid #4b4b4b; display: flex; align-items: center; justify-content: center;
+    transition: all .15s ease; flex-shrink: 0;
+  }
+  .tick svg { display: none; width: 12px; height: 12px; color: #fff; }
+  .voice-row.selected .tick { background: #ff7e5f; border-color: #ff7e5f; }
+  .voice-row.selected .tick svg { display: block; }
+  .voice-row.selected .voice-name { color: #fff; }
+  .apply-enabled { background:#ff7e5f !important; opacity:1 !important; pointer-events:auto !important; }
+</style>
+</head>
+<body class="antialiased app-page">
+<main class="min-h-screen flex flex-col pb-10">
+<div class="px-6 pt-6 flex items-center justify-between">
+<button aria-label="Go back" class="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center text-white hover:bg-white/20 transition-colors cursor-pointer" onclick="window.location.href = 'character-profile.html#about';">
+<i class="fa-solid fa-chevron-left text-lg"></i>
+</button>
+<h1 class="text-xl font-bold absolute left-1/2 -translate-x-1/2">Voices</h1>
+<div class="w-10"></div>
+</div>
+<div class="px-6 mt-6">
+<div class="flex flex-col gap-3">
+<button class="voice-row selected w-full bg-surface-container hover:bg-surface-container-high transition-colors p-4 flex items-center justify-between border border-white/10 rounded-2xl" type="button" onclick="selectVoice(this)">
+<span class="voice-name font-medium text-gray-300">Sensual</span>
+<span class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+</button>
+<button class="voice-row w-full bg-surface-container hover:bg-surface-container-high transition-colors p-4 flex items-center justify-between border border-white/10 rounded-2xl" type="button" onclick="selectVoice(this)">
+<span class="voice-name font-medium text-gray-300">Soft</span>
+<span class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+</button>
+<button class="voice-row w-full bg-surface-container hover:bg-surface-container-high transition-colors p-4 flex items-center justify-between border border-white/10 rounded-2xl" type="button" onclick="selectVoice(this)">
+<span class="voice-name font-medium text-gray-300">Energetic</span>
+<span class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+</button>
+<button class="voice-row w-full bg-surface-container hover:bg-surface-container-high transition-colors p-4 flex items-center justify-between border border-white/10 rounded-2xl" type="button" onclick="selectVoice(this)">
+<span class="voice-name font-medium text-gray-300">Deep</span>
+<span class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+</button>
+<button class="voice-row w-full bg-surface-container hover:bg-surface-container-high transition-colors p-4 flex items-center justify-between border border-white/10 rounded-2xl" type="button" onclick="selectVoice(this)">
+<span class="voice-name font-medium text-gray-300">Playful</span>
+<span class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+</button>
+</div>
+</div>
+</main>
+<div class="fixed bottom-0 inset-x-0 px-6 pb-8 pt-4 bg-gradient-to-t from-[#131313] via-[#131313] to-transparent">
+<button id="apply-btn" class="w-full py-4 rounded-full bg-gray-800 text-white font-bold text-lg shadow-lg pointer-events-none opacity-60 cursor-not-allowed" disabled type="button" onclick="applyVoice()">Apply</button>
+</div>
+<script>
+var voiceRows = document.querySelectorAll('.voice-row');
+var applyBtn = document.getElementById('apply-btn');
+var loadedVoice = 'Sensual';
+try {
+  var cs = JSON.parse(sessionStorage.getItem('yours_char_settings') || '{}');
+  if (cs && cs.voice) loadedVoice = cs.voice;
+} catch (e) {}
+function currentVoice() {
+  for (var i = 0; i < voiceRows.length; i++) {
+    if (voiceRows[i].classList.contains('selected')) {
+      return (voiceRows[i].querySelector('.voice-name') || {}).textContent || 'Sensual';
+    }
+  }
+  return 'Sensual';
+}
+function refreshApply() {
+  var changed = currentVoice() !== loadedVoice;
+  if (changed) {
+    applyBtn.disabled = false;
+    applyBtn.classList.add('apply-enabled');
+    applyBtn.classList.remove('cursor-not-allowed');
+  } else {
+    applyBtn.disabled = true;
+    applyBtn.classList.remove('apply-enabled');
+    applyBtn.classList.add('cursor-not-allowed');
+  }
+}
+function selectVoice(row) {
+  for (var i = 0; i < voiceRows.length; i++) voiceRows[i].classList.remove('selected');
+  row.classList.add('selected');
+  refreshApply();
+}
+function applyVoice() {
+  window.YoursPlanGate.apply(function () {
+    var charSettings = {};
+    try { charSettings = JSON.parse(sessionStorage.getItem('yours_char_settings') || '{}'); } catch (e) {}
+    charSettings.voice = currentVoice();
+    try { sessionStorage.setItem('yours_char_settings', JSON.stringify(charSettings)); } catch (e) {}
+    history.back();
+  });
+}
+refreshApply();
+</script>
+<script src="js/api-client.js"></script>
+<script src="js/plan-gate.js"></script>
+</body></html>

@@ -1,9 +1,11 @@
 <!DOCTYPE html><html lang="en"><head>
 <meta charset="utf-8">
-<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content" name="viewport">
 <title>What's your name? - Onboarding</title>
+<link href="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/file_000000003704823093c6cccb8ba71cd1.png" rel="icon" type="image/png">
 <!-- Include Tailwind CSS -->
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link rel="stylesheet" href="css/app.css">
 <!-- Tailwind Configuration for Blush Design System -->
 <script data-purpose="tailwind-config">
     tailwind.config = {
@@ -40,6 +42,14 @@
       animation: blink 1s step-end infinite;
     }
     
+    /* Keep the page fixed when the on-screen keyboard opens so the browser
+       doesn't pan/zoom into the focused input and break the layout. */
+    html {
+      overflow: hidden;
+    }
+    input {
+      font-size: 16px; /* iOS zooms into inputs smaller than 16px */
+    }
     /* Input styling to hide default cursor and border, and center text */
     input[type="text"] {
       caret-color: transparent; /* Hide default cursor */
@@ -50,9 +60,9 @@
     }
   </style>
 </head>
-<body class="bg-blush-bg text-blush-primary font-sans h-screen flex flex-col overflow-hidden antialiased">
+<body class="bg-blush-bg text-blush-primary font-sans h-dvh flex flex-col overflow-hidden antialiased app-page">
 <!-- BEGIN: Header Section -->
-<header class="flex items-center px-6 pt-12 pb-4 relative z-10" data-purpose="onboarding-header">
+<header class="flex items-center px-6 pb-4 relative z-10" style="padding-top: max(24px, env(safe-area-inset-top));" data-purpose="onboarding-header">
 <!-- Back Button -->
 <button onclick="window.location.href='Age.html'" aria-label="Go back" class="p-2 -ml-2 text-blush-primary focus:outline-none cursor-pointer" data-purpose="back-button">
 <svg fill="none" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
@@ -113,7 +123,7 @@
 
       const submitName = () => {
         if (/[a-zA-Z]/.test(input.value.trim())) {
-          window.location.href = 'Gender-interest.html';
+          window.location.href = 'age-interest.html';
         }
       };
 

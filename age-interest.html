@@ -1,18 +1,18 @@
 <!DOCTYPE html><html lang="en" style=""><head>
 <meta charset="utf-8">
-<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport">
 <title>Blush - Age Preference</title>
+<link href="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/file_000000003704823093c6cccb8ba71cd1.png" rel="icon" type="image/png">
 <!-- Include Tailwind CSS via CDN -->
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link rel="stylesheet" href="css/app.css">
 <!-- Include Plus Jakarta Sans Font -->
 <link href="https://fonts.googleapis.com" rel="preconnect">
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
-<!-- Material Symbols Outlined -->
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
-<style data-purpose="custom-config">
-    /* Tailwind Configuration */
-    tailwind.config = {
+<script id="tailwind-config">
+  // Tailwind Configuration (must be a <script>, not <style>, or the custom colors never generate)
+  tailwind.config = {
       theme: {
         extend: {
           colors: {
@@ -55,8 +55,8 @@
           },
         },
       },
-    }
-  </style>
+    };
+  </script>
 <style data-purpose="custom-styles">
     body {
       background-color: #131313;
@@ -83,11 +83,13 @@
       padding-right: 7.5vw;
       gap: 4vw;
       width: 100%;
+      height: 56vh;
+      min-height: 0;
     }
 
     .carousel-item {
       flex: 0 0 85vw;
-      height: 60vh;
+      height: 100%;
       scroll-snap-align: center;
       transition: filter 0.3s ease, transform 0.3s ease;
       position: relative;
@@ -104,28 +106,29 @@
     }
   </style>
 </head>
-<body class="antialiased min-h-screen flex flex-col font-sans selection:bg-primary selection:text-on-primary">
+<body class="antialiased min-h-dvh flex flex-col font-sans selection:bg-primary selection:text-on-primary app-page" style="padding-top: max(24px, env(safe-area-inset-top));">
 <!-- BEGIN: Top Navigation & Progress -->
 <header class="w-full sticky top-0 z-20 bg-surface" data-purpose="top-navigation">
-<!-- Progress Bar (full-width, same style as other onboarding pages) -->
-<div class="w-full h-1 bg-surface-container-highest overflow-hidden">
+<div class="w-full flex items-center gap-3 px-6 pb-3">
+<!-- Back Button (SVG icon, no text flash) -->
+<button onclick="window.location.href='name.html'" aria-label="Go back" class="p-2 -ml-2 rounded-full cursor-pointer shrink-0 focus:outline-none">
+<svg class="h-6 w-6 text-white font-bold" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M15 19l-7-7 7-7" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</button>
+<!-- Progress Bar (inline with the back arrow) -->
+<div class="flex-1 h-1 bg-surface-container-highest overflow-hidden rounded-full">
 <div id="progress-fill" class="h-full bg-primary-container rounded-full w-[35%] transition-all duration-500"></div>
 </div>
-<div class="w-full flex items-center gap-3 px-6 pt-4 pb-3">
-<!-- Back Button -->
-<button onclick="window.location.href='Gender-interest.html'" aria-label="Go back" class="text-white hover:text-primary transition-colors p-2 -ml-2 rounded-full cursor-pointer shrink-0">
-<span class="material-symbols-outlined text-[28px] font-bold">arrow_back_ios_new</span>
-</button>
-<!-- Title & Subtitle inline with the back arrow -->
-<div class="min-w-0" data-purpose="page-headers">
-<h1 class="text-[28px] leading-tight font-extrabold text-white tracking-tight">What age do you prefer?</h1>
-<p class="text-[15px] font-medium text-white mt-1">Choose one option</p>
 </div>
+<!-- Title & Subtitle below the arrow + progress row -->
+<div class="px-6 pb-4" data-purpose="page-headers">
+<h1 class="text-[28px] leading-tight font-extrabold text-white tracking-tight">What age do you prefer?</h1>
 </div>
 </header>
 <!-- END: Top Navigation & Progress -->
 <!-- BEGIN: Main Content Area -->
-<main class="flex-grow flex flex-col items-center pt-6 pb-6 w-full relative" data-purpose="main-content">
+<main class="flex-grow flex flex-col items-center pt-6 pb-3 w-full relative" data-purpose="main-content">
 <!-- Carousel -->
 <div class="carousel-container" id="carousel">
 <!-- Option 1: Young -->
@@ -147,13 +150,14 @@
 </div>
 </div>
 </div>
-<div class="w-full mt-auto pt-8 px-6 pb-4">
+</main>
+<!-- END: Main Content Area -->
+<!-- Fixed Bottom Action -->
+<div class="fixed bottom-0 left-0 right-0 p-container-margin bg-gradient-to-t from-background via-background/90 to-transparent z-20" style="padding-bottom: max(16px, env(safe-area-inset-bottom));">
 <button onclick="window.location.href='art-interest.html'" class="w-full bg-white text-black font-bold py-4 rounded-full text-[18px] active:scale-[0.98] transition-transform shadow-lg cursor-pointer">
     Continue
   </button>
 </div>
-</main>
-<!-- END: Main Content Area -->
 <script>
   document.addEventListener('DOMContentLoaded', () => {
     const carousel = document.getElementById('carousel');

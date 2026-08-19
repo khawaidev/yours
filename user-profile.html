@@ -1,8 +1,10 @@
 <!DOCTYPE html><html class="dark" lang="en" style=""><head>
 <meta charset="utf-8">
-<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport">
 <title>Profile - Blush</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link rel="stylesheet" href="css/app.css">
+<link href="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/file_000000006a2c81fa833aa9f0571bfffc.png" rel="icon" type="image/png">
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com" rel="preconnect">
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
@@ -101,47 +103,31 @@
     </script>
 <style>
         /* Custom styles for animations and specific visual tweaks */
-        .glass-panel {
-            background: rgba(32, 31, 31, 0.6);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(227, 190, 182, 0.1);
-        }
-        .text-glow {
-            text-shadow: 0 0 10px rgba(255, 180, 163, 0.5);
-        }
-        .icon-glow {
-            filter: drop-shadow(0 0 8px rgba(255, 175, 213, 0.6));
-        }
     </style>
 </head>
-<body class="bg-background text-on-surface font-body-md antialiased pb-[120px] min-h-screen flex flex-col md:hidden selection:bg-primary-container selection:text-on-primary-container">
+<body class="bg-background text-white font-body-md antialiased pb-[120px] min-h-screen flex flex-col md:hidden selection:bg-primary-container selection:text-on-primary-container app-page">
 <!-- Top App Bar (Semantic Shell - Re-used concept for consistency) -->
-<header class="docked full-width top-0 bg-transparent flex justify-center items-center w-full pt-gutter sticky z-40"><div class="flex flex-col w-full px-container-margin gap-4">
+<header class="docked full-width top-0 bg-transparent flex justify-center items-center w-full pt-1 sticky z-40"><div class="flex flex-col w-full px-container-margin gap-4">
     <div class="flex items-center justify-between w-full py-2 relative">
-        <span class="text-2xl font-headline-xl tracking-tighter bg-gradient-to-r from-primary via-secondary to-tertiary bg-clip-text text-transparent italic">Yours</span>
-        <div class="flex items-center gap-1 bg-surface-container-high px-3 py-1 rounded-full border border-outline-variant/20">
-            <span class="material-symbols-outlined text-primary text-body-md">account_balance_wallet</span>
-            <span class="font-label-md text-on-surface">1,250</span>
-        </div>
-    </div>
-    <div class="flex items-center justify-between w-full pb-2">
-        <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-full overflow-hidden border border-outline-variant/30 bg-surface-container flex items-center justify-center text-xl">
-                🐯
-            </div>
-            <div class="flex flex-col items-start">
-                <span class="font-label-md text-on-surface leading-none">Tyga</span>
-                <span class="text-[10px] uppercase tracking-widest text-on-surface-variant leading-none mt-1">FREE user</span>
-            </div>
-        </div>
+        <img alt="Yours" class="h-14 w-auto object-contain" src="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/file_000000003704823093c6cccb8ba71cd1.png">
+        <a href="recharge.html" class="flex items-center gap-1 bg-surface-container-high px-3 py-1 rounded-full border border-outline-variant/20 active:scale-95 transition-transform" aria-label="Recharge">
+            <img alt="Cash" class="w-4 h-4 object-contain" src="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/slazzer-preview-z0bt9.png">
+            <span class="font-label-md text-white" id="wallet-balance">1,250</span>
+            <span class="material-symbols-outlined text-white text-lg leading-none">add</span>
+        </a>
     </div>
 </div></header>
-<main class="flex-1 px-container-margin flex flex-col gap-stack-lg pt-stack-sm">
-<!-- Profile Header Segment -->
-
+<main class="flex-1 px-container-margin flex flex-col gap-3 pt-stack-sm">
+<!-- Profile Section -->
+<section class="flex items-center gap-3 bg-surface-container rounded-2xl p-4 border border-outline-variant/20 shadow-lg">
+    <div class="w-12 h-12 rounded-full overflow-hidden border border-outline-variant/30 bg-surface-container-high flex items-center justify-center text-2xl" id="profile-avatar"></div>
+    <div class="flex flex-col items-start gap-1">
+        <span class="font-label-md text-white leading-none" id="profile-name">Tyga</span>
+        <span class="text-[10px] uppercase tracking-widest text-white/60 leading-none" id="profile-plan">FREE user</span>
+    </div>
+</section>
 <!-- Promotional Banner -->
-<section class="relative rounded-xl overflow-hidden shadow-[0_8px_32px_rgba(255,92,53,0.2)] group cursor-pointer active:scale-[0.98] transition-transform duration-300">
+<section class="relative rounded-2xl overflow-hidden group cursor-pointer active:scale-[0.98] transition-transform duration-300">
 <!-- Background Gradient -->
 <div class="absolute inset-0 bg-gradient-to-br from-primary-container to-secondary-container opacity-90 group-hover:opacity-100 transition-opacity duration-300"></div>
 <!-- Animated decorative element (simulated via CSS gradient overlay for subtle movement) -->
@@ -149,37 +135,39 @@
 <div class="relative z-10 flex flex-col gap-stack-md p-4 gap-2">
 <div class="flex justify-between items-start">
 <div class="flex flex-col gap-1">
-<h2 class="font-headline-lg-mobile text-headline-lg-mobile text-on-primary text-glow">Get PRO plan</h2>
-<p class="font-body-md text-body-md text-on-primary/90">Access exclusive tools &amp; features.</p>
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile text-white">Get PRO plan</h2>
+<p class="font-body-md text-body-md text-white/90">Access exclusive tools &amp; features.</p>
 </div>
 </div>
-<button class="self-start mt-stack-sm bg-surface text-on-surface font-label-md text-label-md px-6 py-3 rounded-full flex items-center gap-2 shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 group-hover:bg-white group-hover:text-black">
+<button class="self-start mt-stack-sm bg-white text-black font-label-md text-label-md px-6 py-3 rounded-full flex items-center gap-2 hover:scale-105 transition-all duration-300 cursor-pointer" onclick="try { sessionStorage.setItem('yours_prev_page', 'user-profile.html'); sessionStorage.setItem('yours_premium_flow', '1'); } catch (e) {} window.location.href = 'premium-acess.html';" type="button">
                     Upgrade
-                    <span class="material-symbols-outlined text-primary-container font-variation-settings: 'FILL' 1; icon-glow" data-icon="local_fire_department" data-weight="fill">local_fire_department</span>
+                    <span class="material-symbols-outlined text-primary-container font-variation-settings: 'FILL' 1;" data-icon="local_fire_department" data-weight="fill">local_fire_department</span>
 </button>
 </div>
 </section>
-<!-- Menu List -->
-<section class="flex flex-col gap-stack-sm bg-surface-container rounded-xl p-2 border border-outline-variant/20 shadow-lg">
-<button class="w-full flex items-center justify-between p-4 rounded-lg hover:bg-surface-container-high transition-colors active:scale-[0.99]">
-<div class="flex items-center gap-4">
-<div class="w-10 h-10 rounded-full bg-surface-variant flex items-center justify-center text-on-surface-variant">
-<span class="material-symbols-outlined font-variation-settings: 'FILL' 0;" data-icon="settings">settings</span>
+<!-- Settings -->
+<section class="bg-surface-container rounded-2xl p-2 border border-outline-variant/20 shadow-lg">
+<a href="settings.html" class="w-full flex items-center justify-between py-2 px-3 rounded-lg hover:bg-surface-container-high transition-colors active:scale-[0.99]">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-full bg-surface-container-high flex items-center justify-center text-white">
+<span class="material-symbols-outlined font-variation-settings: 'FILL' 0; text-lg" data-icon="settings">settings</span>
 </div>
-<span class="font-body-lg text-body-lg text-on-surface">Settings</span>
+<span class="font-body-lg text-body-lg text-white">Settings</span>
 </div>
-<span class="material-symbols-outlined text-on-surface-variant" data-icon="chevron_right">chevron_right</span>
-</button>
-<div class="h-[1px] w-[calc(100%-32px)] mx-auto bg-outline-variant/20"></div>
-<button class="w-full flex items-center justify-between p-4 rounded-lg hover:bg-surface-container-high transition-colors active:scale-[0.99]">
-<div class="flex items-center gap-4">
-<div class="w-10 h-10 rounded-full bg-surface-variant flex items-center justify-center text-on-surface-variant">
-<span class="material-symbols-outlined font-variation-settings: 'FILL' 0;" data-icon="account_balance_wallet">account_balance_wallet</span>
+<span class="material-symbols-outlined text-white/60" data-icon="chevron_right">chevron_right</span>
+</a>
+</section>
+<!-- Wallet -->
+<section class="bg-surface-container rounded-2xl p-2 border border-outline-variant/20 shadow-lg">
+<a href="recharge.html" class="w-full flex items-center justify-between py-2 px-3 rounded-lg hover:bg-surface-container-high transition-colors active:scale-[0.99]">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-full bg-surface-container-high flex items-center justify-center">
+<img alt="Cash" class="w-4 h-4 object-contain" src="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/slazzer-preview-z0bt9.png">
 </div>
-<span class="font-body-lg text-body-lg text-on-surface">Wallet</span>
+<span class="font-body-lg text-body-lg text-white">Wallet</span>
 </div>
-<span class="material-symbols-outlined text-on-surface-variant" data-icon="chevron_right">chevron_right</span>
-</button>
+<span class="material-symbols-outlined text-white/60" data-icon="chevron_right">chevron_right</span>
+</a>
 </section>
 </main>
 <!-- BottomNavBar (Semantic Shell) -->
@@ -201,5 +189,96 @@
 </a>
 </nav>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/api-client.js"></script>
+<script>
+  // Load the real signed-in user: name, plan, and love-token balance from the
+  // backend wallet (replacing the static "Tyga" / "1,250" placeholders).
+  document.addEventListener('DOMContentLoaded', function () {
+    var user = null;
+    try { user = YoursAPI.getCurrentUser(); } catch (e) {}
+
+    var nameEl = document.getElementById('profile-name');
+    var planEl = document.getElementById('profile-plan');
+    var avatarEl = document.getElementById('profile-avatar');
+    var balanceEl = document.getElementById('wallet-balance');
+
+    // Turn an email like "john.doe@gmail.com" into "John Doe".
+    function emailToName(email) {
+      if (!email) return '';
+      var part = (email.split('@')[0] || '').replace(/[._-]+/g, ' ').trim();
+      if (!part) return '';
+      return part.replace(/\b\w/g, function (c) { return c.toUpperCase(); });
+    }
+
+    function looksLikeEmail(s) {
+      return /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(s || '');
+    }
+
+    // Deterministic background colour for the letter avatar.
+    function avatarColorFor(seed) {
+      var palette = ['#FF5A36', '#BD0183', '#C5861C', '#3B82F6', '#10B981', '#8B5CF6', '#EC4899', '#14B8A6'];
+      var h = 0;
+      for (var i = 0; i < seed.length; i++) h = (h * 31 + seed.charCodeAt(i)) >>> 0;
+      return palette[h % palette.length];
+    }
+
+    // The profile picture is the first letter of the resolved name, never an
+    // external image (which may 404). Falls back through display name, stored
+    // profile name, and a name derived from the email so a letter always shows.
+    function applyProfile(profileName) {
+      var displayName = (user && user.displayName) || null;
+      var name = null;
+      if (displayName && !looksLikeEmail(displayName)) name = displayName;
+      if ((!name || looksLikeEmail(name)) && profileName && !looksLikeEmail(profileName)) name = profileName;
+      if (!name || looksLikeEmail(name)) name = emailToName(user ? user.email : '');
+      name = name || 'User';
+
+      if (nameEl) nameEl.textContent = name;
+      if (planEl && !planEl.dataset.set) {
+        planEl.dataset.set = '1';
+      }
+
+      if (avatarEl) {
+        avatarEl.innerHTML = '';
+        avatarEl.style.backgroundImage = '';
+        avatarEl.style.backgroundSize = '';
+        avatarEl.style.backgroundPosition = '';
+        avatarEl.style.backgroundColor = avatarColorFor(name);
+        avatarEl.style.color = '#ffffff';
+        avatarEl.textContent = name.trim().charAt(0).toUpperCase() || 'U';
+      }
+    }
+
+    // Always render a letter avatar — even when the session is unreadable, so a
+    // stale emoji/photo placeholder can never remain on screen.
+    applyProfile(null);
+
+    if (!user || !user.id) return;
+
+    // Bootstrap/refresh the profile (idempotent; passes email so a Google sign-in
+    // with an existing email is treated as a login, never a duplicate user).
+    YoursAPI.bootstrapProfile({
+      userId: user.id,
+      email: user.email || '',
+      displayName: user.displayName || '',
+      avatarUrl: user.avatarUrl || null,
+    }).then(function (res) {
+      var profile = res && res.profile;
+      if (profile && profile.display_name) applyProfile(profile.display_name);
+      if (planEl) {
+        planEl.textContent = (profile && profile.onboarding_state === 'done') ? 'FREE user' : 'FREE user';
+      }
+    }).catch(function () {});
+
+    // Real love-token balance from the backend wallet endpoint.
+    YoursAPI.getWallet(user.id).then(function (res) {
+      var wallet = res && res.wallet;
+      if (wallet && typeof wallet.credits === 'number' && balanceEl) {
+        balanceEl.textContent = Math.floor(wallet.credits).toLocaleString();
+      }
+    }).catch(function () {});
+  });
+</script>
 <script src="js/animations.js"></script>
 </body></html>

@@ -1,8 +1,10 @@
 <!DOCTYPE html><html lang="en" style=""><head>
 <meta charset="utf-8">
-<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport">
 <title>Character Profile</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link rel="stylesheet" href="css/app.css">
+<link href="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/file_000000006a2c81fa833aa9f0571bfffc.png" rel="icon" type="image/png">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 <style data-purpose="custom-styles">
         body {
@@ -52,20 +54,9 @@
             display: flex;
             flex-direction: column;
             height: 100%;
-            padding: 20px;
+            padding: max(10px, env(safe-area-inset-top)) 20px 20px;
         }
 
-        /* Custom Font for Logo (Approximation) */
-        .brand-logo {
-            font-family: 'Arial Black', Gadget, sans-serif;
-            background: -webkit-linear-gradient(#ff6b6b, #ff4757);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-size: 28px;
-            font-weight: 900;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-            letter-spacing: -1px;
-        }
 
         .bottom-nav-bg {
             background: rgba(40, 40, 40, 0.85);
@@ -77,28 +68,164 @@
             background-color: rgba(255, 255, 255, 0.15);
             border-radius: 9999px;
         }
+
+        /* ---- Swipe Guide Overlay ---- */
+        #swipe-guide {
+            display: flex;
+            transition: opacity 0.4s ease;
+        }
+        #swipe-guide.guide-hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        .guide-step { display: none; flex-direction: column; align-items: center; }
+        .guide-step.guide-active {
+            display: flex;
+            animation: guideStepIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+        }
+        @keyframes guideStepIn {
+            from { opacity: 0; transform: translateY(16px) scale(0.97); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .guide-stage {
+            position: relative;
+            width: 220px;
+            height: 130px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .guide-hand {
+            position: absolute;
+            color: #fff;
+            font-size: 46px;
+            filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.45));
+        }
+        .guide-hand-right { animation: guideSwipeRight 1.6s ease-in-out infinite; }
+        .guide-hand-left  { animation: guideSwipeLeft  1.6s ease-in-out infinite; }
+        .guide-hand-up    { animation: guideSwipeUp    1.6s ease-in-out infinite; }
+        @keyframes guideSwipeRight {
+            0%   { transform: translateX(-70px); opacity: 0; }
+            12%  { opacity: 1; }
+            45%  { transform: translateX(0); }
+            88%  { opacity: 1; }
+            100% { transform: translateX(70px); opacity: 0; }
+        }
+        @keyframes guideSwipeLeft {
+            0%   { transform: translateX(70px); opacity: 0; }
+            12%  { opacity: 1; }
+            45%  { transform: translateX(0); }
+            88%  { opacity: 1; }
+            100% { transform: translateX(-70px); opacity: 0; }
+        }
+        @keyframes guideSwipeUp {
+            0%   { transform: translateY(60px); opacity: 0; }
+            12%  { opacity: 1; }
+            45%  { transform: translateY(0); }
+            88%  { opacity: 1; }
+            100% { transform: translateY(-60px); opacity: 0; }
+        }
+        .guide-trail {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            border-radius: 2px;
+        }
+        .guide-trail-right,
+        .guide-trail-left {
+            width: 130px;
+            height: 3px;
+            background: repeating-linear-gradient(90deg, rgba(255,255,255,0.75) 0 10px, transparent 10px 18px);
+        }
+        .guide-trail-up {
+            width: 3px;
+            height: 110px;
+            background: repeating-linear-gradient(180deg, rgba(255,255,255,0.75) 0 10px, transparent 10px 18px);
+        }
+        .guide-chevron {
+            position: absolute;
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 16px;
+            animation: guideChevronPulse 1.2s ease-in-out infinite;
+        }
+        .guide-chevron-right { top: 50%; right: 10px; margin-top: -9px; }
+        .guide-chevron-left  { top: 50%; left: 10px; margin-top: -9px; }
+        .guide-chevron-up    { left: 50%; top: 8px; margin-left: -8px; }
+        @keyframes guideChevronPulse {
+            0%, 100% { opacity: 0.25; transform: scale(0.9); }
+            50%      { opacity: 1; transform: scale(1.1); }
+        }
+        .guide-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+        .guide-dot-active {
+            width: 26px;
+            background: #fff;
+        }
+
+        /* ---- Floating love heart (from love button to center of page) ---- */
+        #feed-love-btn {
+            transition: transform 0.2s ease;
+        }
+        #feed-love-btn.love-btn-pop {
+            transform: scale(0.82);
+        }
+        #feed-avatar {
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        #feed-avatar:active {
+            transform: scale(0.94);
+        }
+        .love-float-heart {
+            position: fixed;
+            z-index: 9999;
+            font-size: 30px;
+            line-height: 1;
+            color: #ff4d7d;
+            filter: drop-shadow(0 0 12px rgba(255, 77, 125, 0.85));
+            pointer-events: none;
+            transform: translate(-50%, -50%) scale(0.3);
+            opacity: 0;
+            will-change: transform, opacity;
+        }
+        .love-float-heart.love-float-active {
+            animation: loveFloatUp 1.05s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+        @keyframes loveFloatUp {
+            0%   { transform: translate(-50%, -50%) scale(0.3); opacity: 0; }
+            18%  { transform: translate(-50%, -50%) scale(1.25); opacity: 1; }
+            100% { transform: translate(-50%, calc(-50% - var(--dy))) scale(1); opacity: 0; }
+        }
     </style>
 </head>
-<body>
+<body class="app-page">
 <!-- BEGIN: AppContainer -->
 <div id="app-container">
-<!-- Background Image -->
-<img alt="Brandy in office" class="bg-image" src="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/IMG_20260807_032009.png">
+<!-- Dynamic background (image/video from the matched character's feed media) -->
+<img alt="" class="bg-image" id="bg-image" style="display:none;">
+<video class="bg-image" id="bg-video" loop="" muted="" playsinline="" style="display:none;"></video>
 <!-- Gradient Overlay for text readability -->
 <div class="gradient-overlay"></div>
 <!-- Content Layer -->
 <div class="content-layer">
 <!-- BEGIN: TopHeader -->
-<header class="flex justify-between items-center pt-4">
+<header class="flex justify-between items-center pt-0">
 <!-- Logo -->
-<div class="brand-logo">Yours</div>
+<img alt="Yours" class="h-12 w-auto object-contain drop-shadow-md" src="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/file_000000003704823093c6cccb8ba71cd1.png">
 <!-- Right Controls -->
 <div class="flex items-center space-x-3">
 <!-- Currency -->
-<div class="bg-black/40 backdrop-blur-md rounded-full px-3 py-1.5 flex items-center space-x-2">
-<i class="fa-solid fa-money-bill-1 text-green-400 text-sm"></i>
+<a href="recharge.html" class="bg-black/40 backdrop-blur-md rounded-full px-3 py-1.5 flex items-center space-x-2 active:scale-95 transition-transform cursor-pointer" aria-label="Recharge">
+<img alt="Cash" class="w-4 h-4 object-contain" src="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/slazzer-preview-z0bt9.png">
 <span class="text-white font-bold text-sm">50</span>
-</div>
+<i class="fa-solid fa-plus text-white text-xs"></i>
+</a>
 <!-- Settings/Filter Icon -->
 <button class="bg-black/40 backdrop-blur-md rounded-full w-10 h-10 flex items-center justify-center text-white relative">
 <i class="fa-solid fa-sliders text-lg"></i>
@@ -109,9 +236,19 @@
 <!-- END: TopHeader -->
 <!-- Spacer to push content to bottom -->
 <div class="flex-grow"></div>
+<!-- Prev / Next nav (swipe alternative) -->
+<div class="absolute left-2 top-1/2 -translate-y-1/2 z-20">
+<button aria-label="Previous character" class="w-9 h-9 rounded-full bg-black/40 backdrop-blur-md flex items-center justify-center text-white active:scale-95 transition-transform cursor-pointer" id="feed-prev" type="button"><i class="fa-solid fa-chevron-left"></i></button>
+</div>
+<div class="absolute right-2 top-1/2 -translate-y-1/2 z-20">
+<button aria-label="Next character" class="w-9 h-9 rounded-full bg-black/40 backdrop-blur-md flex items-center justify-center text-white active:scale-95 transition-transform cursor-pointer" id="feed-next" type="button"><i class="fa-solid fa-chevron-right"></i></button>
+</div>
 <!-- BEGIN: ProfileInfo -->
-<main class="pb-24"><div class="mb-4"><h1 class="text-white text-3xl font-extrabold shadow-sm drop-shadow-md">Brandy, 56</h1><p class="text-white/90 text-sm leading-snug drop-shadow-sm px-1 mt-1">Marketing exec who believes the best things in life come with experience 😉</p></div><div class="flex items-center space-x-4"><img alt="Brandy Avatar" class="w-16 h-16 rounded-full border-2 border-white/20 shadow-lg object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAki33uQl_aGSoN9936hLWBG_jJUu5Jl6rHI0nuGqsWVXS1THqxS8T_jzy95drEx3O9djHQnlwB9u2oF2nkok0M-dLrsAEQVjXYgOSknS39aR_prfdQ17wt0htJnHbk153-R5cRhU1oTaRIp2hWwWDbFL4pOuXba3xTMmzpYubJocNdm4Ab7TwauZrqPCMV4LhhzGgpz4_kepKD-6jn-61UVdmoG9CcOuADSmobOr6QsvJeKFGmaBhivQ"><div class="flex-grow flex items-center bg-white/10 backdrop-blur-md rounded-full p-1 space-x-1"><button class="flex-grow flex items-center justify-center space-x-2 py-3 px-4 rounded-full text-white font-bold text-sm" style="background: linear-gradient(to right bottom, rgb(195, 36, 76), rgb(240, 42, 83), rgb(255, 62, 134));"><i class="fa-solid fa-fire"></i><span class="">Start chat</span></button><div class="w-px h-8 bg-white/20"></div><button class="w-12 h-12 flex items-center justify-center rounded-full text-white" style="background: linear-gradient(to right bottom, rgb(195, 36, 76), rgb(240, 42, 83), rgb(255, 62, 134));"><i class="fa-solid fa-heart text-xl"></i></button></div></div></main>
+<main class="pb-14" id="feed-profile"></main>
 <!-- END: ProfileInfo -->
+<div class="absolute bottom-24 left-0 right-0 z-20 flex justify-center">
+<p class="text-xs text-white/60 bg-black/40 backdrop-blur-md rounded-full px-3 py-1.5" id="feed-friends"></p>
+</div>
 </div>
 <!-- BEGIN: Bottom Navigation (icon-only pill) -->
 <nav class="absolute bottom-4 left-4 right-4 z-20 flex items-center justify-between bg-[#252525]/95 backdrop-blur-lg rounded-[32px] px-2 py-2 shadow-[0_-5px_20px_rgba(0,0,0,0.5)]">
@@ -128,6 +265,50 @@
 <img src="https://i.ibb.co/kVrCvk98/user-1.png" alt="Profile" class="w-6 h-6 object-contain">
 </a>
 </nav>
+<!-- BEGIN: Swipe Guide Overlay -->
+<div aria-label="Swipe guide" id="swipe-guide" class="fixed inset-0 z-[60] flex items-center justify-center" role="dialog">
+<div class="absolute inset-0 bg-black/70 backdrop-blur-sm" data-guide-dismiss=""></div>
+<div class="relative z-10 mx-6 w-full max-w-[340px] rounded-3xl border border-white/10 bg-[#1e1e1e]/95 p-8 text-center shadow-2xl">
+<!-- Step 1: Swipe Right -->
+<div class="guide-step guide-active" data-guide-step="0">
+<div class="guide-stage">
+<div class="guide-trail guide-trail-right"></div>
+<i class="fa-solid fa-chevron-right guide-chevron guide-chevron-right"></i>
+<i class="fa-solid fa-hand-point-right guide-hand guide-hand-right"></i>
+</div>
+<h3 class="mt-5 text-lg font-bold text-white">Swipe right</h3>
+<p class="mt-2 text-sm leading-relaxed text-white/70">To discover more characters like this one</p>
+</div>
+<!-- Step 2: Swipe Left -->
+<div class="guide-step" data-guide-step="1">
+<div class="guide-stage">
+<div class="guide-trail guide-trail-left"></div>
+<i class="fa-solid fa-chevron-left guide-chevron guide-chevron-left"></i>
+<i class="fa-solid fa-hand-point-left guide-hand guide-hand-left"></i>
+</div>
+<h3 class="mt-5 text-lg font-bold text-white">Swipe left</h3>
+<p class="mt-2 text-sm leading-relaxed text-white/70">To discover a different variety of characters</p>
+</div>
+<!-- Step 3: Swipe Up -->
+<div class="guide-step" data-guide-step="2">
+<div class="guide-stage">
+<div class="guide-trail guide-trail-up"></div>
+<i class="fa-solid fa-chevron-up guide-chevron guide-chevron-up"></i>
+<i class="fa-solid fa-hand-point-up guide-hand guide-hand-up"></i>
+</div>
+<h3 class="mt-5 text-lg font-bold text-white">Swipe up</h3>
+<p class="mt-2 text-sm leading-relaxed text-white/70">To save the current character to your list</p>
+</div>
+<!-- Progress Dots -->
+<div class="mt-6 flex items-center justify-center gap-2">
+<span class="guide-dot guide-dot-active"></span>
+<span class="guide-dot"></span>
+<span class="guide-dot"></span>
+</div>
+<button class="mt-6 w-full rounded-full bg-white py-3 text-sm font-bold text-black transition-all hover:bg-gray-100 active:scale-95" id="guide-gotit" type="button">Got it</button>
+</div>
+</div>
+<!-- END: Swipe Guide Overlay -->
 <!-- END: Bottom Navigation -->
 </div>
 <!-- END: AppContainer -->
@@ -135,5 +316,226 @@
 
 
 
+<script>
+  (function () {
+    // Swipe guide: cycles through the 3 hand-gesture steps, dismissible.
+    var guide = document.getElementById('swipe-guide');
+    if (!guide) return;
+    var steps = guide.querySelectorAll('.guide-step');
+    var dots = guide.querySelectorAll('.guide-dot');
+    var current = 0;
+    var timer = null;
+
+    function showStep(i) {
+      steps.forEach(function (s, idx) { s.classList.toggle('guide-active', idx === i); });
+      dots.forEach(function (d, idx) { d.classList.toggle('guide-dot-active', idx === i); });
+    }
+
+    function dismiss() {
+      if (timer) clearInterval(timer);
+      guide.classList.add('guide-hidden');
+      setTimeout(function () {
+        if (guide.parentNode) guide.parentNode.removeChild(guide);
+      }, 450);
+    }
+
+    // Auto-advance the steps so users see all three gestures, then stop
+    // on the final step (swipe up) so the guide feels complete.
+    function advance() {
+      if (current >= steps.length - 1) {
+        clearInterval(timer);
+        return;
+      }
+      current = current + 1;
+      showStep(current);
+    }
+    timer = setInterval(advance, 3000);
+
+    // Dismiss on "Got it" or by tapping the backdrop.
+    guide.addEventListener('click', function (e) {
+      if (e.target.closest('#guide-gotit') || e.target.closest('[data-guide-dismiss]')) dismiss();
+    });
+  })();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  (function () {
+    // Same project config as auth.html
+    var SUPABASE_URL = 'https://dgbxcakkqrgrapwsvrol.supabase.co';
+    var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRnYnhjYWtrcXJncmFwd3N2cm9sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYxOTM0NDksImV4cCI6MjEwMTc2OTQ0OX0.v2gOgC28bfXXVjRVki1lL0ulgCHVloUAv1eF5HVSzuk';
+
+    var supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    function spawnLoveHeart(btn) {
+      if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      var rect = btn.getBoundingClientRect();
+      var startX = rect.left + rect.width / 2;
+      var startY = rect.top + rect.height / 2;
+      var targetY = window.innerHeight / 2;
+      var heart = document.createElement('i');
+      heart.className = 'fa-solid fa-heart love-float-heart';
+      heart.setAttribute('aria-hidden', 'true');
+      heart.style.left = startX + 'px';
+      heart.style.top = startY + 'px';
+      heart.style.setProperty('--dy', (startY - targetY) + 'px');
+      document.body.appendChild(heart);
+      btn.classList.add('love-btn-pop');
+      setTimeout(function () { btn.classList.remove('love-btn-pop'); }, 300);
+      requestAnimationFrame(function () { heart.classList.add('love-float-active'); });
+      setTimeout(function () {
+        if (heart.parentNode) heart.parentNode.removeChild(heart);
+      }, 1200);
+    }
+    window.spawnLoveHeart = spawnLoveHeart;
+
+    var bgImg = document.getElementById('bg-image');
+    var bgVideo = document.getElementById('bg-video');
+    var profileEl = document.getElementById('feed-profile');
+    var friendsEl = document.getElementById('feed-friends');
+    var characters = [];
+    var current = 0;
+
+    function render() {
+      if (!characters.length) {
+        profileEl.innerHTML =
+          '<div class="text-center py-10"><p class="text-white/80">No characters match your interests yet.</p>' +
+          '<p class="text-white/50 text-sm mt-1">Check back soon — new characters are added every day.</p></div>';
+        bgImg.style.display = 'none';
+        bgVideo.style.display = 'none';
+        friendsEl.textContent = '';
+        return;
+      }
+      var c = characters[current];
+      var feedMedia = c.character_feeds && c.character_feeds.length ? c.character_feeds[0] : null;
+
+      // Background: video if feed media is a video, else image
+      bgImg.style.display = feedMedia && feedMedia.media_type === 'video' ? 'none' : 'block';
+      bgVideo.style.display = feedMedia && feedMedia.media_type === 'video' ? 'block' : 'none';
+      if (feedMedia) {
+        var url = feedMedia.media_url;
+        if (feedMedia.media_type === 'video') {
+          bgVideo.src = url;
+          bgVideo.play().catch(function () {});
+        } else {
+          bgImg.src = url;
+        }
+      } else {
+        bgImg.src = c.circular_profile_image_url;
+        bgImg.style.display = 'block';
+      }
+
+      profileEl.innerHTML =
+        '<div class="mb-4"><h1 class="text-white text-3xl font-extrabold shadow-sm drop-shadow-md">' + c.name + ', ' + c.age + '</h1>' +
+        '<p class="text-white/90 text-sm leading-snug drop-shadow-sm px-1 mt-1">' + (c.about || '') + '</p></div>' +
+        '<div class="flex items-center space-x-4">' +
+        '<img alt="' + c.name + ' Avatar" class="w-16 h-16 rounded-full border-2 border-white/20 shadow-lg object-cover" id="feed-avatar" src="' + c.circular_profile_image_url + '">' +
+        '<div class="flex-grow flex items-center bg-white/10 backdrop-blur-md rounded-full p-1 space-x-1">' +
+        '<button aria-label="Start chat" class="flex-grow flex items-center justify-center space-x-2 py-3 px-4 rounded-full text-white font-bold text-sm cursor-pointer" id="feed-chat-btn" style="background: linear-gradient(to right bottom, rgb(195, 36, 76), rgb(240, 42, 83), rgb(255, 62, 134));">' +
+        '<i class="fa-solid fa-fire"></i><span>Start chat</span></button>' +
+        '<div class="w-px h-8 bg-white/20"></div>' +
+        '<button aria-label="Love this character" class="w-12 h-12 flex items-center justify-center rounded-full text-white" id="feed-love-btn" style="background: linear-gradient(to right bottom, rgb(195, 36, 76), rgb(240, 42, 83), rgb(255, 62, 134));">' +
+        '<i class="fa-solid fa-heart text-xl"></i></button></div></div>';
+
+      friendsEl.textContent = (current + 1) + ' of ' + characters.length + ' matches';
+
+      wire();
+    }
+
+    function wire() {
+      var avatar = document.getElementById('feed-avatar');
+      if (avatar) avatar.addEventListener('click', function () {
+        sessionStorage.setItem('yours_current_character', JSON.stringify(characters[current]));
+        window.location.href = 'character-profile.html';
+      });
+      var chatBtn = document.getElementById('feed-chat-btn');
+      if (chatBtn) chatBtn.addEventListener('click', function () {
+        sessionStorage.setItem('yours_current_character', JSON.stringify(characters[current]));
+        window.location.href = 'messaging.html';
+      });
+      var loveBtn = document.getElementById('feed-love-btn');
+      if (loveBtn) loveBtn.addEventListener('click', function () {
+        if (window.spawnLoveHeart) spawnLoveHeart(loveBtn);
+      });
+    }
+
+    function go(step) {
+      if (!characters.length) return;
+      current = (current + step + characters.length) % characters.length;
+      render();
+    }
+
+    document.getElementById('feed-prev').addEventListener('click', function () { go(-1); });
+    document.getElementById('feed-next').addEventListener('click', function () { go(1); });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'ArrowLeft') go(-1);
+      if (e.key === 'ArrowRight') go(1);
+    });
+
+    // ---- Swipe on the page to move between characters ----
+    var touchX = null;
+    document.addEventListener('touchstart', function (e) { touchX = e.changedTouches[0].clientX; }, { passive: true });
+    document.addEventListener('touchend', function (e) {
+      if (touchX === null) return;
+      var dx = e.changedTouches[0].clientX - touchX;
+      if (Math.abs(dx) > 50) go(dx < 0 ? 1 : -1);
+      touchX = null;
+    }, { passive: true });
+
+    // ---- Load matched characters (auth-only) ----
+    async function init() {
+      var session = (await supabase.auth.getSession()).data.session;
+      if (!session) { window.location.href = 'auth.html'; return; }
+
+      // 1) User's profile / onboarding preferences (may not exist yet)
+      var { data: profile, error: profileErr } = await supabase
+        .from('user_profiles')
+        .select('gender_interest, age_interest, personality_interest, art_style, women_type_interest')
+        .eq('id', session.user.id)
+        .maybeSingle();
+      if (profileErr) console.warn('profile fetch failed', profileErr);
+
+      // 2) Pull all active characters + their feed media
+      var { data: chars } = await supabase
+        .from('characters')
+        .select('id,name,age,about,gender,personality,message_style,art_style,voice_id,circular_profile_image_url,character_feeds(media_url,media_type)')
+        .eq('is_active', true);
+
+      if (!chars || !chars.length) { render(); return; }
+
+      // 3) Personality preference is stored with the same enum vocabulary as
+      //    the characters.personality column ('the_sweetheart', 'the_tease',
+      //    'the_dominant', 'the_submissive', 'the_mysterious') — compare directly.
+      var preferredPersonality = (profile && profile.personality_interest) || null;
+      // Gender interest defaults to women when no preference has been saved.
+      var genderInterest = (profile && profile.gender_interest) || 'women';
+
+      function score(c) {
+        var s = 0;
+        if (preferredPersonality && c.personality === preferredPersonality) s += 0.5;
+        if (genderInterest === 'everyone') s += 0.3;
+        else if (c.gender === genderInterest) s += 0.3;
+        if (profile && profile.art_style && c.art_style === profile.art_style) s += 0.2;
+        if (profile && profile.age_interest) {
+          var isYoung = c.age < 35;
+          if ((profile.age_interest === 'young' && isYoung) || (profile.age_interest === 'mature' && !isYoung)) s += 0.2;
+        }
+        return s;
+      }
+
+      characters = chars
+        .map(function (c) { return Object.assign({}, c, { score: score(c) }); })
+        .filter(function (c) {
+          if (genderInterest !== 'everyone' && c.gender && c.gender !== genderInterest) return false;
+          if (profile && profile.art_style && c.art_style && c.art_style !== profile.art_style) return false;
+          return true;
+        })
+        .sort(function (a, b) { return b.score - a.score; });
+
+      render();
+    }
+
+    init();
+  })();
+</script>
 <script src="js/animations.js"></script>
 </body></html>
