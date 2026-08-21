@@ -137,3 +137,15 @@ img {
 nav.fixed {
   margin-bottom: var(--safe-bottom);
 }
+
+/* ---- Desktop / tablet (>= 768px) ----
+   Lift the phone-frame cap so pages use the wider viewport. Onboarding and
+   auth pages keep their own narrow, centered form columns — this only frees
+   the surrounding space and drops the device-frame border/shadow. */
+@media (min-width: 768px) {
+  body.app-page {
+    max-width: none;
+    border-inline: none;
+    box-shadow: none;
+  }
+}

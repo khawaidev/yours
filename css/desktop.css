@@ -1,0 +1,53 @@
+/* ============================================================
+   Yours — Desktop / Tablet layout (>= 768px)
+   ------------------------------------------------------------
+   Loaded on the desktop shell and the pages it hosts in panes.
+   Every rule below is gated by the media query (or the .ys-pane
+   marker the shell adds), so the phone experience is untouched.
+   ============================================================ */
+
+@media (min-width: 768px) {
+  /* Shell panes never show the floating mobile pill navigation.
+     Pills all carry a bottom-* position class (Tailwind). */
+  html.ys-pane nav.fixed[class*="bottom-"],
+  html.ys-pane #app-container > nav.fixed {
+    display: none !important;
+  }
+
+  /* Pages hosted as shell panes fill the pane width. Overrides the
+     inline max-width the mobile pages carry (helper content areas). */
+  html.ys-pane .ys-fill {
+    max-width: none !important;
+    width: 100% !important;
+  }
+
+  /* Messaging sheet: fill the pane but cap readability and center. */
+  html.ys-pane .ys-sheet {
+    max-width: 1080px !important;
+    margin-inline: auto !important;
+  }
+
+  /* Feed (index.html) inside the main pane: drop the 430px column so
+     the deck uses the sheet, keeping the header + caption on a
+     comfortable centered rail instead of stretching edge-to-edge. */
+  html.ys-pane #app-container {
+    width: 100%;
+    max-width: none;
+  }
+  html.ys-pane #app-container .content-layer > header,
+  html.ys-pane #app-container #feed-info {
+    width: 100%;
+    max-width: 620px;
+    margin-inline: auto;
+  }
+
+  /* user-profile.html hides itself at md+; reinstate inside panes. */
+  html.ys-pane body[class*="md:hidden"] {
+    display: flex !important;
+  }
+
+  /* Chat list column: keep it tidy inside the fixed-width pane. */
+  html.ys-pane body.pb-32 {
+    padding-bottom: 1rem;
+  }
+}

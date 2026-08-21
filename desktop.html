@@ -1,0 +1,215 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta name="description" content="Yours on the big screen — use Yours on desktop.">
+    <meta name="robots" content="noindex, nofollow">
+<title>Yours</title>
+<link rel="stylesheet" href="css/app.css">
+<link rel="stylesheet" href="css/desktop.css">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body {
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: radial-gradient(1200px 700px at 20% -10%, #1d1020 0%, #0c0c10 55%, #08080a 100%);
+    color: #f4f4f6;
+    overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  #shell { display: grid; height: 100vh; height: 100dvh; grid-template-columns: 232px 388px 1fr; transition: grid-template-columns .28s ease; }
+
+  #shell.rail { grid-template-columns: 76px 388px 1fr; }
+
+  /* ---- Sidebar ---- */
+  #sidebar {
+    display: flex; flex-direction: column; gap: 4px;
+    background: rgba(18, 18, 24, 0.72);
+    border-right: 1px solid rgba(255,255,255,0.06);
+    padding: 18px 14px; overflow: hidden; min-width: 0;
+  }
+  .brand { display: flex; align-items: center; gap: 10px; padding: 6px 10px 20px; white-space: nowrap; }
+  .brand img { width: 30px; height: 30px; object-fit: contain; flex-shrink: 0; }
+  .brand span { font-size: 19px; font-weight: 800; letter-spacing: .2px; }
+  #sidebar .nav-item {
+    display: flex; align-items: center; gap: 14px;
+    padding: 11px 12px; border-radius: 14px; cursor: pointer;
+    color: #9b9ba3; font-size: 14.5px; font-weight: 600; white-space: nowrap;
+    transition: background .15s, color .15s, transform .15s;
+  }
+  #sidebar .nav-item:hover { background: rgba(255,255,255,0.06); color: #fff; }
+  #sidebar .nav-item.active {
+    background: linear-gradient(135deg, #c3244c 0%, #f02a53 60%, #ff3e86 100%);
+    color: #fff; box-shadow: 0 6px 18px rgba(240,42,83,.35);
+  }
+  #sidebar .nav-item i { width: 20px; text-align: center; font-size: 16.5px; flex-shrink: 0; }
+  #sidebar .nav-item .rail-only { display: none; }
+  #sidebar .nav-label { flex: 1; overflow: hidden; text-overflow: ellipsis; }
+  #shell.rail #sidebar .brand span,
+  #shell.rail .nav-label { display: none; }
+  #shell.rail #sidebar .nav-item { justify-content: center; padding: 12px; gap: 0; }
+  #shell.rail .brand { justify-content: center; padding-inline: 0; }
+  #sidebar .spacer { flex: 1; }
+
+  #collapse-btn {
+    display: block; width: 100%; margin-top: 8px;
+    background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);
+    color: #c9c9d1; border-radius: 12px; padding: 9px 0; cursor: pointer;
+    font-size: 13px; font-weight: 600; transition: background .15s;
+  }
+  #collapse-btn:hover { background: rgba(255,255,255,0.1); }
+  #shell.rail #collapse-btn { font-size: 15px; }
+
+  /* ---- Panes ---- */
+  .pane { min-width: 0; display: flex; flex-direction: column; background: #0e0e12; }
+  .pane-head {
+    display: flex; align-items: center; gap: 10px;
+    padding: 16px 18px; border-bottom: 1px solid rgba(255,255,255,0.06);
+    background: rgba(18,18,24,0.9); z-index: 5;
+  }
+  .pane-head h2 { margin: 0; font-size: 17px; font-weight: 700; }
+  .pane-head .hint { font-size: 12.5px; color: #7b7b84; }
+  .pane iframe { flex: 1; width: 100%; border: 0; background: transparent; }
+
+  #main-pane { background: #0a0a0c; border-left: 1px solid rgba(255,255,255,0.06); }
+
+  #chat-pane { border-right: 1px solid rgba(255,255,255,0.06); }
+  #chat-pane { display: flex; }
+
+  @media (max-width: 1050px) { #shell { grid-template-columns: 76px 340px 1fr; } }
+  @media (max-width: 860px) {
+    #shell { grid-template-columns: 76px 1fr; }
+    #main-pane { display: none; }
+    #shell.rail { grid-template-columns: 76px 1fr; }
+  }
+</style>
+</head>
+<body>
+<div id="shell">
+
+  <!-- LEFT: navigation sidebar (collapsible to an icon rail) -->
+  <aside id="sidebar" aria-label="Navigation">
+    <div class="brand">
+      <img alt="Yours" src="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/file_000000003704823093c6cccb8ba71cd1.png">
+      <span class="text-gradient">Yours</span>
+    </div>
+
+    <button class="nav-item" data-nav="home" data-src="index.html">
+      <i class="fa-solid fa-fire"></i><span class="nav-label">Feed</span>
+    </button>
+    <button class="nav-item" data-nav="discover" data-src="Discover.html">
+      <i class="fa-solid fa-compass"></i><span class="nav-label">Discover</span>
+    </button>
+    <button class="nav-item" data-nav="chat" data-src="chat.html">
+      <i class="fa-solid fa-comments"></i><span class="nav-label">Chats</span>
+    </button>
+    <button class="nav-item" data-nav="create" data-src="for-you.html">
+      <i class="fa-solid fa-wand-magic-sparkles"></i><span class="nav-label">Create</span>
+    </button>
+    <button class="nav-item" data-nav="profile" data-src="user-profile.html">
+      <i class="fa-solid fa-user"></i><span class="nav-label">Profile</span>
+    </button>
+    <button class="nav-item" data-nav="settings" data-src="settings.html">
+      <i class="fa-solid fa-gear"></i><span class="nav-label">Settings</span>
+    </button>
+
+    <div class="spacer"></div>
+    <button id="collapse-btn" title="Toggle sidebar"><i class="fa-solid fa-bars"></i></button>
+  </aside>
+
+  <!-- MIDDLE: persistent chat list -->
+  <section class="pane" id="chat-pane">
+    <div class="pane-head">
+      <h2><i class="fa-solid fa-comments" style="color:var(--app-accent);margin-right:6px"></i>Chats</h2>
+      <span class="hint">Pick someone to keep talking</span>
+    </div>
+    <iframe id="chatFrame" name="chatFrame" src="chat.html?pane=1" title="Chats"></iframe>
+  </section>
+
+  <!-- RIGHT: main content (feed by default; messaging when a chat opens) -->
+  <section class="pane" id="main-pane">
+    <iframe id="mainFrame" name="mainFrame" src="index.html?pane=1" title="Main"></iframe>
+  </section>
+
+</div>
+
+<script>
+  (function () {
+    'use strict';
+
+    var shell = document.getElementById('shell');
+    var mainFrame = document.getElementById('mainFrame');
+    var collapseBtn = document.getElementById('collapse-btn');
+    var navButtons = Array.prototype.slice.call(document.querySelectorAll('#sidebar .nav-item[data-nav]'));
+
+    // Remember the sidebar collapsed preference.
+    try {
+      if (localStorage.getItem('yours_sidebar_closed') === '1') shell.classList.add('rail');
+      else if (window.innerWidth > 0 && window.innerWidth < 900) shell.classList.add('rail');
+    } catch (e) { /* ignore */ }
+
+    var lastMain = 'index.html';
+
+    function pageFromQuery() {
+      var m = /[?&]page=([^&]+)/.exec(window.location.search);
+      return m ? decodeURIComponent(m[1]) : 'home';
+    }
+
+    function setMain(url) {
+      if (!url) return;
+      lastMain = url;
+      var sep = url.indexOf('?') === -1 ? '?' : '&';
+      mainFrame.src = url + sep + 'pane=1&t=' + Date.now();
+    }
+
+    function highlight(nav) {
+      navButtons.forEach(function (b) {
+        b.classList.toggle('active', b.getAttribute('data-nav') === nav);
+      });
+    }
+
+    navButtons.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var src = btn.getAttribute('data-src');
+        var nav = btn.getAttribute('data-nav');
+        setMain(src);
+        highlight(nav);
+      });
+    });
+
+    // Default page from the URL (?page=...), else feed.
+    highlight(pageFromQuery());
+    var initBtn = navButtons.filter(function (b) { return b.getAttribute('data-nav') === pageFromQuery(); })[0];
+    if (initBtn) setMain(initBtn.getAttribute('data-src'));
+
+    collapseBtn.addEventListener('click', function () {
+      shell.classList.toggle('rail');
+      try { localStorage.setItem('yours_sidebar_closed', shell.classList.contains('rail') ? '1' : '0'); } catch (e) { /* ignore */ }
+    });
+
+    // Pages inside the panes post messages when the user opens a chat,
+    // opens a profile, or presses back — drive the main pane here.
+    window.addEventListener('message', function (ev) {
+      var d = ev.data;
+      if (!d || !d.ys) return;
+
+      if (d.ys === 'open-chat') {
+        var c = d.payload;
+        if (c && c.id) {
+          try { sessionStorage.setItem('yours_current_character', JSON.stringify(c)); } catch (e) { /* ignore */ }
+        }
+        setMain('messaging.html');
+        highlight('chat');
+      } else if (d.ys === 'open-profile') {
+        setMain('character-profile.html');
+        highlight('discover');
+      } else if (d.ys === 'go-back') {
+        setMain(lastMain || 'index.html');
+      }
+    });
+  })();
+</script>
+</body></html>

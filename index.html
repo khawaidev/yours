@@ -1,9 +1,11 @@
 <!DOCTYPE html><html lang="en" style=""><head>
 <meta charset="utf-8">
 <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport">
+    <meta name="description" content="Yours is where AI companions come alive — chat, voice call and build a real connection with your own AI companion.">
 <title>Yours</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link rel="stylesheet" href="css/app.css">
+<link rel="stylesheet" href="css/desktop.css">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 <link href="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/file_000000006a2c81fa833aa9f0571bfffc.png" rel="icon" type="image/png">
 <!-- Open Graph (WhatsApp, Instagram, Telegram, Facebook, etc.) -->
@@ -26,6 +28,7 @@
 <!-- Supabase browser client (anon key is public by design; keep the service role key server-side only) -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/api-client.js"></script>
+<script src="js/desktop-shell.js"></script>
 <style data-purpose="custom-styles">
         body {
             background-color: #000; /* For mobile device feel outside safe area */
@@ -346,16 +349,6 @@
     </style>
 </head>
 <body class="is-guest app-page">
-<!-- Scan-to-continue gate: shown on desktop/tablet so visitors move to their phone -->
-<div id="qr-gate" style="display:none;position:fixed;inset:0;z-index:9999;flex-direction:column;align-items:center;justify-content:center;gap:24px;text-align:center;padding:24px;background:rgba(10,10,18,0.62);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);overflow:hidden;">
-  <!-- Blurred brand splash so the feeds/index page feels present behind the card -->
-  <img alt="" aria-hidden="true" src="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/file_000000006a2c81fa833aa9f0571bfffc.png" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:130%;max-width:none;filter:blur(24px) saturate(0.9);opacity:0.22;pointer-events:none;">
-  <div style="position:relative;background:rgba(255,255,255,0.98);border-radius:24px;padding:18px;box-shadow:0 24px 60px rgba(0,0,0,0.55);">
-    <canvas id="qr-canvas" width="240" height="240" style="display:block;width:240px;height:240px;border-radius:12px;"></canvas>
-  </div>
-  <div id="qr-fallback" style="display:none;position:relative;max-width:300px;color:#ffffff;font-size:14px;word-break:break-word;"></div>
-  <p style="position:relative;color:#ffffff;font-size:16px;line-height:1.55;font-weight:600;max-width:330px;margin:0;">We offer the best user experience in mobile phone devices.<br>Please scan and continue with your phone.</p>
-</div>
 <!-- BEGIN: AppContainer -->
 <div id="app-container">
 <!-- Background Image -->
@@ -1513,72 +1506,6 @@
         if (e === 'SIGNED_IN') maybeShow();
       });
     }
-  })();
-</script>
-<script>
-  (function () {
-    // Scan-to-continue gate for index.html. Only screens >= 768px (desktop /
-    // tablet) get the QR gate; phones already give the best experience.
-    function isPhoneScreen() { return window.innerWidth < 768; }
-
-    function showFallback() {
-      var canvas = document.getElementById('qr-canvas');
-      var fb = document.getElementById('qr-fallback');
-      if (canvas) canvas.style.display = 'none';
-      if (!fb) return;
-      fb.style.display = 'block';
-      fb.innerHTML = 'Scan the QR link on your phone, or open it directly: ';
-      var a = document.createElement('a');
-      a.href = window.location.href;
-      a.target = '_blank';
-      a.rel = 'noopener';
-      a.textContent = window.location.href;
-      a.style.cssText = 'color:#ffd97a;font-weight:700;word-break:break-all;';
-      fb.appendChild(a);
-    }
-
-    function drawQR(canvas) {
-      try {
-        new QRCode(canvas, {
-          text: window.location.href,
-          width: 240,
-          height: 240,
-          colorDark: '#111111',
-          colorLight: '#ffffff',
-          correctLevel: QRCode.CorrectLevel.M
-        });
-      } catch (e) {
-        showFallback();
-      }
-    }
-
-    function openGate() {
-      var gate = document.getElementById('qr-gate');
-      if (!gate || isPhoneScreen()) return;
-      document.body.style.overflow = 'hidden';
-      var app = document.getElementById('app-container');
-      if (app) app.style.overflow = 'hidden';
-      gate.style.display = 'flex';
-      var canvas = document.getElementById('qr-canvas');
-      if (!canvas) return;
-      if (window.QRCode) { drawQR(canvas); return; }
-      var s = document.createElement('script');
-      s.src = 'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js';
-      s.onload = function () { drawQR(canvas); };
-      s.onerror = showFallback;
-      document.head.appendChild(s);
-    }
-
-    function boot() {
-      if (document.getElementById('qr-gate')) {
-        if (document.readyState === 'loading') {
-          document.addEventListener('DOMContentLoaded', openGate);
-        } else {
-          openGate();
-        }
-      }
-    }
-    boot();
   })();
 </script>
 <script src="js/animations.js"></script>
