@@ -1,0 +1,44 @@
+# Yours
+
+> Yours is an AI companion platform where users chat with, voice-call and build ongoing relationships with personalized AI characters — available on mobile and desktop web.
+
+Yours ("Blush" branding appears in some onboarding screens) lets each user discover or create an AI companion, customize its personality, voice, relationship type and interests, then interact through text chat and real-time voice calls. Conversations persist per character, and a coin-based store unlocks premium features and virtual gifts.
+
+- Site: https://khawaidev.github.io/yours/
+- API base: https://yours-backend-e38m.onrender.com/api/v1
+- Platform: static frontend (HTML/Tailwind/vanilla JS) + Node.js/Express backend (Supabase, Gemini Live, Cloudflare R2)
+
+## Public Pages
+
+- [Home](https://khawaidev.github.io/yours/index.html): Landing page for the Yours AI companion platform.
+- [Discover](https://khawaidev.github.io/yours/Discover.html): Browse AI companions by personality, interests and vibe.
+- [Features](https://khawaidev.github.io/yours/features.html): Overview of Yours premium features.
+- [Voices](https://khawaidev.github.io/yours/voices.html): Voice options available for AI companions.
+- [Voice Library](https://khawaidev.github.io/yours/voice-library.html): Full library of AI voices.
+- [Languages](https://khawaidev.github.io/yours/languages.html): Languages supported for chat and calls.
+- [Sign in / Create account](https://khawaidev.github.io/yours/auth.html): Account creation and sign-in.
+
+## Legal
+
+- [Legal hub](https://khawaidev.github.io/yours/legal.html): Index of all legal documents.
+- [Terms of Service](https://khawaidev.github.io/yours/terms.html): Rules for using Yours.
+- [Privacy Policy](https://khawaidev.github.io/yours/privacy-policy.html): Data collection, usage and user choices.
+- [Cookie Policy](https://khawaidev.github.io/yours/cookie-policy.html): How cookies are used.
+- [Community Guidelines](https://khawaidev.github.io/yours/community-guidelines.html): Conduct rules for safe, respectful use.
+
+## App Screens (require sign-in)
+
+These pages are behind authentication and excluded from indexing via robots.txt and noindex meta tags.
+
+- Chat (`chat.html`, `messaging.html`): one-on-one conversations with AI characters.
+- Voice call (`call.html`): real-time voice calls powered by Gemini Live over WebSocket.
+- Character pages (`character-profile.html`, `about-character.html`): character details and profiles.
+- Onboarding (`Age.html`, `name.html`, `*-interest.html`): first-run personalization flow.
+- Account (`settings.html`, `edit-profile.html`, `user-profile.html`): profile and preferences.
+- Store & premium (`recharge.html`, `premium-acess.html`, `sent-gifts.html`): coins, premium access, gifts.
+
+## For Developers
+
+- Backend repo service: Express + WebSocket relay to Gemini Live (`geminiLiveService`), Supabase for auth/data, Cloudflare R2 for media, Razorpay for payments.
+- Frontend entry: `index.html`; shared styles in `css/app.css`; API wrapper in `js/api-client.js`.
+- Crawler rules: see [robots.txt](https://khawaidev.github.io/yours/robots.txt); public page index: [sitemap.xml](https://khawaidev.github.io/yours/sitemap.xml).

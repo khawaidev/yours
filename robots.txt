@@ -1,0 +1,47 @@
+# Yours — AI companion platform
+# https://khawaidev.github.io/yours/
+
+User-agent: *
+Allow: /
+# Private / session-based app screens — require sign-in, nothing to crawl
+Disallow: /admin.html
+Disallow: /Age.html
+Disallow: /Greetings.html
+Disallow: /name.html
+Disallow: /age-interest.html
+Disallow: /art-interest.html
+Disallow: /eye-interest.html
+Disallow: /explore-interest.html
+Disallow: /personality-interest.html
+Disallow: /personality-settings.html
+Disallow: /relationship-settings.html
+Disallow: /conversation-settings.html
+Disallow: /analyse.html
+Disallow: /call.html
+Disallow: /chat.html
+Disallow: /messaging.html
+Disallow: /feed.html
+Disallow: /for-you.html
+Disallow: /notifications.html
+Disallow: /edit-profile.html
+Disallow: /settings.html
+Disallow: /user-profile.html
+Disallow: /recharge.html
+Disallow: /premium-acess.html
+Disallow: /sent-gifts.html
+Disallow: /desktop.html
+Disallow: /demo-image.html
+Disallow: /demo-video.html
+Disallow: /t.html
+
+# AI crawlers welcome on public pages
+User-agent: GPTBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+Sitemap: https://khawaidev.github.io/yours/sitemap.xml
