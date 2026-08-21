@@ -1341,10 +1341,63 @@
       });
   }
 
+  // ---- Persist user-uploaded images in IndexedDB, tagged with the user id ----
+  var UPLOAD_DB = 'yours_uploads';
+  var UPLOAD_STORE = 'user_images';
+  var MAX_STORED_UPLOADS = 30; // per user, oldest pruned first
+
+  function openUploadDb() {
+    return new Promise(function (resolve, reject) {
+      if (!window.indexedDB) { reject(new Error('IndexedDB unavailable')); return; }
+      var req = indexedDB.open(UPLOAD_DB, 1);
+      req.onupgradeneeded = function () {
+        var db = req.result;
+        if (!db.objectStoreNames.contains(UPLOAD_STORE)) {
+          var store = db.createObjectStore(UPLOAD_STORE, { keyPath: 'id', autoIncrement: true });
+          store.createIndex('userId', 'userId');
+        }
+      };
+      req.onsuccess = function () { resolve(req.result); };
+      req.onerror = function () { reject(req.error); };
+    });
+  }
+
+  function saveUserUpload(dataUrl) {
+    if (!dataUrl || !USER_ID) return Promise.resolve();
+    return openUploadDb().then(function (db) {
+      return new Promise(function (resolve, reject) {
+        var tx = db.transaction(UPLOAD_STORE, 'readwrite');
+        var store = tx.objectStore(UPLOAD_STORE);
+        store.add({
+          userId: USER_ID,
+          characterId: CHARACTER.id || null,
+          dataUrl: dataUrl,
+          ts: Date.now(),
+        });
+        // Prune this user's oldest uploads beyond the cap (same transaction).
+        var items = [];
+        var cursorReq = store.index('userId').openCursor(IDBKeyRange.only(USER_ID));
+        cursorReq.onsuccess = function (e) {
+          var cursor = e.target.result;
+          if (cursor) {
+            items.push({ pk: cursor.primaryKey, ts: cursor.value.ts });
+            cursor.continue();
+          } else {
+            items.sort(function (a, b) { return b.ts - a.ts; });
+            items.slice(MAX_STORED_UPLOADS).forEach(function (it) { store.delete(it.pk); });
+          }
+        };
+        tx.oncomplete = function () { resolve(); };
+        tx.onerror = function () { reject(tx.error); };
+      });
+    }).catch(function (err) {
+      console.warn('saveUserUpload failed:', err && err.message);
+    });
+  }
+
   function sendMessage() {
     var text = input.value.trim();
     var image = pendingImage;
-
     // AI voice-note request (text only, no attached image).
     if (text && !image && isVoiceRequest(text)) {
       input.value = '';
@@ -1388,6 +1441,8 @@
       .then(function (data) {
         sending = false;
         hideTyping();
+        // Persist the uploaded image to browser storage under the user id.
+        if (image) saveUserUpload(image);
         var am = data && data.aiMessage;
         if (am && am.message_type === 'video' && (am.media_url || am.content)) {
           addVideoMessage(am.media_url || am.content);
