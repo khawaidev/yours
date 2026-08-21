@@ -9,6 +9,10 @@
 <link rel="stylesheet" href="css/app.css">
 <link rel="stylesheet" href="css/desktop.css">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<!-- Warm up the call page: fetch it plus open connections to its backends early -->
+<link rel="prefetch" href="call.html">
+<link rel="dns-prefetch" href="https://yours-backend-e38m.onrender.com">
+<link rel="preconnect" href="https://dgbxcakkqrgrapwsvrol.supabase.co" crossorigin>
 <style data-purpose="custom-styles">
     body {
       background: #0e0e0e;
@@ -1680,14 +1684,16 @@
   if (callBtn) {
     callBtn.addEventListener('click', function () {
       if (menuBtn && dropdown) dropdown.classList.add('hidden');
-      // Ensure we know which conversation this call belongs to.
+      try { sessionStorage.setItem('yours_current_character', JSON.stringify(CHARACTER)); } catch (e) {}
+      // Navigate immediately when the conversation is already known; only
+      // wait on the API when it isn't, so the call page opens fast.
+      if (CONVERSATION_ID) {
+        try { sessionStorage.setItem('yours_conversation_id', CONVERSATION_ID); } catch (e) {}
+        window.location.href = 'call.html';
+        return;
+      }
       ensureConversation().then(function () {
-        try {
-          sessionStorage.setItem('yours_current_character', JSON.stringify(CHARACTER));
-        } catch (e) {}
-        try {
-          if (CONVERSATION_ID) sessionStorage.setItem('yours_conversation_id', CONVERSATION_ID);
-        } catch (e) {}
+        try { sessionStorage.setItem('yours_conversation_id', CONVERSATION_ID); } catch (e) {}
         window.location.href = 'call.html';
       }).catch(function (err) {
         showToast((err && err.message) || 'Please sign in first.');

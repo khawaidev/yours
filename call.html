@@ -22,14 +22,14 @@
     inset: 0;
     background-position: center;
     background-size: cover;
-    filter: blur(22px) brightness(0.6) saturate(1.2);
-    transform: scale(1.12);
+    filter: blur(12px) brightness(0.72) saturate(1.15);
+    transform: scale(1.08);
     z-index: 0;
   }
   .call-overlay {
     position: fixed;
     inset: 0;
-    background: linear-gradient(to top, rgba(0,0,0,0.68) 0%, rgba(0,0,0,0.12) 45%, rgba(0,0,0,0.26) 100%);
+    background: linear-gradient(to top, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.45) 30%, rgba(0,0,0,0.14) 60%, rgba(0,0,0,0.28) 100%);
     z-index: 1;
   }
   .speak-btn {
@@ -50,7 +50,6 @@
     touch-action: none;
   }
   .hang-btn:active { transform: scale(0.92); }
-  .dots-btn { width: 2.75rem; height: 2.75rem; border-radius: 9999px; background: rgba(0,0,0,0.4); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
   .stage-line { transition: opacity 0.4s ease, transform 0.4s ease; }
   @keyframes gleam {
     0% { background-position: 200% center; }
@@ -109,7 +108,7 @@
   }
   .issue-chip.selected { background: #FFD600; color: #000; }
   .continue-btn { background: #FFFFFF; color: #000; transition: opacity 0.15s ease, transform 0.1s ease; }
-  body.ended .controls, body.ended .call-header { display: none; }
+  body.ended .controls { display: none; }
   @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
   .blink { animation: blink 1.4s ease-in-out infinite; }
 </style>
@@ -118,25 +117,10 @@
 <div class="call-bg" id="call-bg"></div>
 <div class="call-overlay"></div>
 
-<!-- Call header: character name + three dots at the top right -->
-<header class="call-header absolute top-0 left-0 right-0 z-20 flex items-center justify-end px-5 pt-5">
-<div class="flex items-center gap-3">
-<button aria-label="Call options" class="dots-btn flex items-center justify-center text-white/80 active:scale-95 transition-transform" id="call-options-btn" type="button">
-<i class="fa-solid fa-ellipsis-vertical text-lg"></i>
-</button>
-</div>
-</header>
-
-<!-- Option dropdown -->
-<div class="hidden absolute right-5 top-16 z-30 w-48 rounded-2xl bg-black/80 backdrop-blur-xl border border-white/10 overflow-hidden" id="call-dropdown">
-<button class="w-full text-left px-4 py-3 text-sm text-white/80 hover:bg-white/10 flex items-center gap-3" data-opt="mute" id="call-mute-opt" type="button"><i class="fa-solid fa-microphone-slash w-4"></i><span>Mute microphone</span></button>
-<button class="w-full text-left px-4 py-3 text-sm text-white/80 hover:bg-white/10 flex items-center gap-3" data-opt="speaker" id="call-speaker-opt" type="button"><i class="fa-solid fa-volume-high w-4"></i><span>Speaker on</span></button>
-<button class="w-full text-left px-4 py-3 text-sm text-white/80 hover:bg-white/10 flex items-center gap-3" data-opt="end" type="button"><i class="fa-solid fa-phone w-4 rotate-[135deg]"></i><span>End call</span></button>
-</div>
-
 <!-- Live transcript area (AI STT) -->
 <main class="relative z-10 flex h-full flex-col px-6 pb-40 pt-24 overflow-hidden" id="call-main">
 <div class="mb-auto flex flex-col items-center text-center pt-16" id="connecting-ui">
+<img id="connecting-avatar" class="w-24 h-24 rounded-full object-cover ring-2 ring-white/25 shadow-[0_10px_36px_rgba(0,0,0,0.5)] mb-6 bg-black/30" alt="">
 <h1 class="gleam-text text-4xl font-extrabold tracking-tight leading-tight" id="connecting-title">Calling …</h1>
 <p class="gleam-text gleam-slow text-lg font-bold mt-3" id="connecting-sub">Connecting call</p>
 <div class="mt-8 flex items-center gap-2">
@@ -235,6 +219,14 @@ Continue
   var charName = character.name || 'Character';
   connectingTitle.textContent = 'Calling ' + charName + '…';
 
+  // Character's circular profile above the "Calling …" title.
+  var connectingAvatar = document.getElementById('connecting-avatar');
+  if (connectingAvatar) {
+    var avatarUrl = character.circular_profile_image_url || character.avatar || '';
+    if (avatarUrl && avatarUrl.indexOf('undefined') === -1) connectingAvatar.src = avatarUrl;
+    else connectingAvatar.style.display = 'none';
+  }
+
   // Character feed image as the blurred page background.
   var feedMedia = character.character_feeds && character.character_feeds.length ? character.character_feeds[0] : null;
   var bgUrl = feedMedia ? feedMedia.media_url : (character.circular_profile_image_url || '');
@@ -245,6 +237,7 @@ Continue
   // ---- State ----
   var userId = null;
   var callId = null;
+  var startCallPromise = null;
   var ws = null;
   var liveStartedAt = null;
   var ended = false;
@@ -737,8 +730,13 @@ Continue
       window._metrics = METRICS;
     }
 
-    if (userId && callId) {
-      YoursAPI.endCall(callId, userId, METRICS).catch(function (err) {
+    if (userId) {
+      // Wait for a still-pending startCall so a fast hang-up can't orphan
+      // the call record, then end it.
+      Promise.resolve(startCallPromise).then(function () {
+        if (!callId) return null;
+        return YoursAPI.endCall(callId, userId, METRICS);
+      }).catch(function (err) {
         console.warn('endCall failed', err);
       }).finally(showEnded);
     } else {
@@ -750,40 +748,6 @@ Continue
     if (ended) return;
     callEndedByUser = true;
     finishCall();
-  });
-
-  // ================= OPTIONS MENU =================
-  var optsBtn = $('call-options-btn');
-  var dropdown = $('call-dropdown');
-  var mutedState = false;
-  optsBtn.addEventListener('click', function (e) {
-    e.stopPropagation();
-    dropdown.classList.toggle('hidden');
-  });
-  document.addEventListener('click', function (e) {
-    if (!e.target.closest('#call-options-btn') && !e.target.closest('#call-dropdown') && !dropdown.classList.contains('hidden')) {
-      dropdown.classList.add('hidden');
-    }
-  });
-  dropdown.addEventListener('click', function (e) {
-    var opt = e.target.closest('[data-opt]');
-    if (!opt) return;
-    var action = opt.getAttribute('data-opt');
-    dropdown.classList.add('hidden');
-    if (action === 'end') {
-      callEndedByUser = true;
-      finishCall();
-    } else if (action === 'mute') {
-      mutedState = !mutedState;
-      muted = mutedState;
-      $('call-mute-opt').innerHTML = mutedState
-        ? '<i class="fa-solid fa-microphone w-4"></i><span>Unmute microphone</span>'
-        : '<i class="fa-solid fa-microphone-slash w-4"></i><span>Mute microphone</span>';
-    } else if (action === 'speaker') {
-      // Speaker is default; nothing extra needed here.
-      var so = $('call-speaker-opt');
-      so.innerHTML = '<i class="fa-solid fa-volume-high w-4"></i><span>Speaker on</span>';
-    }
   });
 
   // ================= RATING / FEEDBACK FLOW =================
@@ -933,16 +897,18 @@ Continue
       return;
     }
     userId = session.user.id;
-    // Create the call record, then open the live stream.
-    try {
-      var created = await YoursAPI.startCall(userId, character.id, conversationId);
-      callId = created.callId;
-    } catch (err) {
-      console.warn('startCall failed', err);
-    }
+    // Open the live stream first; persist the call record in parallel so
+    // the connection isn't blocked by an API round trip.
     liveStartedAt = Date.now();
     connectCall();
-  })();
-})();
+    startCallPromise = (async function () {
+      try {
+        var created = await YoursAPI.startCall(userId, character.id, conversationId);
+        callId = created.callId;
+      } catch (err) {
+        console.warn('startCall failed', err);
+      }
+    })();
+  })();})();
 </script>
 </body></html>
