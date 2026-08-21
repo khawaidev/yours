@@ -22,8 +22,8 @@
     inset: 0;
     background-position: center;
     background-size: cover;
-    filter: blur(12px) brightness(0.72) saturate(1.15);
-    transform: scale(1.08);
+    filter: blur(8px) brightness(0.75) saturate(1.15);
+    transform: scale(1.06);
     z-index: 0;
   }
   .call-overlay {
@@ -75,6 +75,9 @@
   .connecting-dot:nth-child(3) { animation-delay: 0.4s; }
   #connecting-ui { transition: opacity 0.4s ease; }
   #connecting-ui.connecting-hidden { opacity: 0; pointer-events: none; }
+  /* Transcript fades/slides in when the call connects */
+  #transcript-area { opacity: 0; transform: translateY(22px); transition: opacity 0.45s ease, transform 0.55s cubic-bezier(0.16, 1, 0.3, 1); }
+  #transcript-area.visible { opacity: 1; transform: translateY(0); }
   .no-scrollbar::-webkit-scrollbar { display: none; }
   .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
   .sheet {
@@ -118,8 +121,8 @@
 <div class="call-overlay"></div>
 
 <!-- Live transcript area (AI STT) -->
-<main class="relative z-10 flex h-full flex-col px-6 pb-40 pt-24 overflow-hidden" id="call-main">
-<div class="mb-auto flex flex-col items-center text-center pt-16" id="connecting-ui">
+<main class="relative z-10 h-full overflow-hidden" id="call-main">
+<div class="mb-auto flex flex-col items-center text-center pt-16 px-6" id="connecting-ui">
 <img id="connecting-avatar" class="w-24 h-24 rounded-full object-cover ring-2 ring-white/25 shadow-[0_10px_36px_rgba(0,0,0,0.5)] mb-6 bg-black/30" alt="">
 <h1 class="gleam-text text-4xl font-extrabold tracking-tight leading-tight" id="connecting-title">Calling …</h1>
 <p class="gleam-text gleam-slow text-lg font-bold mt-3" id="connecting-sub">Connecting call</p>
@@ -129,8 +132,9 @@
 <span class="connecting-dot"></span>
 </div>
 </div>
-<section class="w-full flex-1 min-h-0 overflow-y-auto no-scrollbar" id="transcript-area" style="display:none;">
-<div class="flex min-h-full flex-col justify-end">
+<!-- Transcript spans the full screen; content stays anchored above the controls -->
+<section class="absolute inset-0 w-full overflow-y-auto no-scrollbar" id="transcript-area" style="display:none;">
+<div class="flex min-h-full w-full flex-col justify-end px-6 pt-6 pb-40">
 <div class="text-left" id="stt-user"></div>
 <div class="text-left mt-6">
 <div id="ai-spoken-past"></div>
@@ -551,7 +555,13 @@ Continue
 
   function showTranscript() {
     var area = $('transcript-area');
-    if (area) area.style.display = 'block';
+    if (area) {
+      area.style.display = 'block';
+      // Double rAF so the fade/slide transition runs after display flips.
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () { area.classList.add('visible'); });
+      });
+    }
     var ui = $('connecting-ui');
     if (ui) ui.classList.add('connecting-hidden');
   }
@@ -698,6 +708,10 @@ Continue
 
     var durationText = formatDuration(duration);
     $('call-duration-text').textContent = durationText;
+    // Always show "Disconnected" on the ended screen regardless of the
+    // last live status (which may still read "Connected").
+    var endedSub = $('call-ended-sub');
+    if (endedSub) endedSub.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-red-400 inline-block"></span>Disconnected';
 
     // Hand the call result to the chat page via sessionStorage — window
     // globals don't survive the page navigation.
@@ -720,6 +734,9 @@ Continue
     endedScreen.style.display = 'flex';
     function showEnded() {
       $('call-continue-btn').onclick = function () {
+        // Feedback prompt has a 1-day cooldown per user; skip straight to chat.
+        if (feedbackOnCooldown()) { goBackToChat(); return; }
+        markFeedbackPrompted();
         openRatingSheet();
       };
       // Continue always goes to the chat with the character.
@@ -751,6 +768,18 @@ Continue
   });
 
   // ================= RATING / FEEDBACK FLOW =================
+  var FEEDBACK_COOLDOWN_MS = 24 * 60 * 60 * 1000;
+  function feedbackCooldownKey() { return 'yours_call_feedback_at_' + (userId || 'anon'); }
+  function feedbackOnCooldown() {
+    try {
+      var last = parseInt(localStorage.getItem(feedbackCooldownKey()) || '0', 10);
+      return !!last && (Date.now() - last) < FEEDBACK_COOLDOWN_MS;
+    } catch (e) { return false; }
+  }
+  function markFeedbackPrompted() {
+    try { localStorage.setItem(feedbackCooldownKey(), String(Date.now())); } catch (e) {}
+  }
+
   var backdrop = $('feedback-backdrop');
   var ratingSheet = $('rating-sheet');
   var issuesSheet = $('issues-sheet');
