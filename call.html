@@ -78,6 +78,14 @@
   /* Transcript fades/slides in when the call connects */
   #transcript-area { opacity: 0; transform: translateY(22px); transition: opacity 0.45s ease, transform 0.55s cubic-bezier(0.16, 1, 0.3, 1); }
   #transcript-area.visible { opacity: 1; transform: translateY(0); }
+  /* Karaoke live line: base dimmed, spoken words flip to white */
+  .current-line { color: rgba(255,255,255,0.38); }
+  .current-line .spoken { color: #ffffff; }
+  .speaking-word { display: inline-block; animation: speakWord linear forwards; }
+  @keyframes speakWord { from { color: rgba(255,255,255,0.38); } to { color: #ffffff; } }
+  /* Init prompt before the first exchange */
+  #call-init-text { transition: opacity 0.45s ease, transform 0.45s ease; }
+  #call-init-text.init-hidden { opacity: 0; transform: translateY(12px); }
   .no-scrollbar::-webkit-scrollbar { display: none; }
   .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
   .sheet {
@@ -135,15 +143,18 @@
 <!-- Transcript spans the full screen; content stays anchored above the controls -->
 <section class="absolute inset-0 w-full overflow-y-auto no-scrollbar" id="transcript-area" style="display:none;">
 <div class="flex min-h-full w-full flex-col justify-end px-6 pt-6 pb-40">
-<div class="text-left" id="stt-user"></div>
-<div class="text-left mt-6">
-<div id="ai-spoken-past"></div>
+<!-- Latest previous AI line -->
 <div id="ai-spoken-latest"></div>
-<div id="ai-spoken-current"></div>
-<div id="ai-spoken-next"></div>
-</div>
+<!-- User's latest speech sits right below it -->
+<div class="text-left mt-4" id="stt-user"></div>
+<!-- Karaoke line: spoken words white, upcoming words dimmed -->
+<div class="text-left mt-5" id="ai-current"></div>
 </div>
 </section>
+<!-- Shown once connected until the first conversation text arrives -->
+<div class="absolute left-6 right-6 top-[34%] z-10 text-center px-2" id="call-init-text" style="display:none;">
+<p class="text-white font-extrabold text-3xl leading-snug drop-shadow-[0_2px_12px_rgba(0,0,0,0.6)]">Hold the speaker to start talking to <span id="init-char-name"></span></p>
+</div>
 </main>
 
 <!-- Bottom controls -->
@@ -247,9 +258,9 @@ Continue
   var ended = false;
 
   // Transcript state
-  var spokenPast = '';
-  var latestText = '';      // most recently completed AI turn (dimmed hero style)
-  var currentText = '';     // the line being spoken right now
+  var latestText = '';        // most recently completed AI turn (single prev line)
+  var currentChunks = [];     // incremental chunks of the line being spoken
+  var initTextHidden = false;
   var currentTurnStarted = false;
 
   // Metrics
@@ -494,9 +505,9 @@ Continue
       // Silence tail + stream-end signal: without these the server never
       // detects end-of-speech (VAD needs silence in the stream) and the AI
       // only answered when the next hold resumed the audio.
-      sendSilenceTail(650);
+      sendSilenceTail(500);
       sendAudioStreamEnd();
-    }, 300);
+    }, 200);
     lastUserTurnEnd = Date.now();
   }
   holdBtn.addEventListener('pointerdown', beginHold);
@@ -564,27 +575,55 @@ Continue
     }
     var ui = $('connecting-ui');
     if (ui) ui.classList.add('connecting-hidden');
+    // Connected with no conversation yet — show the init prompt.
+    showInitText();
   }
 
-  // Render the transcript stages. Vertical gaps live here so empty
-  // stages never leave stray spacing behind.
+  // Render the transcript: one previous AI line on top, the user's latest
+  // speech below it, then the live karaoke line.
   function renderStages() {
-    var pastEl = $('ai-spoken-past');
     var latestEl = $('ai-spoken-latest');
-    var curEl = $('ai-spoken-current');
-    var nextEl = $('ai-spoken-next');
-    if (pastEl) pastEl.innerHTML = spokenPast
-      ? '<div class="stage-line text-white/40 font-bold text-[17px] leading-snug mb-6">' + spokenPast + '</div>'
-      : '';
-    // Latest completed turn: same size as the live line, just dimmer.
     if (latestEl) latestEl.innerHTML = latestText
-      ? '<div class="stage-line text-white/70 font-extrabold text-2xl leading-snug mb-6">' + latestText + '</div>'
+      ? '<div class="stage-line text-white/55 font-extrabold text-2xl leading-snug">' + esc(latestText) + '</div>'
       : '';
-    if (curEl) curEl.innerHTML = currentText
-      ? '<div class="stage-line text-white font-extrabold text-2xl leading-snug">' + currentText + '</div>'
-      : '';
-    if (nextEl) nextEl.innerHTML = '<div class="stage-line text-white/35 font-bold text-[17px] leading-snug blink mt-6">. . .</div>';
+    renderCurrentLine();
+  }
+
+  // Live line: everything except the newest chunk is already spoken (white);
+  // the newest chunk animates dim → white over its estimated speak time.
+  function renderCurrentLine() {
+    var curEl = $('ai-current');
+    if (!curEl) return;
+    if (!currentChunks.length) { curEl.innerHTML = ''; return; }
+    var confirmed = currentChunks.slice(0, -1).join(' ');
+    var active = currentChunks[currentChunks.length - 1];
+    // Rough speaking-rate estimate: ~15 chars/second, clamped.
+    var estMs = Math.max(280, Math.min(1800, Math.round(active.length / 15 * 1000)));
+    var html = '<div class="stage-line current-line font-extrabold text-2xl leading-snug">';
+    if (confirmed) html += '<span class="spoken">' + esc(confirmed) + '</span> ';
+    html += '<span class="speaking-word" style="animation-duration:' + estMs + 'ms">' + esc(active) + '</span>';
+    html += '</div>';
+    curEl.innerHTML = html;
     scrollTranscript();
+  }
+
+  // Init prompt: visible after connect until the first exchange starts.
+  function showInitText() {
+    var el = $('call-init-text');
+    var nameEl = $('init-char-name');
+    if (nameEl) nameEl.textContent = charName;
+    initTextHidden = false;
+    if (el) { el.style.display = 'block'; el.classList.remove('init-hidden'); }
+  }
+  function hideInitText() {
+    if (initTextHidden) return;
+    initTextHidden = true;
+    var el = $('call-init-text');
+    if (!el) return;
+    el.classList.add('init-hidden');
+    setTimeout(function () {
+      if (initTextHidden) el.style.display = 'none';
+    }, 480);
   }
 
   function scrollTranscript() {
@@ -599,10 +638,11 @@ Continue
   }
 
   function handleServerContent(sc) {
-    // --- Input transcription (user's speech → STT text, bold big, left aligned) ---
+    // --- Input transcription (user's speech → STT text) ---
     if (sc.inputTranscription && sc.inputTranscription.text) {
       var sttEl = $('stt-user');
       if (sttEl) sttEl.innerHTML = '<div class="text-white/60 font-semibold text-sm leading-snug text-left">You: ' + esc(sc.inputTranscription.text) + '</div>';
+      hideInitText();
       if (sc.inputTranscription.status === 'INPUT_TEXT_AUDIO_TRANSCRIPTION_STATUS_COMPLETE') {
         sttFinalCount += 1;
       }
@@ -619,8 +659,11 @@ Continue
         }
       }
       sessionHasOutput = true;
-      currentText = (currentText ? currentText + ' ' : '') + sc.outputTranscription.text;
-      renderStages();
+      // Each chunk is a word/word-group just spoken; the newest one animates
+      // from dimmed to white while the rest of the line stays white.
+      currentChunks.push(sc.outputTranscription.text);
+      hideInitText();
+      renderCurrentLine();
     }
 
     // --- Interruptions (barge-in / hang-up) ---
@@ -628,11 +671,11 @@ Continue
       METRICS.interruptions += 1;
       if (!sessionHasOutput) aiBlanks += 1;
       stopPlayback();
-      // Reset the current turn; keep what was spoken so far.
-      if (currentText) {
-        spokenPast += (spokenPast ? ' ' : '') + currentText;
+      // Reset the live line; whatever was spoken becomes the prev line.
+      if (currentChunks.length) {
+        latestText = currentChunks.join(' ');
+        currentChunks = [];
       }
-      currentText = '';
       sessionHasOutput = false;
       currentTurnStarted = false;
       renderStages();
@@ -642,12 +685,10 @@ Continue
     if (!sc.modelTurn) {
       if (sc.turnComplete) {
         METRICS.turns += 1;
-        if (currentText) {
-          // The previous latest line falls into history; the just-finished
-          // turn becomes the new "latest" (dimmed hero) line.
-          if (latestText) spokenPast += (spokenPast ? ' ' : '') + latestText;
-          latestText = currentText;
-          currentText = '';
+        if (currentChunks.length) {
+          // The finished turn becomes the single "latest" prev line.
+          latestText = currentChunks.join(' ');
+          currentChunks = [];
           currentTurnStarted = false;
           sessionHasOutput = false;
           renderStages();
@@ -682,8 +723,9 @@ Continue
       } else if (p && typeof p.text === 'string' && p.text) {
         gotAnything = true;
         sessionHasOutput = true;
-        currentText = (currentText ? currentText + ' ' : '') + p.text;
-        renderStages();
+        currentChunks.push(p.text);
+        hideInitText();
+        renderCurrentLine();
       }
     }
     if (gotAnything) sessionHasOutput = true;
