@@ -133,6 +133,10 @@
       color: #fff;
       border-bottom-right-radius: 0.4rem;
     }
+    /* Image messages: small radius on top/left/right (bottom-right stays tight) */
+    .msg-bubble-user-image {
+      border-radius: 0.4rem;
+    }
     .msg-bubble-ai {
       background: rgba(18, 18, 18, 0.8);
       border: 1px solid rgba(255, 255, 255, 0.25);
@@ -149,7 +153,9 @@
       display: flex;
       align-items: center;
       gap: 0.45rem;
-      padding: 0.85rem 2rem;
+      /* Same horizontal inset as text bubbles (1rem) so the label sits
+         at the same distance from the bubble edges as message text. */
+      padding: 0.85rem 1rem;
       font-size: 0.9rem;
       white-space: nowrap;
       width: fit-content;
@@ -841,6 +847,7 @@
     var bubble = document.createElement('div');
     bubble.className = 'msg-bubble msg-bubble-user';
     if (imageSrc) {
+      bubble.classList.add('msg-bubble-user-image');
       var img = document.createElement('img');
       img.src = imageSrc;
       img.alt = 'Attached image';
@@ -849,8 +856,9 @@
     }
     if (text) {
       var txt = document.createElement('span');
+      txt.style.display = 'block';
       txt.innerHTML = renderMessageText(text);
-      if (imageSrc) txt.style.marginTop = '0.35rem';
+      if (imageSrc) txt.style.marginTop = '0.6rem';
       bubble.appendChild(txt);
     }
     row.appendChild(bubble);
