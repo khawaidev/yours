@@ -143,9 +143,9 @@
 <!-- Transcript spans the full screen; content stays anchored above the controls -->
 <section class="absolute inset-0 w-full overflow-y-auto no-scrollbar" id="transcript-area" style="display:none;">
 <div class="flex min-h-full w-full flex-col justify-end px-6 pt-6 pb-40">
-<!-- Latest previous AI line -->
-<div id="ai-spoken-latest"></div>
-<!-- User's latest speech sits right below it -->
+<!-- Rolling history: latest 3 exchanges (You / AI), then live lines -->
+<div id="convo-history"></div>
+<!-- User's in-progress speech -->
 <div class="text-left mt-4" id="stt-user"></div>
 <!-- Karaoke line: spoken words white, upcoming words dimmed -->
 <div class="text-left mt-5" id="ai-current"></div>
@@ -258,7 +258,8 @@ Continue
   var ended = false;
 
   // Transcript state
-  var latestText = '';        // most recently completed AI turn (single prev line)
+  var convoHistory = [];      // completed turns, oldest first ({who:'user'|'ai', text})
+  var pendingUserStt = '';    // user speech heard but not yet committed
   var currentChunks = [];     // incremental chunks of the line being spoken
   var initTextHidden = false;
   var currentTurnStarted = false;
@@ -579,14 +580,38 @@ Continue
     showInitText();
   }
 
-  // Render the transcript: one previous AI line on top, the user's latest
-  // speech below it, then the live karaoke line.
+  // Render the transcript: latest 3 exchanges (You / AI) with vertical gaps,
+  // then the user's in-progress speech and the live karaoke line.
   function renderStages() {
-    var latestEl = $('ai-spoken-latest');
-    if (latestEl) latestEl.innerHTML = latestText
-      ? '<div class="stage-line text-white/55 font-extrabold text-2xl leading-snug">' + esc(latestText) + '</div>'
-      : '';
+    renderHistory();
     renderCurrentLine();
+  }
+
+  function renderHistory() {
+    var el = $('convo-history');
+    if (!el) return;
+    var items = convoHistory.slice(-3);
+    var html = '';
+    for (var i = 0; i < items.length; i++) {
+      var it = items[i];
+      if (it.who === 'user') {
+        html += '<div class="stage-line text-white/50 font-semibold text-sm leading-snug mb-4">You: ' + esc(it.text) + '</div>';
+      } else {
+        html += '<div class="stage-line text-white/65 font-extrabold text-xl leading-snug mb-4">' + esc(charName) + ': ' + esc(it.text) + '</div>';
+      }
+    }
+    el.innerHTML = html;
+  }
+
+  // Commit the user's finished speech into history (deduped: fires on the
+  // transcription-complete flag, or when the AI starts replying).
+  function commitUserStt() {
+    if (!pendingUserStt) return;
+    convoHistory.push({ who: 'user', text: pendingUserStt });
+    pendingUserStt = '';
+    var sttEl = $('stt-user');
+    if (sttEl) sttEl.innerHTML = '';
+    renderHistory();
   }
 
   // Live line: everything except the newest chunk is already spoken (white);
@@ -642,14 +667,18 @@ Continue
     if (sc.inputTranscription && sc.inputTranscription.text) {
       var sttEl = $('stt-user');
       if (sttEl) sttEl.innerHTML = '<div class="text-white/60 font-semibold text-sm leading-snug text-left">You: ' + esc(sc.inputTranscription.text) + '</div>';
+      pendingUserStt = sc.inputTranscription.text;
       hideInitText();
       if (sc.inputTranscription.status === 'INPUT_TEXT_AUDIO_TRANSCRIPTION_STATUS_COMPLETE') {
         sttFinalCount += 1;
+        commitUserStt();
       }
     }
 
     // --- Output transcription (what the character is saying right now) ---
     if (sc.outputTranscription && sc.outputTranscription.text) {
+      // AI replying means the user's turn ended even without a complete flag.
+      commitUserStt();
       if (!currentTurnStarted) {
         currentTurnStarted = true;
         modelTurnSeen = true;
@@ -671,9 +700,9 @@ Continue
       METRICS.interruptions += 1;
       if (!sessionHasOutput) aiBlanks += 1;
       stopPlayback();
-      // Reset the live line; whatever was spoken becomes the prev line.
+      // Reset the live line; whatever was spoken joins history.
       if (currentChunks.length) {
-        latestText = currentChunks.join(' ');
+        convoHistory.push({ who: 'ai', text: currentChunks.join(' ') });
         currentChunks = [];
       }
       sessionHasOutput = false;
@@ -686,8 +715,8 @@ Continue
       if (sc.turnComplete) {
         METRICS.turns += 1;
         if (currentChunks.length) {
-          // The finished turn becomes the single "latest" prev line.
-          latestText = currentChunks.join(' ');
+          // The finished AI turn joins the rolling history.
+          convoHistory.push({ who: 'ai', text: currentChunks.join(' ') });
           currentChunks = [];
           currentTurnStarted = false;
           sessionHasOutput = false;
