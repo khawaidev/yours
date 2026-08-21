@@ -92,7 +92,7 @@
 <!-- END: Main Content Area -->
 <!-- BEGIN: Bottom Action -->
 <div class="absolute bottom-6 left-4 right-4">
-<button onclick="window.location.href='index.html'" class="w-full bg-white text-black font-extrabold text-lg py-4 px-6 rounded-full shadow-lg cursor-pointer">
+<button onclick="finishOnboarding()" class="w-full bg-white text-black font-extrabold text-lg py-4 px-6 rounded-full shadow-lg cursor-pointer">
         Continue
       </button>
 </div>
@@ -122,6 +122,25 @@
 
     hotCheck.classList.toggle('hidden', !isHot);
     sweetCheck.classList.toggle('hidden', isHot);
+  }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/api-client.js"></script>
+<script>
+  // Last onboarding step: flag the profile as onboarded, then enter the app.
+  // Navigation happens regardless so a backend hiccup can't trap the user.
+  function finishOnboarding() {
+    var target = 'index.html';
+    try {
+      var user = window.YoursAPI && YoursAPI.getCurrentUser();
+      if (user && user.id && window.YoursAPI.updateOnboardingState) {
+        YoursAPI.updateOnboardingState(user.id, 'done')
+          .catch(function (err) { console.warn('onboarding state save failed:', err && err.message); })
+          .finally(function () { window.location.href = target; });
+        return;
+      }
+    } catch (e) {}
+    window.location.href = target;
   }
 </script>
 <script src="js/animations.js"></script>

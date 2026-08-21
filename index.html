@@ -562,16 +562,16 @@
     // email as a login (no duplicate user/profile created).
     function bootstrapProfile(session) {
       try {
-        if (!session || !session.user) return;
+        if (!session || !session.user) return Promise.resolve(null);
         var u = session.user;
         var meta = u.user_metadata || {};
-        YoursAPI.bootstrapProfile({
+        return YoursAPI.bootstrapProfile({
           userId: u.id,
           email: u.email || meta.email || '',
           displayName: meta.full_name || meta.name || '',
           avatarUrl: meta.avatar_url || meta.picture || null,
-        }).catch(function () {});
-      } catch (e) {}
+        }).catch(function () { return null; });
+      } catch (e) { return Promise.resolve(null); }
     }
 
     function resolveMode() {
@@ -582,8 +582,12 @@
           if (hasSession) {
             localStorage.removeItem('yours_demo_mode');
             applyMode(true);
-            bootstrapProfile(res.data.session);
             maybeStartFunnel();
+            // A brand-new account (created by this bootstrap) must go through
+            // onboarding even if it landed here straight from Google OAuth.
+            bootstrapProfile(res.data.session).then(function (r) {
+              if (r && r.created) window.location.replace('Age.html');
+            });
           } else if (demoMode === 'auth') {
             applyMode(true);
           } else if (demoMode === 'guest') {

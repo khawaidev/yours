@@ -15,6 +15,7 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 <!-- Supabase browser client (anon key is public by design; keep the service role key server-side only) -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/api-client.js"></script>
 <script data-purpose="tailwind-config">
     tailwind.config = {
       darkMode: 'class',
@@ -216,13 +217,38 @@ Your AI companions are ready to meet you and create something special
       window.location.href = new URL(REDIRECT_PAGE, window.location.href).href;
     }
 
+    // Route a signed-in user: a brand-new account (Google or email) starts
+    // onboarding; an existing account is a login and goes straight to the app.
+    function handleSignedIn() {
+      if (!(supabase && window.YoursAPI)) { redirectHome(); return; }
+      supabase.auth.getSession().then(function (res) {
+        var u = res.data && res.data.session && res.data.session.user;
+        if (!u) { redirectHome(); return; }
+        var meta = u.user_metadata || {};
+        YoursAPI.bootstrapProfile({
+          userId: u.id,
+          email: u.email || meta.email || '',
+          displayName: meta.full_name || meta.name || '',
+          avatarUrl: meta.avatar_url || meta.picture || null,
+        }).then(function (r) {
+          if (r && r.created) {
+            // First time here — run the full onboarding flow.
+            window.location.href = new URL(REDIRECT_PAGE, window.location.href).href;
+          } else {
+            // Existing user: login, never onboarding again.
+            window.location.replace('index.html');
+          }
+        }).catch(function () { redirectHome(); });
+      });
+    }
+
     // Restore an existing session (returning from Google OAuth or a magic link).
     if (supabase) {
       supabase.auth.getSession().then(function (res) {
-        if (res.data.session) redirectHome();
+        if (res.data.session) handleSignedIn();
       });
       supabase.auth.onAuthStateChange(function (event) {
-        if (event === 'SIGNED_IN') redirectHome();
+        if (event === 'SIGNED_IN') handleSignedIn();
       });
     }
 
