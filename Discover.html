@@ -97,8 +97,8 @@
 </div>
 <!-- Tabs: Liked is the default -->
 <div class="flex overflow-x-auto no-scrollbar gap-3 pb-2 -mx-5 px-5">
-<button class="discover-tab active whitespace-nowrap px-5 py-2 rounded-chip bg-app-accent text-white font-medium text-sm" data-tab="liked" type="button">Liked</button>
-<button class="discover-tab whitespace-nowrap px-5 py-2 rounded-chip bg-app-surface text-app-primary font-medium text-sm" data-tab="foryou" type="button">For you</button>
+<button class="discover-tab whitespace-nowrap px-5 py-2 rounded-chip bg-app-surface text-app-primary font-medium text-sm" data-tab="liked" type="button">Liked</button>
+<button class="discover-tab active whitespace-nowrap px-5 py-2 rounded-chip bg-app-accent text-white font-medium text-sm" data-tab="foryou" type="button">For you</button>
 <button class="discover-tab whitespace-nowrap px-5 py-2 rounded-chip bg-app-surface text-app-primary font-medium text-sm" data-tab="popular" type="button">Popular</button>
 <button class="discover-tab whitespace-nowrap px-5 py-2 rounded-chip bg-app-surface text-app-primary font-medium text-sm" data-tab="realistic" type="button">Realistic</button>
 <button class="discover-tab whitespace-nowrap px-5 py-2 rounded-chip bg-app-surface text-app-primary font-medium text-sm" data-tab="anime" type="button">Anime</button>
@@ -107,8 +107,8 @@
 <!-- END: MainHeader & Top Nav -->
 <!-- BEGIN: Main Content -->
 <main class="flex-1 overflow-y-auto pb-28 px-5">
-<!-- Panel: Liked (default) -->
-<section data-panel="liked" class="mb-8">
+<!-- Panel: Liked -->
+<section data-panel="liked" class="mb-8 hidden">
 <div class="flex justify-between items-center mb-4">
 <h2 class="text-xl font-bold">Liked</h2>
 <span class="text-app-secondary text-sm font-medium">Saved by you</span>
@@ -128,8 +128,8 @@
 </div>
 </section>
 
-<!-- Panel: For you -->
-<section data-panel="foryou" class="mb-8 hidden">
+<!-- Panel: For you (default) -->
+<section data-panel="foryou" class="mb-8">
 <div class="flex justify-between items-end mb-4">
 <h2 class="text-xl font-bold">Personalized</h2>
 </div>
@@ -411,8 +411,8 @@
     }
     loadBalance();
 
-    // Default tab = Liked
-    activateTab('liked');
+    // Default tab = For you
+    activateTab('foryou');
   })();
 </script>
 <script src="js/animations.js"></script>

@@ -580,9 +580,19 @@
         window.YoursAPI.getGifts(uid, cId).then(function (res) {
           var gifts = (res && res.gifts) || [];
           // Map DB rows to the tile shape used by the renderer.
-          window.renderGifts(gifts.map(function (g) {
+          var mapped = gifts.map(function (g) {
             return { name: g.gift_name, img: g.gift_image };
-          }));
+          });
+          // Merge with the session-local fallback so gifts sent while the
+          // DB write failed still show up; dedupe by name+image.
+          var local = (localGifts() || []).slice().reverse();
+          var seen = {};
+          var merged = [];
+          local.concat(mapped).forEach(function (g) {
+            var k = (g.name || '') + '|' + (g.img || '');
+            if (!seen[k]) { seen[k] = true; merged.push(g); }
+          });
+          window.renderGifts(merged);
         }).catch(function () {
           window.renderGifts(localGifts());
         });
@@ -592,10 +602,39 @@
     }
 
     resolveUser().then(function () {
-      if (stored) {
+      function useFullCharacter(id, fallback) {
+        // Refetch the full row: sessionStorage snapshots saved by the chat /
+        // call pages are partial ({id,name,avatar}) and miss bio/age/gender.
+        supabase
+          .from('characters')
+          .select('id,name,age,about,gender,personality,art_style,voice_id,circular_profile_image_url,character_feeds(media_url,media_type)')
+          .eq('id', id)
+          .maybeSingle()
+          .then(function (res) {
+            var c = res && res.data;
+            if (c) {
+              window.__char_id__ = c.id || null;
+              apply(Object.assign({}, fallback || {}, c));
+            } else if (fallback) {
+              apply(fallback);
+            }
+            loadGifts();
+          })
+          .catch(function () {
+            if (fallback) apply(fallback);
+            loadGifts();
+          });
+      }
+
+      if (stored && stored.id) {
         window.__char_id__ = stored.id || null;
-        apply(stored);
-        loadGifts();
+        var complete = stored.about != null && stored.age != null && stored.gender != null;
+        if (complete) {
+          apply(stored);
+          loadGifts();
+        } else {
+          useFullCharacter(stored.id, stored);
+        }
       } else {
         supabase
           .from('characters')

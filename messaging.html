@@ -1995,10 +1995,16 @@
         sessionStorage.setItem(key, JSON.stringify(list));
         try { sessionStorage.setItem('yours_gifts_key', key); } catch (e2) {}
       } catch (e) {}
-      // Best-effort DB write (only when signed in and a character is set).
-      if (window.YoursAPI && YoursAPI.sendGift) {
+      // DB write (only when signed in and a real character id is set).
+      if (uid !== 'guest' && cid && cid !== 'unknown' && window.YoursAPI && YoursAPI.sendGift) {
         window.YoursAPI.sendGift(uid, cid, gift.name, gift.img)
-          .catch(function () { /* keep the local fallback */ });
+          .then(function (res) {
+            if (res && res.success === false) throw new Error(res.error || 'gift not saved');
+          })
+          .catch(function (err) {
+            console.warn('sendGift failed:', err && err.message);
+            showToast('Gift shown locally but could not be saved to your account.');
+          });
       }
       if (res && res.wallet && res.wallet.credits != null) {
         updateGiftBalance(res.wallet.credits);
