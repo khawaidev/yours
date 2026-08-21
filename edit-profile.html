@@ -52,7 +52,8 @@
       transition: border-color 0.2s ease;
     }
     .field:focus {
-      border-color: #fff;
+      border-color: #FF5A36;
+      box-shadow: 0 0 0 3px rgba(255, 90, 54, 0.18);
     }
     .field::placeholder {
       color: rgba(255, 255, 255, 0.5);
@@ -217,15 +218,20 @@ Save changes
     YoursAPI.updateProfile(user.id, {
       displayName: nameInput.value.trim().length ? nameInput.value.trim() : loaded.name,
       declaredAge: ageValue != null && ageValue !== '' ? ageValue : undefined,
-    }).then(function () {
-      loaded.name = nameInput.value.trim() || loaded.name;
-      loaded.age = ageValue != null ? ageValue : loaded.age;
-      applyAvatar(loaded.name);
-      showToast('Profile updated');
-      refreshSave();
+    }).then(function (res) {
+      if (res && res.success === false) throw new Error(res.error || 'Could not save changes.');
+      var p = res && res.profile;
+      var wantedName = nameInput.value.trim() || loaded.name;
+      // Confirm the change actually persisted to the DB row before reloading.
+      var verified = !p || (
+        (p.display_name == null || String(p.display_name) === wantedName) &&
+        (ageValue == null || p.declared_age == null || String(p.declared_age) === String(ageValue))
+      );
+      if (!verified) throw new Error('Save could not be verified — please try again.');
+      // No toast: reload so the page shows the persisted values fresh from the DB.
+      window.location.reload();
     }).catch(function (err) {
       showToast(err && err.message ? err.message : 'Could not save changes.');
-    }).finally(function () {
       saving = false;
       saveBtn.textContent = 'Save changes';
       refreshSave();

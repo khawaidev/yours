@@ -124,7 +124,7 @@
 <!-- Profile Section -->
 <section class="flex items-center gap-3 bg-surface-container rounded-2xl p-4 border border-outline-variant/20 shadow-lg">
     <div class="w-12 h-12 rounded-full overflow-hidden border border-outline-variant/30 bg-surface-container-high flex items-center justify-center text-2xl" id="profile-avatar"></div>
-    <div class="flex flex-col items-start gap-1">
+    <div class="flex flex-col items-start gap-2">
         <span class="font-label-md text-white leading-none" id="profile-name">Tyga</span>
         <span class="text-[10px] uppercase tracking-widest text-white/60 leading-none" id="profile-plan">FREE user</span>
     </div>
@@ -142,7 +142,7 @@
 <p class="font-body-md text-body-md text-white/90">Access exclusive tools &amp; features.</p>
 </div>
 </div>
-<button class="self-start mt-stack-sm bg-white text-black font-label-md text-label-md px-6 py-3 rounded-full flex items-center gap-2 hover:scale-105 transition-all duration-300 cursor-pointer" onclick="try { sessionStorage.setItem('yours_prev_page', 'user-profile.html'); sessionStorage.setItem('yours_premium_flow', '1'); } catch (e) {} window.location.href = 'premium-acess.html';" type="button">
+<button id="pro-action-btn" class="self-start mt-stack-sm bg-white text-black font-label-md text-label-md px-6 py-3 rounded-full flex items-center gap-2 hover:scale-105 transition-all duration-300 cursor-pointer" onclick="try { sessionStorage.setItem('yours_prev_page', 'user-profile.html'); sessionStorage.setItem('yours_premium_flow', '1'); } catch (e) {} window.location.href = 'premium-acess.html';" type="button">
                     Upgrade
                     <span class="material-symbols-outlined text-primary-container font-variation-settings: 'FILL' 1;" data-icon="local_fire_department" data-weight="fill">local_fire_department</span>
 </button>
@@ -228,14 +228,16 @@
     }
 
     // The profile picture is the first letter of the resolved name, never an
-    // external image (which may 404). Falls back through display name, stored
-    // profile name, and a name derived from the email so a letter always shows.
+    // external image (which may 404). The DB profile name wins; anything that
+    // looks like an email is rejected so the email can never show as a name.
     function applyProfile(profileName) {
-      var displayName = (user && user.displayName) || null;
-      var name = null;
-      if (displayName && !looksLikeEmail(displayName)) name = displayName;
-      if ((!name || looksLikeEmail(name)) && profileName && !looksLikeEmail(profileName)) name = profileName;
-      if (!name || looksLikeEmail(name)) name = emailToName(user ? user.email : '');
+      var candidates = [profileName, user && user.displayName];
+      var name = '';
+      for (var i = 0; i < candidates.length; i++) {
+        var c = candidates[i];
+        if (c && String(c).trim() && !looksLikeEmail(c)) { name = String(c).trim(); break; }
+      }
+      if (!name) name = emailToName(user ? user.email : '');
       name = name || 'User';
 
       if (nameEl) nameEl.textContent = name;
@@ -270,9 +272,14 @@
     }).then(function (res) {
       var profile = res && res.profile;
       if (profile && profile.display_name) applyProfile(profile.display_name);
-      if (planEl) {
-        planEl.textContent = (profile && profile.onboarding_state === 'done') ? 'FREE user' : 'FREE user';
-      }
+      if (planEl) planEl.textContent = 'FREE user';
+      // Real plan state drives the badge and the banner action.
+      YoursAPI.isPro(user.id).then(function (pro) {
+        if (pro) {
+          if (planEl) planEl.textContent = 'PRO user';
+          upgradeToTopUp();
+        }
+      }).catch(function () {});
     }).catch(function () {});
 
     // Real love-token balance from the backend wallet endpoint.
@@ -282,6 +289,16 @@
         balanceEl.textContent = Math.floor(wallet.credits).toLocaleString();
       }
     }).catch(function () {});
+
+    // PRO users top up tokens instead of upgrading: swap the banner button.
+    function upgradeToTopUp() {
+      var btn = document.getElementById('pro-action-btn');
+      if (!btn) return;
+      btn.textContent = 'Top up more love tokens';
+      btn.classList.remove('bg-white', 'text-black', 'hover:scale-105');
+      btn.classList.add('bg-gradient-to-r', 'from-[#FF5A36]', 'to-[#FF4D6D]', 'text-white', 'hover:scale-105');
+      btn.setAttribute('onclick', "window.location.href = 'recharge.html';");
+    }
   });
 </script>
 <script src="js/animations.js"></script>
