@@ -1,10 +1,13 @@
 <!DOCTYPE html><html lang="en" style=""><head>
 <meta charset="utf-8">
 <meta content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, interactive-widget=resizes-content" name="viewport">
+    <meta name="description" content="Your conversations with AI characters on Yours.">
+    <meta name="robots" content="noindex, nofollow">
 <title>Chat Interface</title>
 <link href="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/file_000000003704823093c6cccb8ba71cd1.png" rel="icon" type="image/png">
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link rel="stylesheet" href="css/app.css">
+<link rel="stylesheet" href="css/desktop.css">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 <style data-purpose="custom-styles">
     body {
@@ -96,6 +99,22 @@
     }
     .msg-row-ai {
       align-items: flex-start;
+    }
+    /* Centered system chip, e.g. "Call ended · 2m 14s" */
+    .msg-row-system {
+      align-items: center;
+    }
+    .call-ended-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      background: rgba(18, 18, 18, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      color: rgba(255, 255, 255, 0.75);
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 0.45rem 0.9rem;
+      border-radius: 9999px;
     }
     .msg-bubble {
       max-width: 78%;
@@ -315,7 +334,7 @@
 <div class="chat-bg" aria-hidden="true"></div>
 <!-- BEGIN: Custom skeleton loader (mirrors page layout) -->
 <div id="page-skeleton" style="position:fixed;inset:0;z-index:9999;background:#0e0e0e;display:flex;flex-direction:column;align-items:center">
-<div style="width:100%;max-width:28rem;height:100%;padding:1rem 1.25rem;display:flex;flex-direction:column">
+<div style="width:100%;max-width:28rem;height:100%;padding:1rem 1.25rem;display:flex;flex-direction:column" class="ys-fill ys-sheet">
 <!-- Header: back / avatar / name + actions -->
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2rem">
 <div style="display:flex;align-items:center;gap:.75rem">
@@ -701,6 +720,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/api-client.js"></script>
+<script src="js/desktop-shell.js"></script>
 <script>
 (function () {
   var chatArea = document.getElementById('chat-area');
@@ -767,7 +787,12 @@
     if (!c) return;
     CHARACTER.id = c.id || CHARACTER.id || null;
     CHARACTER.name = c.name || CHARACTER.name;
-    CHARACTER.avatar = c.circular_profile_image_url || CHARACTER.avatar;
+    // Keep every field the call page needs to rebuild the backdrop/avatar
+    // after returning from a call (the sessionStorage snapshot is rebuilt
+    // from this object, so dropping fields here breaks the bg + profile pic).
+    CHARACTER.avatar = c.circular_profile_image_url || c.avatar || CHARACTER.avatar;
+    CHARACTER.circular_profile_image_url = c.circular_profile_image_url || c.avatar || CHARACTER.circular_profile_image_url || null;
+    if (c.character_feeds) CHARACTER.character_feeds = c.character_feeds;
     if (profileHeader) profileHeader.textContent = CHARACTER.name;
     if (avatarImg) { avatarImg.src = CHARACTER.avatar; avatarImg.alt = CHARACTER.name + ' Profile'; avatarImg.setAttribute('aria-label', 'Open ' + CHARACTER.name + "'s profile"); }
     var regenDesc = document.getElementById('reset-chat-desc');
@@ -775,8 +800,8 @@
     refreshMenuLabels();
     // Use the character's feed media as the chat backdrop (same image as the feed).
     var feedMedia = c.character_feeds && c.character_feeds.length ? c.character_feeds[0] : null;
-    var bgUrl = feedMedia ? feedMedia.media_url : (c.circular_profile_image_url || '');
-    if (feedMedia && feedMedia.media_type === 'video') bgUrl = c.circular_profile_image_url || feedMedia.media_url;
+    var bgUrl = feedMedia ? feedMedia.media_url : (c.circular_profile_image_url || c.avatar || '');
+    if (feedMedia && feedMedia.media_type === 'video') bgUrl = c.circular_profile_image_url || c.avatar || feedMedia.media_url;
     if (bgUrl && bgUrl.indexOf('undefined') === -1) {
       var chatBg = document.querySelector('.chat-bg');
       if (chatBg) chatBg.style.backgroundImage = 'url(' + bgUrl + ')';
@@ -1479,6 +1504,7 @@
   // ---- Header wiring ----
   if (backBtn) {
     backBtn.addEventListener('click', function () {
+      if (window.ysPane) { window.ysNotify('go-back'); return; }
       if (window.history.length > 1) window.history.back();
       else window.location.href = 'index.html';
     });
@@ -1947,11 +1973,34 @@
         if (!chatArea.childNodes.length) {
           addCharacterMessage('Hey, I\'m ' + CHARACTER.name + '. I\'m so happy you found me — tell me about your day! 💕', true);
         }
+        showLastCallBubble();
       })
       .catch(function () {
         addCharacterMessage('Hey, I\'m ' + CHARACTER.name + '. I\'m so happy you found me — tell me about your day! 💕', true);
+        showLastCallBubble();
       })
       .then(function () { markReady('msgs'); });
+  }
+
+  // ---- "Call ended · duration" chip after returning from a call ----
+  function showLastCallBubble() {
+    var raw = null;
+    try { raw = sessionStorage.getItem('yours_last_call'); } catch (e) {}
+    if (!raw) return;
+    try { sessionStorage.removeItem('yours_last_call'); } catch (e) {}
+    var info = null;
+    try { info = JSON.parse(raw); } catch (e) { info = null; }
+    if (!info) return;
+    var label = 'Call ended' + (info.durationText ? ' · ' + info.durationText : '');
+    var row = document.createElement('div');
+    row.className = 'msg-row msg-row-system';
+    var chip = document.createElement('div');
+    chip.className = 'call-ended-chip';
+    chip.innerHTML = '<i class="fa-solid fa-phone text-xs rotate-[135deg]"></i><span></span>';
+    chip.querySelector('span').textContent = label;
+    row.appendChild(chip);
+    chatArea.appendChild(row);
+    scrollBottom();
   }
 
   // ---- Pick up the character from sessionStorage set by feed/profile/chat ----
