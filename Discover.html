@@ -79,13 +79,17 @@
 <body class="bg-app-bg text-white font-sans antialiased selection:bg-gray-700 min-h-screen flex flex-col app-page">
 <!-- BEGIN: MainHeader & Top Nav -->
 <header class="pb-4 px-5 sticky top-0 bg-app-bg/95 backdrop-blur-sm z-50" style="padding-top: max(12px, env(safe-area-inset-top));">
-<!-- Title + Cash pill -->
+<!-- Title + Cash pill (authed) / Signup offer pill (guests) -->
 <div class="flex items-center justify-between mb-6">
 <h1 class="text-3xl font-extrabold tracking-tight">Discover</h1>
-<a href="recharge.html" class="bg-app-surface rounded-full px-3 py-2 flex items-center space-x-2 active:scale-95 transition-transform" aria-label="Recharge">
+<a href="recharge.html" id="disc-wallet" class="bg-app-surface rounded-full px-3 py-2 flex items-center space-x-2 active:scale-95 transition-transform" aria-label="Recharge" style="display:none;">
 <img alt="Cash" class="w-4 h-4 object-contain" src="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/slazzer-preview-z0bt9.png">
 <span class="text-white font-bold text-sm" id="disc-balance">50</span>
 <i class="fa-solid fa-plus text-white text-xs"></i>
+</a>
+<a href="auth.html" id="disc-guest-offer" class="bg-app-surface rounded-full px-3 py-2 flex items-center space-x-2 active:scale-95 transition-transform cursor-pointer" aria-label="Get 100 free tokens when you sign up" style="display:none;">
+<i class="fa-solid fa-gift text-white text-sm"></i>
+<span class="text-white font-bold text-xs whitespace-nowrap">100 free upon signup</span>
 </a>
 </div>
 <!-- Search Bar -->
@@ -284,6 +288,8 @@
       try {
         sessionStorage.setItem('yours_current_character', JSON.stringify(c));
       } catch (e) {}
+      // Inside the desktop shell, the profile lives in its own pane.
+      if (window.ysPane && window.ysNotify) { window.ysNotify('open-profile'); return; }
       window.location.href = 'character-profile.html';
     }
 
@@ -401,7 +407,16 @@
     function loadBalance() {
       var user = null;
       try { user = API ? API.getCurrentUser() : null; } catch (e) {}
-      if (!user || !user.id) return;
+      // Guests: swap the cash pill for the signup offer.
+      var wallet = document.getElementById('disc-wallet');
+      var offer = document.getElementById('disc-guest-offer');
+      if (!user || !user.id) {
+        if (wallet) wallet.style.display = 'none';
+        if (offer) offer.style.display = 'flex';
+        return;
+      }
+      if (wallet) wallet.style.display = 'flex';
+      if (offer) offer.style.display = 'none';
       API.getWallet(user.id).then(function (res) {
         var el = document.getElementById('disc-balance');
         if (res && res.wallet && res.wallet.credits != null && el) {
