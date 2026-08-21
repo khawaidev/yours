@@ -227,10 +227,9 @@
       return palette[h % palette.length];
     }
 
-    // The profile picture is the first letter of the resolved name, never an
-    // external image (which may 404). The DB profile name wins; anything that
-    // looks like an email is rejected so the email can never show as a name.
-    function applyProfile(profileName) {
+    // The profile picture: the user's assigned profile icon from
+    // /assets/profile-icons when set, else a letter avatar fallback.
+    function applyProfile(profileName, profileIcon) {
       var candidates = [profileName, user && user.displayName];
       var name = '';
       for (var i = 0; i < candidates.length; i++) {
@@ -246,13 +245,19 @@
       }
 
       if (avatarEl) {
-        avatarEl.innerHTML = '';
-        avatarEl.style.backgroundImage = '';
-        avatarEl.style.backgroundSize = '';
-        avatarEl.style.backgroundPosition = '';
-        avatarEl.style.backgroundColor = avatarColorFor(name);
-        avatarEl.style.color = '#ffffff';
-        avatarEl.textContent = name.trim().charAt(0).toUpperCase() || 'U';
+        if (profileIcon && /^usericon[1-5]$/.test(String(profileIcon))) {
+          avatarEl.innerHTML = '';
+          avatarEl.style.backgroundColor = 'transparent';
+          avatarEl.innerHTML = '<img src="Assets/profile-icons/' + encodeURIComponent(String(profileIcon)) + '.png" alt="' + name + ' icon" class="w-full h-full object-cover">';
+        } else {
+          avatarEl.innerHTML = '';
+          avatarEl.style.backgroundImage = '';
+          avatarEl.style.backgroundSize = '';
+          avatarEl.style.backgroundPosition = '';
+          avatarEl.style.backgroundColor = avatarColorFor(name);
+          avatarEl.style.color = '#ffffff';
+          avatarEl.textContent = name.trim().charAt(0).toUpperCase() || 'U';
+        }
       }
     }
 
@@ -271,7 +276,7 @@
       avatarUrl: user.avatarUrl || null,
     }).then(function (res) {
       var profile = res && res.profile;
-      if (profile && profile.display_name) applyProfile(profile.display_name);
+      if (profile) applyProfile(profile.display_name, profile.profile_icon);
       if (planEl) planEl.textContent = 'FREE user';
       // Real plan state drives the badge and the banner action.
       YoursAPI.isPro(user.id).then(function (pro) {

@@ -95,6 +95,7 @@
 <!-- END: Header -->
 <!-- BEGIN: Avatar Preview -->
 <section data-reveal class="flex flex-col items-center mb-8">
+<img class="w-24 h-24 rounded-full bg-gray-700 object-cover mb-1 hidden" id="avatar-icon" alt="Profile icon">
 <div class="w-24 h-24 rounded-full bg-gray-700 flex items-center justify-center text-4xl mb-1" id="avatar-preview">🤪</div>
 <p class="text-blush-subtext text-sm" id="email-hint">Signed in</p>
 </section>
@@ -109,6 +110,10 @@
 <label class="text-blush-subtext text-xs font-semibold uppercase tracking-wider px-2 mb-2 block" for="declared-age">Age</label>
 <input class="field" id="declared-age" min="18" max="120" inputmode="numeric" placeholder="18" type="number">
 <p class="text-blush-subtext text-xs px-2 mt-2">Your age must be 18 or older.</p>
+</div>
+<div>
+<label class="text-blush-subtext text-xs font-semibold uppercase tracking-wider px-2 mb-2 block">Profile icon</label>
+<div class="flex items-center justify-between gap-3 px-1" id="icon-picker"></div>
 </div>
 </section>
 <!-- END: Form -->
@@ -136,10 +141,59 @@ Save changes
   var saveBtn = document.getElementById('save-btn');
   var toast = document.getElementById('toast');
   var avatar = document.getElementById('avatar-preview');
+  var avatarIcon = document.getElementById('avatar-icon');
   var emailHint = document.getElementById('email-hint');
+  var iconPicker = document.getElementById('icon-picker');
 
-  var loaded = { name: '', age: null };
+  var ICON_BASE = 'Assets/profile-icons/';
+  var ICON_NAMES = ['usericon1', 'usericon2', 'usericon3', 'usericon4', 'usericon5'];
+  var loaded = { name: '', age: null, icon: null };
+  var selectedIcon = null;
   var saving = false;
+
+  function iconUrl(name) { return ICON_BASE + name + '.png'; }
+
+  // Build the five-icon picker; tapping one selects it (ring highlight).
+  function buildIconPicker(current) {
+    if (!iconPicker) return;
+    iconPicker.innerHTML = '';
+    ICON_NAMES.forEach(function (name) {
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.setAttribute('aria-label', 'Choose ' + name);
+      btn.className = 'w-14 h-14 rounded-full overflow-hidden transition-all duration-150';
+      btn.style.border = '2px solid rgba(255,255,255,0.15)';
+      btn.dataset.icon = name;
+      var img = document.createElement('img');
+      img.src = iconUrl(name);
+      img.alt = name;
+      img.className = 'w-full h-full object-cover';
+      btn.appendChild(img);
+      btn.addEventListener('click', function () { selectIcon(name); });
+      iconPicker.appendChild(btn);
+    });
+    selectIcon(current || loaded.icon || ICON_NAMES[0]);
+  }
+
+  function selectIcon(name) {
+    selectedIcon = name;
+    if (!iconPicker) return;
+    iconPicker.querySelectorAll('button').forEach(function (b) {
+      var on = b.dataset.icon === name;
+      b.style.border = on ? '3px solid #FF4D6D' : '2px solid rgba(255,255,255,0.15)';
+      b.style.transform = on ? 'scale(1.08)' : 'none';
+    });
+    refreshSave();
+  }
+
+  function applyIconToPreview(name) {
+    if (!name) return;
+    if (avatarIcon) {
+      avatarIcon.src = iconUrl(name);
+      avatarIcon.classList.remove('hidden');
+    }
+    if (avatar) avatar.classList.add('hidden');
+  }
 
   function showToast(msg) {
     toast.textContent = msg;
@@ -154,7 +208,8 @@ Save changes
 
   function refreshSave() {
     var changed = nameInput.value.trim() !== loaded.name ||
-      (ageInput.value !== '' && String(loaded.age) !== String(parseInt(ageInput.value, 10)));
+      (ageInput.value !== '' && String(loaded.age) !== String(parseInt(ageInput.value, 10))) ||
+      (selectedIcon != null && loaded.icon != null && selectedIcon !== loaded.icon);
     saveBtn.disabled = saving || !changed;
   }
 
@@ -191,15 +246,23 @@ Save changes
     displayName: user.displayName || '',
   }).then(function (res) {
     var p = res && res.profile;
-    if (!p) return;
+    if (!p) { buildIconPicker(null); return; }
     loaded.name = p.display_name || user.displayName || '';
     loaded.age = p.declared_age != null ? p.declared_age : null;
+    loaded.icon = p.profile_icon || null;
     nameInput.value = loaded.name;
     if (loaded.age != null) ageInput.value = loaded.age;
+    if (loaded.icon) {
+      applyIconToPreview(loaded.icon);
+      buildIconPicker(loaded.icon);
+    } else {
+      buildIconPicker(null);
+    }
     applyAvatar(loaded.name || (user.displayName || ''));
     refreshSave();
   }).catch(function () {
     applyAvatar(user.displayName || '');
+    buildIconPicker(null);
   });
 
   saveBtn.addEventListener('click', function () {
@@ -218,6 +281,7 @@ Save changes
     YoursAPI.updateProfile(user.id, {
       displayName: nameInput.value.trim().length ? nameInput.value.trim() : loaded.name,
       declaredAge: ageValue != null && ageValue !== '' ? ageValue : undefined,
+      profileIcon: selectedIcon || undefined,
     }).then(function (res) {
       if (res && res.success === false) throw new Error(res.error || 'Could not save changes.');
       var p = res && res.profile;
@@ -225,7 +289,8 @@ Save changes
       // Confirm the change actually persisted to the DB row before reloading.
       var verified = !p || (
         (p.display_name == null || String(p.display_name) === wantedName) &&
-        (ageValue == null || p.declared_age == null || String(p.declared_age) === String(ageValue))
+        (ageValue == null || p.declared_age == null || String(p.declared_age) === String(ageValue)) &&
+        (selectedIcon == null || p.profile_icon == null || String(p.profile_icon) === String(selectedIcon))
       );
       if (!verified) throw new Error('Save could not be verified — please try again.');
       // No toast: reload so the page shows the persisted values fresh from the DB.

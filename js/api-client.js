@@ -225,13 +225,15 @@ class YoursAPI {
   }
 
   /**
-   * Update mutable profile fields (name, declared age). Only the fields you
-   * pass get changed; pass { displayName } and/or { declaredAge }.
+   * Update mutable profile fields (name, declared age, profile icon). Only
+   * the fields you pass get changed; pass { displayName } and/or
+   * { declaredAge } and/or { profileIcon }.
    */
-  static async updateProfile(userId, { displayName, declaredAge } = {}) {
+  static async updateProfile(userId, { displayName, declaredAge, profileIcon } = {}) {
     const body = { userId };
     if (displayName !== undefined) body.displayName = displayName;
     if (declaredAge !== undefined) body.declaredAge = declaredAge;
+    if (profileIcon !== undefined) body.profileIcon = profileIcon;
     return this.request('/auth/profile', {
       method: 'PATCH',
       body: JSON.stringify(body),
