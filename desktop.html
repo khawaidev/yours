@@ -131,9 +131,10 @@
     <iframe id="mainFrame" name="mainFrame" src="index.html?pane=1" title="Feeds"></iframe>
   </section>
 
-  <!-- RIGHT: current character's profile (authed) / Discover page (guests) -->
+  <!-- RIGHT: current character's profile (authed) / Discover page (guests),
+       loaded by script so signed-out users never load the wrong page first -->
   <section class="pane" id="profile-pane">
-    <iframe id="sideFrame" name="sideFrame" src="character-profile.html?pane=1" title="Character profile"></iframe>
+    <iframe id="sideFrame" name="sideFrame" src="about:blank" title="Side panel"></iframe>
   </section>
 
 </div>
