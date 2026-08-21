@@ -491,7 +491,7 @@
       // 1) User's profile / onboarding preferences (may not exist yet)
       var { data: profile, error: profileErr } = await supabase
         .from('user_profiles')
-        .select('gender_interest, age_interest, personality_interest, art_style, women_type_interest')
+        .select('age_interest, personality_interest, art_style, women_type_interest')
         .eq('id', session.user.id)
         .maybeSingle();
       if (profileErr) console.warn('profile fetch failed', profileErr);
@@ -508,14 +508,10 @@
       //    the characters.personality column ('the_sweetheart', 'the_tease',
       //    'the_dominant', 'the_submissive', 'the_mysterious') — compare directly.
       var preferredPersonality = (profile && profile.personality_interest) || null;
-      // Gender interest defaults to women when no preference has been saved.
-      var genderInterest = (profile && profile.gender_interest) || 'women';
 
       function score(c) {
         var s = 0;
         if (preferredPersonality && c.personality === preferredPersonality) s += 0.5;
-        if (genderInterest === 'everyone') s += 0.3;
-        else if (c.gender === genderInterest) s += 0.3;
         if (profile && profile.art_style && c.art_style === profile.art_style) s += 0.2;
         if (profile && profile.age_interest) {
           var isYoung = c.age < 35;
@@ -527,7 +523,8 @@
       characters = chars
         .map(function (c) { return Object.assign({}, c, { score: score(c) }); })
         .filter(function (c) {
-          if (genderInterest !== 'everyone' && c.gender && c.gender !== genderInterest) return false;
+          // No gender filtering: every active character is shown, ranked by
+          // the remaining preference scores.
           if (profile && profile.art_style && c.art_style && c.art_style !== profile.art_style) return false;
           return true;
         })
