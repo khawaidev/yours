@@ -11,8 +11,8 @@
   html, body { height: 100%; margin: 0; }
   body {
     font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: radial-gradient(1200px 700px at 20% -10%, #1d1020 0%, #0c0c10 55%, #08080a 100%);
-    color: #f4f4f6;
+    background: #ffffff;
+    color: #17171b;
     overflow: hidden;
     display: flex; align-items: center; justify-content: center;
     -webkit-font-smoothing: antialiased;
@@ -20,18 +20,19 @@
   .card {
     display: flex; flex-direction: column; align-items: center; gap: 22px;
     padding: 38px 44px; border-radius: 28px;
-    background: rgba(20,20,26,.92); border: 1px solid rgba(255,255,255,.08);
-    box-shadow: 0 30px 80px rgba(0,0,0,.55);
+    background: rgba(255,255,255,.86); border: 1px solid rgba(0,0,0,.06);
+    box-shadow: 0 30px 80px rgba(0,0,0,.14);
+    backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
     max-width: min(86vw, 420px); text-align: center;
     animation: rise .45s ease both;
   }
   @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
   .qr-frame {
-    padding: 14px; background: #fff; border-radius: 20px;
-    box-shadow: 0 12px 34px rgba(0,0,0,.45);
+    padding: 14px; background: #fff; border-radius: 20px; border: 1px solid rgba(0,0,0,.08);
+    box-shadow: 0 12px 34px rgba(0,0,0,.12);
   }
   .qr-frame img { display: block; width: 220px; height: 220px; object-fit: contain; }
-  .text { margin: 0; font-size: 17px; font-weight: 700; line-height: 1.5; }
+  .text { margin: 0; font-size: 17px; font-weight: 700; line-height: 1.5; color: #17171b; }
 </style>
 </head>
 <body>
