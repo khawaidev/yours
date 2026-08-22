@@ -43,6 +43,8 @@
     display: flex; align-items: center; gap: 14px;
     padding: 11px 12px; border-radius: 14px; cursor: pointer;
     color: #9b9ba3; font-size: 14.5px; font-weight: 600; white-space: nowrap;
+    background: none; border: none;
+    -webkit-tap-highlight-color: transparent; outline: none;
     transition: background .15s, color .15s, transform .15s;
   }
   #sidebar .nav-item:hover { background: rgba(255,255,255,0.06); color: #fff; }
@@ -76,9 +78,9 @@
   #chat-pane { border-right: 1px solid rgba(255,255,255,0.06); }
   #feeds-pane { border-right: 1px solid rgba(255,255,255,0.06); background: #0a0a0c; }
   #profile-pane { border-left: 1px solid rgba(255,255,255,0.06); background: #0a0a0c; }
-  body.guest-mode #chat-pane,
-  body.guest-mode #profile-pane { display: none; }
-  body.guest-mode #feeds-pane { border-left: 0; }
+  body.guest-mode #chat-pane { display: none; }
+  /* Guests use the right pane for Discover (not character profile) */
+  body.guest-mode #profile-pane { display: flex; border-left: 0; background: #0a0a0c; }
 
   @media (max-width: 1250px) {
     #shell { grid-template-columns: 76px 340px 476px 1fr; }
