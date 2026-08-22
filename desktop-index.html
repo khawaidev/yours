@@ -7,47 +7,90 @@
 <link href="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/file_000000006a2c81fa833aa9f0571bfffc.png" rel="icon" type="image/png">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
 <style>
-  :root { color-scheme: light; }
+  :root {
+    color-scheme: dark;
+    --bg: #2b2320;
+    --ink: #ffffff;
+    --muted: rgba(255,255,255,.64);
+    --line: rgba(255,255,255,.14);
+    --blush: #f2c9c4;
+    --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  }
   * { box-sizing: border-box; }
   html, body { height: 100%; margin: 0; }
   body {
     font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: #ffffff;
-    color: #17171b;
+    background:
+      radial-gradient(52vw 60vh at 50% 42%, rgba(242,201,196,.10), transparent 68%),
+      var(--bg);
+    color: var(--ink);
     overflow: hidden;
     display: flex; align-items: center; justify-content: space-between;
-    gap: 2vw; padding: 0 3vw;
+    gap: 2vw; padding: 0 4vw;
     -webkit-font-smoothing: antialiased;
   }
+  .phone-wrap {
+    flex: 1 1 0; display: flex; justify-content: center;
+    min-width: 0;
+  }
   .phone {
-    width: min(30vw, 400px); max-height: 92vh;
+    width: min(100%, 380px); max-height: 88vh;
     object-fit: contain; flex-shrink: 0;
     user-select: none; pointer-events: none;
-    animation: slide-in .55s ease both;
+    opacity: .92;
+    filter: drop-shadow(0 32px 48px rgba(0,0,0,.45));
+    animation: slide-in .8s var(--ease) both;
   }
   .phone-left  { animation-name: slide-in-left; }
   .phone-right { animation-name: slide-in-right; }
-  @keyframes slide-in-left  { from { opacity: 0; transform: translateX(-40px); } to { opacity: 1; transform: none; } }
-  @keyframes slide-in-right { from { opacity: 0; transform: translateX(40px); } to { opacity: 1; transform: none; } }
+  @keyframes slide-in-left  { from { opacity: 0; transform: translateX(-56px); } to { opacity: .92; transform: none; } }
+  @keyframes slide-in-right { from { opacity: 0; transform: translateX(56px); } to { opacity: .92; transform: none; } }
   .center {
-    display: flex; flex-direction: column; align-items: center; gap: 22px;
-    text-align: center; animation: rise .45s ease both;
+    display: flex; flex-direction: column; align-items: center; gap: 24px;
+    text-align: center; max-width: 480px; padding: 32px 0;
+    animation: rise .8s var(--ease) both;
   }
-  @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+  @keyframes rise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+  .eyebrow {
+    margin: 0;
+    font-size: 12px; font-weight: 700; letter-spacing: .22em;
+    text-transform: uppercase; color: var(--blush);
+    display: flex; align-items: center; gap: 16px;
+  }
+  .eyebrow::before, .eyebrow::after {
+    content: ""; height: 1px; width: 40px; background: var(--line);
+  }
+  h1 {
+    margin: 0; font-size: clamp(28px, 3.2vw, 44px);
+    font-weight: 600; line-height: 1.08; letter-spacing: -.02em;
+  }
+  .sub {
+    margin: 0; font-size: 15px; font-weight: 500; line-height: 1.6;
+    color: var(--muted); max-width: 40ch;
+  }
   .qr-frame {
-    padding: 14px; background: #fff; border-radius: 20px;
-    border: 1px solid rgba(0,0,0,.08);
-    box-shadow: 0 12px 34px rgba(0,0,0,.12);
+    padding: 16px; background: #fff; border-radius: 20px;
+    box-shadow: 0 24px 64px rgba(0,0,0,.5), inset 0 0 0 1px rgba(0,0,0,.04);
+    animation: rise .8s var(--ease) .12s both;
   }
-  .qr-frame img { display: block; width: 220px; height: 220px; object-fit: contain; }
-  .text { margin: 0; font-size: 17px; font-weight: 700; line-height: 1.5; color: #17171b; }
+  .qr-frame img { display: block; width: 208px; height: 208px; object-fit: contain; }
+  .hint {
+    margin: 0; font-size: 13px; font-weight: 600;
+    color: var(--muted);
+    animation: rise .8s var(--ease) .2s both;
+  }
+  .hint strong { color: var(--blush); font-weight: 700; }
+  @media (max-width: 900px) { .phone-wrap { display: none; } }
 </style>
 </head>
 <body>
-  <img class="phone phone-left" src="Assets/left.png" alt="Yours app preview">
+  <div class="phone-wrap"><img class="phone phone-left" src="Assets/left.png" alt="Yours app preview"></div>
   <main class="center" role="dialog" aria-label="Continue on your smartphone">
+    <p class="eyebrow">Yours &middot; Continue on mobile</p>
+    <h1>Your companion is waiting.</h1>
+    <p class="sub">Scan the code to open Yours on your phone and pick up right where you left off.</p>
     <div class="qr-frame"><img alt="Yours QR code" src="Assets/qrcode.png"></div>
-    <p class="text">Enjoy the full experience of the app in your smart phone</p>
+    <p class="hint">Point your camera &middot; tap the link</p>
   </main>
-  <img class="phone phone-right" src="Assets/right.png" alt="Yours app preview">
+  <div class="phone-wrap"><img class="phone phone-right" src="Assets/right.png" alt="Yours app preview"></div>
 </body></html>
