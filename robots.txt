@@ -29,7 +29,7 @@ Disallow: /user-profile.html
 Disallow: /recharge.html
 Disallow: /premium-acess.html
 Disallow: /sent-gifts.html
-Disallow: /desktop.html
+Disallow: /desktop-index.html
 Disallow: /demo-image.html
 Disallow: /demo-video.html
 Disallow: /t.html
