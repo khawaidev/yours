@@ -104,6 +104,43 @@
     window.ysPane = true;
   }
 
+  /* Desktop-only QR gate for the feed: signed in or not, the index page
+     inside the shell is blurred and replaced by a QR code handing the
+     experience off to the visitor's smartphone. No other page in the
+     shell gets this treatment. */
+  if (inPane() && isDesktopWidth() && pageName() === 'index.html') {
+    var mountQrGate = function () {
+      if (!document.body || document.getElementById('ys-qr-gate')) return;
+
+      var style = document.createElement('style');
+      style.textContent =
+        '#ys-qr-gate{position:fixed;inset:0;z-index:2147483647;display:flex;align-items:center;justify-content:center;' +
+        'background:rgba(8,8,12,.6);backdrop-filter:blur(18px) saturate(120%);-webkit-backdrop-filter:blur(18px) saturate(120%);' +
+        "font-family:'Plus Jakarta Sans',system-ui,-apple-system,sans-serif;}" +
+        '.ys-qr-card{display:flex;flex-direction:column;align-items:center;gap:22px;padding:38px 44px;border-radius:28px;' +
+        'background:rgba(20,20,26,.92);border:1px solid rgba(255,255,255,.08);box-shadow:0 30px 80px rgba(0,0,0,.55);' +
+        'max-width:min(86vw,420px);text-align:center;}' +
+        '.ys-qr-frame{padding:14px;background:#fff;border-radius:20px;box-shadow:0 12px 34px rgba(0,0,0,.45);}' +
+        '.ys-qr-frame img{display:block;width:220px;height:220px;object-fit:contain;}' +
+        '.ys-qr-text{margin:0;color:#f4f4f6;font-size:17px;font-weight:700;line-height:1.5;}';
+      document.head.appendChild(style);
+
+      var gate = document.createElement('div');
+      gate.id = 'ys-qr-gate';
+      gate.setAttribute('role', 'dialog');
+      gate.setAttribute('aria-label', 'Continue on your smartphone');
+      gate.innerHTML =
+        '<div class="ys-qr-card">' +
+          '<div class="ys-qr-frame"><img alt="Yours QR code" src="Assets/qrcode.png"></div>' +
+          '<p class="ys-qr-text">Enjoy the full experience of the all in your smart phone</p>' +
+        '</div>';
+      document.body.appendChild(gate);
+    };
+
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mountQrGate);
+    else mountQrGate();
+  }
+
   function ysNotify(type, payload) {
     if (window.parent && window.parent !== window &&
         typeof window.parent.postMessage === 'function') {
