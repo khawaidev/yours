@@ -18,8 +18,10 @@
   .btn-chip.selected { background:#ff7e5f; border-color:#ff7e5f; color:#fff; }
   .apply-enabled { background:#ff7e5f !important; opacity:1 !important; pointer-events:auto !important; }
 </style>
+<link rel="stylesheet" href="css/desktop.css">
 </head>
 <body class="antialiased app-page">
+<div id="ds-sidebar"></div>
 <main class="min-h-screen flex flex-col pb-28">
 <div class="px-6 pt-6 flex items-center justify-between relative">
 <button aria-label="Go back" class="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center text-white hover:bg-white/20 transition-colors cursor-pointer" onclick="window.location.href = 'character-profile.html#about';">
@@ -102,4 +104,7 @@ refreshApply();
 </script>
 <script src="js/api-client.js"></script>
 <script src="js/plan-gate.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/desktop-ui.js"></script>
 </body></html>

@@ -337,8 +337,10 @@
       color: #fff;
     }
   </style>
+<link rel="stylesheet" href="css/desktop.css">
 </head>
 <body class="text-white h-screen flex flex-col overflow-hidden bg-black/60 app-page" style="font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif;">
+<div id="ds-sidebar"></div>
 <!-- Fixed background layer (mobile-safe; stays pinned when the keyboard opens) -->
 <div class="chat-bg" aria-hidden="true"></div>
 <!-- BEGIN: Custom skeleton loader (mirrors page layout) -->
@@ -409,6 +411,7 @@
 <button class="chat-dropdown-item" data-action="profile" type="button"><i class="fa-regular fa-user"></i><span id="menu-profile-label">&nbsp;'s profile</span></button>
 <button class="chat-dropdown-item" data-action="photos" type="button"><i class="fa-regular fa-images"></i><span id="menu-photos-label">&nbsp;'s Photos</span></button>
 <button class="chat-dropdown-item" data-action="reset" type="button"><i class="fa-solid fa-rotate-right"></i><span>Reset chat session</span></button>
+</div>
 </div>
 </div>
 </header>
@@ -2102,4 +2105,6 @@
 })();
 </script>
 <script src="js/animations.js"></script>
+
+<script src="js/desktop-ui.js"></script>
 </body></html>

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Create Your Companion - Face | Yours</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="icon" type="image/png" href="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/file_000000006a2c81fa833aa9f0571bfffc.png">
+<link rel="stylesheet" href="css/desktop.css">
+</head>
+<body class="ds-page" data-active-nav="create" data-topbar-title="Create">
+
+<div class="ds-layout">
+  <div id="ds-sidebar"></div>
+
+  <div class="ds-content-col">
+    <div id="ds-topbar"></div>
+
+    <main class="ds-main">
+      <!-- ================= CREATE STAGE 3 / FACE ================= -->
+      <section class="cc-wrap" aria-label="Face preferences">
+        <div class="cc-progress" role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" aria-label="Creation progress">
+          <div class="cc-progress-fill" style="width: 50%"></div>
+        </div>
+
+        <!-- Ethnicity from stage2.png -->
+        <p class="cc-group-title" style="text-align:center; margin-top:2px;">Ethnicity</p>
+        <div class="ethnicity-grid" role="radiogroup" aria-label="Ethnicity" data-group="ethnicity">
+          <button type="button" class="ethnicity-card" data-value="ASIAN" aria-label="Asian"><span class="eth-thumb"><i class="fa-solid fa-user"></i></span><span class="eth-label">Asian</span></button>
+          <button type="button" class="ethnicity-card" data-value="BLACK" aria-label="Black"><span class="eth-thumb"><i class="fa-solid fa-user"></i></span><span class="eth-label">Black</span></button>
+          <button type="button" class="ethnicity-card is-selected" data-value="WHITE" aria-label="White"><span class="eth-thumb"><i class="fa-solid fa-user"></i></span><span class="eth-label">White</span><span class="eth-check"><i class="fa-solid fa-check"></i></span></button>
+          <button type="button" class="ethnicity-card" data-value="LATINA" aria-label="Latina"><span class="eth-thumb"><i class="fa-solid fa-user"></i></span><span class="eth-label">Latina</span></button>
+          <button type="button" class="ethnicity-card" data-value="ARAB" aria-label="Arab"><span class="eth-thumb"><i class="fa-solid fa-user"></i></span><span class="eth-label">Arab</span></button>
+          <button type="button" class="ethnicity-card" data-value="INDIAN" aria-label="Indian"><span class="eth-thumb"><i class="fa-solid fa-user"></i></span><span class="eth-label">Indian</span></button>
+          <button type="button" class="ethnicity-card" data-value="ELF" aria-label="Elf"><span class="eth-thumb"><i class="fa-solid fa-wand-sparkles"></i></span><span class="eth-label">Elf</span></button>
+          <button type="button" class="ethnicity-card" data-value="ALIEN" aria-label="Alien"><span class="eth-thumb"><i class="fa-solid fa-user-astronaut"></i></span><span class="eth-label">Alien</span></button>
+          <button type="button" class="ethnicity-card" data-value="DEMON" aria-label="Demon"><span class="eth-thumb"><i class="fa-solid fa-fire"></i></span><span class="eth-label">Demon</span></button>
+          <button type="button" class="ethnicity-card" data-value="CUSTOM" aria-label="Custom"><span class="eth-thumb"><i class="fa-solid fa-paintbrush"></i></span><span class="eth-label">Custom</span></button>
+        </div>
+
+        <div class="skin-wrap">
+          <p class="cc-group-title" style="text-align:center;">Skin Tone</p>
+          <div class="skin-grid" role="radiogroup" aria-label="Skin Tone" data-group="skin_tone">
+            <button type="button" class="skin-option" data-value="Fair" aria-label="Fair"><span class="skin-swatch" style="background:#f5e6d3"></span></button>
+            <button type="button" class="skin-option" data-value="Light" aria-label="Light"><span class="skin-swatch" style="background:#e8c9a8"></span></button>
+            <button type="button" class="skin-option" data-value="Medium" aria-label="Medium"><span class="skin-swatch" style="background:#d4a484"></span></button>
+            <button type="button" class="skin-option is-selected" data-value="Tan" aria-label="Tan"><span class="skin-swatch" style="background:#c6865a"></span><span>Tan</span></button>
+            <button type="button" class="skin-option" data-value="Bronze" aria-label="Bronze"><span class="skin-swatch" style="background:#a86a3a"></span></button>
+            <button type="button" class="skin-option" data-value="Dark" aria-label="Dark"><span class="skin-swatch" style="background:#6e2f1a"></span></button>
+          </div>
+        </div>
+
+        <div class="cc-nav">
+          <a class="cc-back" href="desktop-create-stage2.html"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i>Back</a>
+          <button type="button" class="cc-continue" id="continue-btn">Continue<i class="fa-solid fa-arrow-right" aria-hidden="true"></i></button>
+        </div>
+      </section>
+    </main>
+
+    <footer id="ds-footer"></footer>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/api-client.js"></script>
+<script src="js/desktop-ui.js"></script>
+<script src="js/create-funnel.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  YoursCreate.bindChipGroups();
+
+  document.getElementById('continue-btn').addEventListener('click', function () {
+    YoursCreate.save(YoursCreate.collectGroups());
+    var user = window.YoursAPI ? YoursAPI.getCurrentUser() : null;
+    try { if (user && YoursAPI.trackEvent) YoursAPI.trackEvent('desktop_create_stage3', YoursCreate.prefs(), user.id); } catch (e) {}
+    window.location.href = 'desktop-create-stage4.html';
+  });
+})();
+</script>
+</body>
+</html>

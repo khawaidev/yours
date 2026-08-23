@@ -106,8 +106,10 @@
             clip-path: polygon(50% 0%, 61% 11%, 76% 5%, 82% 20%, 97% 20%, 95% 36%, 100% 50%, 95% 64%, 97% 80%, 82% 80%, 76% 95%, 61% 89%, 50% 100%, 39% 89%, 24% 95%, 18% 80%, 3% 80%, 5% 64%, 0% 50%, 5% 36%, 3% 20%, 18% 20%, 24% 5%, 39% 11%);
         }
     </style>
+<link rel="stylesheet" href="css/desktop.css">
 </head>
 <body class="bg-background text-white min-h-screen flex flex-col font-body-md pb-8 app-page">
+<div id="ds-sidebar"></div>
 <!-- BEGIN: Custom skeleton loader (mirrors page layout) -->
 <div id="page-skeleton" style="position:fixed;inset:0;z-index:9999;background:#0e0e0e;overflow-y:auto">
 <div style="width:100%;max-width:28rem;margin:0 auto;padding:1rem 1.5rem 4rem">
@@ -422,4 +424,7 @@
   })();
 </script>
 <script src="js/animations.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/desktop-ui.js"></script>
 </body></html>

@@ -34,8 +34,10 @@
       background: linear-gradient(to top, rgba(19, 19, 19, 1) 0%, rgba(19, 19, 19, 0.9) 30%, rgba(19, 19, 19, 0) 100%);
     }
   </style>
+<link rel="stylesheet" href="css/desktop.css">
 </head>
 <body class="bg-surface text-onSurface font-sans antialiased h-screen w-screen overflow-hidden flex flex-col justify-end relative app-page">
+<div id="ds-sidebar"></div>
 <!-- BEGIN: Custom skeleton loader (mirrors page layout) -->
 <div id="page-skeleton" style="position:fixed;inset:0;z-index:9999;background:#0e0e0e;display:flex;flex-direction:column;align-items:center">
 <div style="width:100%;max-width:28rem;padding:0 1.5rem 2.5rem;display:flex;flex-direction:column;justify-content:flex-end;flex-grow:1">
@@ -297,4 +299,7 @@
   });
 </script>
 <script src="js/animations.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/desktop-ui.js"></script>
 </body></html>

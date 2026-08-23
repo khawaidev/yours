@@ -123,8 +123,10 @@
   @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
   .blink { animation: blink 1.4s ease-in-out infinite; }
 </style>
+<link rel="stylesheet" href="css/desktop.css">
 </head>
 <body class="bg-[#0d0d10] text-white antialiased h-[100dvh] overflow-hidden app-page" id="page-body">
+<div id="ds-sidebar"></div>
 <div class="call-bg" id="call-bg"></div>
 <div class="call-overlay"></div>
 
@@ -1011,4 +1013,6 @@ Continue
     })();
   })();})();
 </script>
+
+<script src="js/desktop-ui.js"></script>
 </body></html>

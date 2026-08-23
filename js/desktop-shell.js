@@ -1,13 +1,18 @@
 /* Yours — desktop handling
    ------------------------------------------------------------
-   The old multi-pane desktop shell has been removed. What remains:
+   Desktop visitors (>= 768px) get a full desktop experience:
 
-   1. Desktop-width visitors landing on the feed are sent to
-      desktop-index.html, a standalone page that hands the
-      experience off to their smartphone via a QR code.
-   2. ysNotify()/ysOpenChat() stay defined so existing pages that
-      call them keep working; with no shell around they simply
-      fall back to plain navigation.
+   1. index.html (mobile swipe feed) redirects desktop users to
+      desktop-index.html — the Discover page inside the shared
+      desktop shell (css/desktop.css + js/desktop-ui.js).
+   2. The create funnel lives on desktop-create.html plus the
+      desktop-create-stage2..5.html pages.
+   3. Every other app page injects the same sidebar via its
+      <div id="ds-sidebar"></div> host; auth and onboarding
+      pages stay sidebar-free.
+   4. ysNotify()/ysOpenChat() stay defined so existing pages that
+      call them keep working; they simply fall back to plain
+      navigation into messaging.html.
 
    Phones (<768px) are never redirected.
 */

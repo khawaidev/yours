@@ -1,7 +1,9 @@
-<!DOCTYPE html><html class="dark" lang="en"><head>
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
 <meta charset="utf-8">
 <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport">
-    <meta name="description" content="Discover AI companions on Yours — browse characters by personality, interests and vibe, and find the one made for you.">
+<meta name="description" content="Discover AI companions on Yours — browse characters by personality, interests and vibe, and find the one made for you.">
 <title>Discover - Yours</title>
 <link href="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/file_000000003704823093c6cccb8ba71cd1.png" rel="icon" type="image/png">
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
@@ -9,71 +11,94 @@
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
-          },
-          colors: {
-            'app-bg': '#121212',
-            'app-surface': '#252525',
-            'app-primary': '#E2E2E2',
-            'app-secondary': '#A0A0A0',
-            'app-accent': '#3A3A3A',
-          },
-          borderRadius: {
-            'card': '24px',
-            'chip': '20px',
-            'nav': '32px',
-          }
+  tailwind.config = {
+    darkMode: 'class',
+    theme: {
+      extend: {
+        fontFamily: {
+          sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+        },
+        colors: {
+          'app-bg': '#121212',
+          'app-surface': '#252525',
+          'app-primary': '#E2E2E2',
+          'app-secondary': '#A0A0A0',
+          'app-accent': '#3A3A3A',
+        },
+        borderRadius: {
+          'card': '24px',
+          'chip': '20px',
+          'nav': '32px',
         }
       }
     }
-  </script>
+  }
+</script>
 <style data-purpose="custom-utilities">
-    /* Hide scrollbar for horizontal scrolling areas */
-    .no-scrollbar::-webkit-scrollbar {
-      display: none;
-    }
-    .no-scrollbar {
-      -ms-overflow-style: none;
-      scrollbar-width: none;
-    }
+  /* Hide scrollbar for horizontal scrolling areas */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
 
-    /* Text overlay gradient for cards */
-    .card-gradient {
-      background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 50%);
-    }
+  /* Text overlay gradient for cards */
+  .card-gradient {
+    background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 50%);
+  }
 
-    /* Active discover tab */
-    .discover-tab {
-      transition: background-color 0.2s ease, color 0.2s ease;
-    }
+  /* Active discover tab */
+  .discover-tab {
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
 
-    /* Card shimmer / skeleton */
-    .skel-card {
-      position: relative;
-      overflow: hidden;
-      background: #1f1f1f;
-      border-radius: 24px;
-    }
-    .skel-card::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
-      animation: discover-shimmer 1.2s infinite;
-      transform: translateX(-100%);
-    }
-    @keyframes discover-shimmer {
-      100% { transform: translateX(100%); }
-    }
-  </style>
+  /* Card shimmer / skeleton */
+  .skel-card {
+    position: relative;
+    overflow: hidden;
+    background: #1f1f1f;
+    border-radius: 24px;
+  }
+  .skel-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
+    animation: discover-shimmer 1.2s infinite;
+    transform: translateX(-100%);
+  }
+  @keyframes discover-shimmer {
+    100% { transform: translateX(100%); }
+  }
+
+  /* Filter buttons */
+  .filter-btn {
+    @apply whitespace-nowrap px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 cursor-pointer border border-transparent;
+  }
+  .filter-btn:hover {
+    @apply border-gray-600;
+  }
+  .filter-btn.active {
+    @apply bg-app-accent text-white;
+  }
+  .filter-btn:not(.active) {
+    @apply bg-app-surface text-app-primary;
+  }
+
+  /* Filter row */
+  .filter-row {
+    @apply flex overflow-x-auto no-scrollbar gap-2 pb-2;
+    scrollbar-width: none;
+  }
+  .filter-row::-webkit-scrollbar {
+    display: none;
+  }
+</style>
 <link rel="canonical" href="https://khawaidev.github.io/yours/Discover.html">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Yours">
@@ -82,299 +107,542 @@
 <meta property="og:url" content="https://khawaidev.github.io/yours/Discover.html">
 <meta property="og:image" content="https://ik.imagekit.io/0a4t1zpln/file_000000008fec82119dc760b0c03a4ca5.png">
 <meta name="twitter:card" content="summary_large_image">
+<link rel="stylesheet" href="css/desktop.css">
 </head>
 <body class="bg-app-bg text-white font-sans antialiased selection:bg-gray-700 min-h-screen flex flex-col app-page">
+<div id="ds-sidebar"></div>
+
 <!-- BEGIN: MainHeader & Top Nav -->
 <header class="pb-4 px-5 sticky top-0 bg-app-bg/95 backdrop-blur-sm z-50" style="padding-top: max(12px, env(safe-area-inset-top));">
-<!-- Title + Cash pill (authed) / Signup offer pill (guests) -->
-<div class="flex items-center justify-between mb-6">
-<h1 class="text-3xl font-extrabold tracking-tight">Discover</h1>
-<a href="recharge.html" id="disc-wallet" class="bg-app-surface rounded-full px-3 py-2 flex items-center space-x-2 active:scale-95 transition-transform" aria-label="Recharge" style="display:none;">
-<img alt="Cash" class="w-4 h-4 object-contain" src="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/slazzer-preview-z0bt9.png">
-<span class="text-white font-bold text-sm" id="disc-balance">50</span>
-<i class="fa-solid fa-plus text-white text-xs"></i>
-</a>
-<a href="auth.html" id="disc-guest-offer" class="bg-app-surface rounded-full px-3 py-2 flex items-center space-x-2 active:scale-95 transition-transform cursor-pointer" aria-label="Get 100 free tokens when you sign up" style="display:none;">
-<i class="fa-solid fa-gift text-white text-sm"></i>
-<span class="text-white font-bold text-xs whitespace-nowrap">100 free upon signup</span>
-</a>
-</div>
-<!-- Search Bar -->
-<div class="relative mb-5">
-<div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-<i class="fa-solid fa-search text-app-secondary"></i>
-</div>
-<input class="w-full bg-app-surface text-app-primary placeholder-app-secondary rounded-full py-3 pl-11 pr-4 border-none focus:ring-1 focus:ring-gray-500 text-base shadow-sm" placeholder="Search for a character" type="text" id="discover-search">
-</div>
-<!-- Tabs: Liked is the default -->
-<div class="flex overflow-x-auto no-scrollbar gap-3 pb-2 -mx-5 px-5">
-<button class="discover-tab whitespace-nowrap px-5 py-2 rounded-chip bg-app-surface text-app-primary font-medium text-sm" data-tab="liked" type="button">Liked</button>
-<button class="discover-tab active whitespace-nowrap px-5 py-2 rounded-chip bg-app-accent text-white font-medium text-sm" data-tab="foryou" type="button">For you</button>
-<button class="discover-tab whitespace-nowrap px-5 py-2 rounded-chip bg-app-surface text-app-primary font-medium text-sm" data-tab="popular" type="button">Popular</button>
-<button class="discover-tab whitespace-nowrap px-5 py-2 rounded-chip bg-app-surface text-app-primary font-medium text-sm" data-tab="realistic" type="button">Realistic</button>
-<button class="discover-tab whitespace-nowrap px-5 py-2 rounded-chip bg-app-surface text-app-primary font-medium text-sm" data-tab="anime" type="button">Anime</button>
-</div>
+  <!-- Title + Cash pill (authed) / Signup offer pill (guests) -->
+  <div class="flex items-center justify-between mb-6">
+    <h1 class="text-3xl font-extrabold tracking-tight">Discover</h1>
+    <a href="recharge.html" id="disc-wallet" class="bg-app-surface rounded-full px-3 py-2 flex items-center space-x-2 active:scale-95 transition-transform" aria-label="Recharge" style="display:none;">
+      <img alt="Cash" class="w-4 h-4 object-contain" src="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/slazzer-preview-z0bt9.png">
+      <span class="text-white font-bold text-sm" id="disc-balance">50</span>
+      <i class="fa-solid fa-plus text-white text-xs"></i>
+    </a>
+    <a href="auth.html" id="disc-guest-offer" class="bg-app-surface rounded-full px-3 py-2 flex items-center space-x-2 active:scale-95 transition-transform cursor-pointer" aria-label="Get 100 free tokens when you sign up" style="display:none;">
+      <i class="fa-solid fa-gift text-white text-sm"></i>
+      <span class="text-white font-bold text-xs whitespace-nowrap">100 free upon signup</span>
+    </a>
+  </div>
+
+  <!-- Search Bar -->
+  <div class="relative mb-5">
+    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+      <i class="fa-solid fa-search text-app-secondary"></i>
+    </div>
+    <input class="w-full bg-app-surface text-app-primary placeholder-app-secondary rounded-full py-3 pl-11 pr-4 border-none focus:ring-1 focus:ring-gray-500 text-base shadow-sm" placeholder="Search for a character" type="text" id="discover-search">
+  </div>
+
+  <!-- Mobile Tabs (hidden on md+) -->
+  <div class="flex overflow-x-auto no-scrollbar gap-3 pb-2 -mx-5 px-5 md:hidden">
+    <button class="discover-tab whitespace-nowrap px-5 py-2 rounded-chip bg-app-surface text-app-primary font-medium text-sm" data-tab="liked" type="button">Liked</button>
+    <button class="discover-tab active whitespace-nowrap px-5 py-2 rounded-chip bg-app-accent text-white font-medium text-sm" data-tab="foryou" type="button">For you</button>
+    <button class="discover-tab whitespace-nowrap px-5 py-2 rounded-chip bg-app-surface text-app-primary font-medium text-sm" data-tab="popular" type="button">Popular</button>
+    <button class="discover-tab whitespace-nowrap px-5 py-2 rounded-chip bg-app-surface text-app-primary font-medium text-sm" data-tab="realistic" type="button">Realistic</button>
+    <button class="discover-tab whitespace-nowrap px-5 py-2 rounded-chip bg-app-surface text-app-primary font-medium text-sm" data-tab="anime" type="button">Anime</button>
+  </div>
+
+  <!-- Desktop Filter Buttons (hidden on mobile, shown on md+) -->
+  <div class="hidden md:flex flex-wrap gap-2 mb-2">
+    <!-- Recommendation filters -->
+    <div class="flex items-center gap-2">
+      <span class="text-xs text-app-secondary font-medium">Rec:</span>
+      <button class="filter-btn active" data-filter="recommendation" data-value="foryou">For you</button>
+      <button class="filter-btn" data-filter="recommendation" data-value="popular">Popular</button>
+      <button class="filter-btn" data-filter="recommendation" data-value="newest">Newest</button>
+      <button class="filter-btn" data-filter="recommendation" data-value="following">Following</button>
+    </div>
+
+    <!-- Gender filters -->
+    <div class="flex items-center gap-2">
+      <span class="text-xs text-app-secondary font-medium">Gender:</span>
+      <button class="filter-btn active" data-filter="gender" data-value="everyone">Everyone</button>
+      <button class="filter-btn" data-filter="gender" data-value="female">Female</button>
+      <button class="filter-btn" data-filter="gender" data-value="male">Male</button>
+    </div>
+
+    <!-- Age filters -->
+    <div class="flex items-center gap-2">
+      <span class="text-xs text-app-secondary font-medium">Age:</span>
+      <button class="filter-btn active" data-filter="age" data-value="any">Any age</button>
+      <button class="filter-btn" data-filter="age" data-value="teen">Teen</button>
+      <button class="filter-btn" data-filter="age" data-value="young-adult">Young adult</button>
+      <button class="filter-btn" data-filter="age" data-value="adult">Adult</button>
+      <button class="filter-btn" data-filter="age" data-value="mature">Mature</button>
+    </div>
+
+    <!-- Art Style filters -->
+    <div class="flex items-center gap-2">
+      <span class="text-xs text-app-secondary font-medium">Style:</span>
+      <button class="filter-btn active" data-filter="style" data-value="any">Any style</button>
+      <button class="filter-btn" data-filter="style" data-value="realistic">Realistic</button>
+      <button class="filter-btn" data-filter="style" data-value="anime">Anime</button>
+    </div>
+  </div>
 </header>
 <!-- END: MainHeader & Top Nav -->
+
 <!-- BEGIN: Main Content -->
 <main class="flex-1 overflow-y-auto pb-28 px-5">
-<!-- Panel: Liked -->
-<section data-panel="liked" class="mb-8 hidden">
-<div class="flex justify-between items-center mb-4">
-<h2 class="text-xl font-bold">Liked</h2>
-<span class="text-app-secondary text-sm font-medium">Saved by you</span>
-</div>
-<!-- Loading skeletons -->
-<div class="flex overflow-x-auto no-scrollbar gap-4 -mx-5 px-5" id="liked-grid">
-<div class="skel-card w-[160px] h-[320px] shrink-0"></div>
-<div class="skel-card w-[160px] h-[320px] shrink-0"></div>
-</div>
-<!-- Empty state -->
-<div class="hidden text-center py-14 px-6" id="liked-empty">
-<div class="w-16 h-16 mx-auto rounded-full bg-app-surface flex items-center justify-center mb-4">
-<i class="fa-solid fa-heart text-app-secondary text-2xl"></i>
-</div>
-<h3 class="text-lg font-bold mb-1">No liked characters yet</h3>
-<p class="text-sm text-app-secondary leading-relaxed">Tap the <i class="fa-solid fa-heart text-[#f43f5e]"></i> button on any character in the feed and they&rsquo;ll show up here.</p>
-</div>
-</section>
+  <!-- Panel: Liked -->
+  <section data-panel="liked" class="mb-8 hidden">
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-xl font-bold">Liked</h2>
+      <span class="text-app-secondary text-sm font-medium">Saved by you</span>
+    </div>
+    <!-- Loading skeletons -->
+    <div class="flex overflow-x-auto no-scrollbar gap-4 -mx-5 px-5" id="liked-grid">
+      <div class="skel-card w-[160px] h-[320px] shrink-0"></div>
+      <div class="skel-card w-[160px] h-[320px] shrink-0"></div>
+    </div>
+    <!-- Empty state -->
+    <div class="hidden text-center py-14 px-6" id="liked-empty">
+      <div class="w-16 h-16 mx-auto rounded-full bg-app-surface flex items-center justify-center mb-4">
+        <i class="fa-solid fa-heart text-app-secondary text-2xl"></i>
+      </div>
+      <h3 class="text-lg font-bold mb-1">No liked characters yet</h3>
+      <p class="text-sm text-app-secondary leading-relaxed">Tap the <i class="fa-solid fa-heart text-[#f43f5e]"></i> button on any character in the feed and they&rsquo;ll show up here.</p>
+    </div>
+  </section>
 
-<!-- Panel: For you (default) -->
-<section data-panel="foryou" class="mb-8">
-<div class="flex justify-between items-end mb-4">
-<h2 class="text-xl font-bold">Personalized</h2>
-</div>
-<div class="flex overflow-x-auto no-scrollbar gap-4 -mx-5 px-5" id="foryou-grid">
-<div class="skel-card w-[160px] h-[320px] shrink-0"></div>
-<div class="skel-card w-[160px] h-[320px] shrink-0"></div>
-</div>
-</section>
+  <!-- Panel: For you (default) -->
+  <section data-panel="foryou" class="mb-8">
+    <div class="flex justify-between items-end mb-4">
+      <h2 class="text-xl font-bold">Personalized</h2>
+    </div>
+    <div class="flex overflow-x-auto no-scrollbar gap-4 -mx-5 px-5" id="foryou-grid">
+      <div class="skel-card w-[160px] h-[320px] shrink-0"></div>
+      <div class="skel-card w-[160px] h-[320px] shrink-0"></div>
+    </div>
+  </section>
 
-<!-- Panel: Popular -->
-<section data-panel="popular" class="mb-8 hidden">
-<div class="flex justify-between items-end mb-4">
-<h2 class="text-xl font-bold">Popular</h2>
-</div>
-<div class="flex overflow-x-auto no-scrollbar gap-4 -mx-5 px-5" id="popular-grid">
-<div class="skel-card w-[160px] h-[320px] shrink-0"></div>
-<div class="skel-card w-[160px] h-[320px] shrink-0"></div>
-</div>
-</section>
+  <!-- Panel: Popular -->
+  <section data-panel="popular" class="mb-8 hidden">
+    <div class="flex justify-between items-end mb-4">
+      <h2 class="text-xl font-bold">Popular</h2>
+    </div>
+    <div class="flex overflow-x-auto no-scrollbar gap-4 -mx-5 px-5" id="popular-grid">
+      <div class="skel-card w-[160px] h-[320px] shrink-0"></div>
+      <div class="skel-card w-[160px] h-[320px] shrink-0"></div>
+    </div>
+  </section>
 
-<!-- Panel: Realistic -->
-<section data-panel="realistic" class="mb-8 hidden">
-<div class="flex justify-between items-end mb-4">
-<h2 class="text-xl font-bold">Realistic</h2>
-</div>
-<div class="flex overflow-x-auto no-scrollbar gap-4 -mx-5 px-5" id="realistic-grid">
-<div class="skel-card w-[160px] h-[320px] shrink-0"></div>
-<div class="skel-card w-[160px] h-[320px] shrink-0"></div>
-</div>
-</section>
+  <!-- Panel: Realistic -->
+  <section data-panel="realistic" class="mb-8 hidden">
+    <div class="flex justify-between items-end mb-4">
+      <h2 class="text-xl font-bold">Realistic</h2>
+    </div>
+    <div class="flex overflow-x-auto no-scrollbar gap-4 -mx-5 px-5" id="realistic-grid">
+      <div class="skel-card w-[160px] h-[320px] shrink-0"></div>
+      <div class="skel-card w-[160px] h-[320px] shrink-0"></div>
+    </div>
+  </section>
 
-<!-- Panel: Anime -->
-<section data-panel="anime" class="mb-8 hidden">
-<div class="flex justify-between items-end mb-4">
-<h2 class="text-xl font-bold">Anime</h2>
-</div>
-<div class="flex overflow-x-auto no-scrollbar gap-4 -mx-5 px-5" id="anime-grid">
-<div class="skel-card w-[160px] h-[320px] shrink-0"></div>
-<div class="skel-card w-[160px] h-[320px] shrink-0"></div>
-</div>
-</section>
+  <!-- Panel: Anime -->
+  <section data-panel="anime" class="mb-8 hidden">
+    <div class="flex justify-between items-end mb-4">
+      <h2 class="text-xl font-bold">Anime</h2>
+    </div>
+    <div class="flex overflow-x-auto no-scrollbar gap-4 -mx-5 px-5" id="anime-grid">
+      <div class="skel-card w-[160px] h-[320px] shrink-0"></div>
+      <div class="skel-card w-[160px] h-[320px] shrink-0"></div>
+    </div>
+  </section>
 
-<!-- Section: Design Perfect Companion -->
-<section class="mb-8">
-<h2 class="text-xl font-bold mb-4">Design perfect companion</h2>
-<div class="flex gap-4">
-<div class="relative w-[160px] h-[160px] rounded-card overflow-hidden bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-800/50 flex items-center justify-center cursor-pointer shadow-lg" id="create-btn">
-<div class="absolute inset-0 bg-[url('https://placehold.co/400x400/222/666?text=Blur')] bg-cover bg-center opacity-30 blur-md"></div>
-<div class="relative z-10 flex flex-col items-center justify-center">
-<div class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center backdrop-blur-sm mb-2">
-<i class="fa-solid fa-plus text-xl"></i>
-</div>
-<span class="text-sm font-semibold">Create</span>
-</div>
-</div>
-</div>
-</section>
+  <!-- Section: Design Perfect Companion -->
+  <section class="mb-8">
+    <h2 class="text-xl font-bold mb-4">Design perfect companion</h2>
+    <div class="flex gap-4">
+      <div class="relative w-[160px] h-[160px] rounded-card overflow-hidden bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-800/50 flex items-center justify-center cursor-pointer shadow-lg" id="create-btn">
+        <div class="absolute inset-0 bg-[url('https://placehold.co/400x400/222/666?text=Blur')] bg-cover bg-center opacity-30 blur-md"></div>
+        <div class="relative z-10 flex flex-col items-center justify-center">
+          <div class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center backdrop-blur-sm mb-2">
+            <i class="fa-solid fa-plus text-xl"></i>
+          </div>
+          <span class="text-sm font-semibold">Create</span>
+        </div>
+      </div>
+    </div>
+  </section>
 </main>
 <!-- END: Main Content -->
+
 <!-- BEGIN: Bottom Navigation (icon-only pill) -->
 <nav class="fixed bottom-4 left-4 right-4 z-50 flex items-center justify-between bg-[#252525]/95 backdrop-blur-lg rounded-[32px] px-2 py-2 shadow-[0_-5px_20px_rgba(0,0,0,0.5)]">
-<a href="index.html" class="flex-1 flex items-center justify-center py-2 rounded-[24px] transition-all opacity-60 hover:opacity-100 cursor-pointer" title="Feed">
-<img src="https://i.ibb.co/hR2htXpk/football-card.png" alt="Feed" class="w-6 h-6 object-contain">
-</a>
-<a href="Discover.html" class="flex-1 flex items-center justify-center py-2 rounded-[24px] bg-[#3A3A3A] transition-all cursor-pointer" title="Discover">
-<img src="https://i.ibb.co/Zp5ZML9X/browser.png" alt="Discover" class="w-6 h-6 object-contain">
-</a>
-<a href="chat.html" class="flex-1 flex items-center justify-center py-2 rounded-[24px] transition-all opacity-60 hover:opacity-100 cursor-pointer" title="Chat">
-<img src="https://i.ibb.co/k2yRYWGk/ai-technology.png" alt="Chat" class="w-6 h-6 object-contain">
-</a>
-<a href="user-profile.html" class="flex-1 flex items-center justify-center py-2 rounded-[24px] transition-all opacity-60 hover:opacity-100 cursor-pointer" title="Profile">
-<img src="https://i.ibb.co/kVrCvk98/user-1.png" alt="Profile" class="w-6 h-6 object-contain">
-</a>
+  <a href="index.html" class="flex-1 flex items-center justify-center py-2 rounded-[24px] transition-all opacity-60 hover:opacity-100 cursor-pointer" title="Feed">
+    <img src="https://i.ibb.co/hR2htXpk/football-card.png" alt="Feed" class="w-6 h-6 object-contain">
+  </a>
+  <a href="Discover.html" class="flex-1 flex items-center justify-center py-2 rounded-[24px] bg-[#3A3A3A] transition-all cursor-pointer" title="Discover">
+    <img src="https://i.ibb.co/Zp5ZML9X/browser.png" alt="Discover" class="w-6 h-6 object-contain">
+  </a>
+  <a href="chat.html" class="flex-1 flex items-center justify-center py-2 rounded-[24px] transition-all opacity-60 hover:opacity-100 cursor-pointer" title="Chat">
+    <img src="https://i.ibb.co/k2yRYWGk/ai-technology.png" alt="Chat" class="w-6 h-6 object-contain">
+  </a>
+  <a href="user-profile.html" class="flex-1 flex items-center justify-center py-2 rounded-[24px] transition-all opacity-60 hover:opacity-100 cursor-pointer" title="Profile">
+    <img src="https://i.ibb.co/kVrCvk98/user-1.png" alt="Profile" class="w-6 h-6 object-contain">
+  </a>
 </nav>
 <!-- END: Bottom Navigation -->
+
 <!-- Coming soon popup -->
 <div id="coming-soon-modal" style="position:fixed;inset:0;z-index:9999;display:none;align-items:center;justify-content:center;">
-<div id="coming-soon-backdrop" style="position:absolute;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);"></div>
-<div class="relative bg-[#1a1a1a] border border-white/10 rounded-[24px] p-8 text-center mx-6" style="width:min(90vw,320px);">
-<h3 class="text-xl font-bold text-white mb-2">Coming soon!</h3>
-<p class="text-sm text-gray-400 leading-relaxed mb-6">This feature is not available yet.</p>
-<button class="w-full bg-white text-black font-semibold py-3 rounded-full active:scale-95 transition-transform" id="coming-soon-ok" type="button">Got it</button>
+  <div id="coming-soon-backdrop" style="position:absolute;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);"></div>
+  <div class="relative bg-[#1a1a1a] border border-white/10 rounded-[24px] p-8 text-center mx-6" style="width:min(90vw,320px);">
+    <h3 class="text-xl font-bold text-white mb-2">Coming soon!</h3>
+    <p class="text-sm text-gray-400 leading-relaxed mb-6">This feature is not available yet.</p>
+    <button class="w-full bg-white text-black font-semibold py-3 rounded-full active:scale-95 transition-transform" id="coming-soon-ok" type="button">Got it</button>
+  </div>
 </div>
-</div>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/api-client.js"></script>
 <script src="js/desktop-shell.js"></script>
 <script>
-  (function () {
-    var API = window.YoursAPI;
+(function () {
+  var API = window.YoursAPI;
 
-    // ---- Coming soon (Create) modal ----
-    var createBtn = document.getElementById('create-btn');
-    var comingSoonModal = document.getElementById('coming-soon-modal');
-    var comingSoonBackdrop = document.getElementById('coming-soon-backdrop');
-    var comingSoonOk = document.getElementById('coming-soon-ok');
-    if (createBtn && comingSoonModal) {
-      createBtn.addEventListener('click', function () { comingSoonModal.style.display = 'flex'; });
-      comingSoonOk.addEventListener('click', function () { comingSoonModal.style.display = 'none'; });
-      comingSoonBackdrop.addEventListener('click', function () { comingSoonModal.style.display = 'none'; });
+  // ---- Coming soon (Create) modal ----
+  var createBtn = document.getElementById('create-btn');
+  var comingSoonModal = document.getElementById('coming-soon-modal');
+  var comingSoonBackdrop = document.getElementById('coming-soon-backdrop');
+  var comingSoonOk = document.getElementById('coming-soon-ok');
+  if (createBtn && comingSoonModal) {
+    createBtn.addEventListener('click', function () { comingSoonModal.style.display = 'flex'; });
+    comingSoonOk.addEventListener('click', function () { comingSoonModal.style.display = 'none'; });
+    comingSoonBackdrop.addEventListener('click', function () { comingSoonModal.style.display = 'none'; });
+  }
+
+  // ---- Helpers ----
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>\"']/g, function (m) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '\"': '&quot;', "'": '&#39;' }[m];
+    });
+  }
+
+  function feedImage(c) {
+    if (c.character_feeds && c.character_feeds.length) {
+      var imgFeed = c.character_feeds.find(function (f) { return f.media_type === 'image' && f.media_url; });
+      if (imgFeed) return imgFeed.media_url;
+      return c.character_feeds[0].media_url || null;
     }
+    return c.circular_profile_image_url || c.feed_media_url || c.background_image_url || null;
+  }
 
-    // ---- Helpers ----
-    function esc(s) {
-      return String(s == null ? '' : s).replace(/[&<>"']/g, function (m) {
-        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m];
-      });
+  function cardHtml(c, wide) {
+    var img = feedImage(c);
+    var nameAge = (c.name || '') + (c.age ? ', ' + c.age : '');
+    var about = c.about || c.description || c.bio || '';
+    var cls = wide
+      ? 'relative w-full aspect-[3/4] rounded-card overflow-hidden shrink-0 snap-start cursor-pointer'
+      : 'relative w-[160px] h-[320px] rounded-card overflow-hidden shrink-0 snap-start cursor-pointer';
+    return '<div class="' + cls + '" data-char="' + esc(c.id) + '">' +
+      (img
+        ? '<img loading="lazy" class="w-full h-full object-cover" src="' + esc(img) + '" alt="' + esc(c.name) + '">'
+        : '<div class="w-full h-full bg-app-accent flex items-center justify-center text-4xl font-bold">' + esc((c.name || '?').charAt(0).toUpperCase()) + '</div>') +
+      '<div class="absolute inset-0 card-gradient flex flex-col justify-end p-4">' +
+        '<h3 class="font-bold text-lg mb-1 drop-shadow-md">' + esc(nameAge) + '</h3>' +
+        '<p class="text-xs text-gray-200 line-clamp-2 drop-shadow-sm">' + esc(about) + '</p>' +
+      '</div></div>';
+  }
+
+  function renderInto(container, chars, wide) {
+    container.innerHTML = '';
+    if (!chars || !chars.length) {
+      container.innerHTML = '<p class="text-sm text-app-secondary py-8">No characters here yet.</p>';
+      return;
     }
+    chars.forEach(function (c) {
+      var div = document.createElement('div');
+      div.innerHTML = cardHtml(c, wide);
+      var card = div.firstChild;
+      card.addEventListener('click', function () { openCharacter(c); });
+      container.appendChild(card);
+    });
+  }
 
-    function feedImage(c) {
-      if (c.character_feeds && c.character_feeds.length) {
-        var imgFeed = c.character_feeds.find(function (f) { return f.media_type === 'image' && f.media_url; });
-        if (imgFeed) return imgFeed.media_url;
-        return c.character_feeds[0].media_url || null;
-      }
-      return c.circular_profile_image_url || c.feed_media_url || c.background_image_url || null;
-    }
+  function openCharacter(c) {
+    try {
+      sessionStorage.setItem('yours_current_character', JSON.stringify(c));
+    } catch (e) {}
+    // Inside the desktop shell, the profile lives in its own pane.
+    if (window.ysPane && window.ysNotify) { window.ysNotify('open-profile'); return; }
+    window.location.href = 'character-profile.html';
+  }
 
-    function cardHtml(c, wide) {
-      var img = feedImage(c);
-      var nameAge = (c.name || '') + (c.age ? ', ' + c.age : '');
-      var about = c.about || c.description || c.bio || '';
-      var cls = wide
-        ? 'relative w-full aspect-[3/4] rounded-card overflow-hidden shrink-0 snap-start cursor-pointer'
-        : 'relative w-[160px] h-[320px] rounded-card overflow-hidden shrink-0 snap-start cursor-pointer';
-      return '<div class="' + cls + '" data-char="' + esc(c.id) + '">' +
-        (img
-          ? '<img loading="lazy" class="w-full h-full object-cover" src="' + esc(img) + '" alt="' + esc(c.name) + '">'
-          : '<div class="w-full h-full bg-app-accent flex items-center justify-center text-4xl font-bold">' + esc((c.name || '?').charAt(0).toUpperCase()) + '</div>') +
-        '<div class="absolute inset-0 card-gradient flex flex-col justify-end p-4">' +
-          '<h3 class="font-bold text-lg mb-1 drop-shadow-md">' + esc(nameAge) + '</h3>' +
-          '<p class="text-xs text-gray-200 line-clamp-2 drop-shadow-sm">' + esc(about) + '</p>' +
-        '</div></div>';
-    }
+  // ---- Helper: Check if desktop (md breakpoint = 768px) ----
+  function isDesktop() {
+    return window.innerWidth >= 768;
+  }
 
-    function renderInto(container, chars, wide) {
-      container.innerHTML = '';
-      if (!chars || !chars.length) {
-        container.innerHTML = '<p class="text-sm text-app-secondary py-8">No characters here yet.</p>';
-        return;
-      }
-      chars.forEach(function (c) {
-        var div = document.createElement('div');
-        div.innerHTML = cardHtml(c, wide);
-        var card = div.firstChild;
-        card.addEventListener('click', function () { openCharacter(c); });
-        container.appendChild(card);
-      });
-    }
+  // ---- Mobile Tab State ----
+  var activeTab = 'foryou';
 
-    function openCharacter(c) {
-      try {
-        sessionStorage.setItem('yours_current_character', JSON.stringify(c));
-      } catch (e) {}
-      // Inside the desktop shell, the profile lives in its own pane.
-      if (window.ysPane && window.ysNotify) { window.ysNotify('open-profile'); return; }
-      window.location.href = 'character-profile.html';
-    }
+  // ---- Desktop Filter State ----
+  var activeFilters = {
+    recommendation: 'foryou',
+    gender: 'everyone',
+    age: 'any',
+    style: 'any'
+  };
 
-    // ---- Tabs ----
-    var tabs = document.querySelectorAll('.discover-tab');
-    var panels = document.querySelectorAll('[data-panel]');
+  // ---- Mobile Tabs ----
+  var tabs = document.querySelectorAll('.discover-tab');
+  var panels = document.querySelectorAll('[data-panel]');
 
-    function activateTab(name) {
-      tabs.forEach(function (t) {
-        var on = t.getAttribute('data-tab') === name;
-        t.classList.toggle('active', on);
-        t.classList.toggle('bg-app-accent', on);
-        t.classList.toggle('text-white', on);
-        t.classList.toggle('bg-app-surface', !on);
-        t.classList.toggle('text-app-primary', !on);
-      });
-      panels.forEach(function (p) {
-        p.classList.toggle('hidden', p.getAttribute('data-panel') !== name);
-      });
-      if (name === 'liked') loadLiked();
-    }
-
+  function activateTab(name) {
+    activeTab = name;
     tabs.forEach(function (t) {
-      t.addEventListener('click', function () { activateTab(t.getAttribute('data-tab')); });
+      var on = t.getAttribute('data-tab') === name;
+      t.classList.toggle('active', on);
+      t.classList.toggle('bg-app-accent', on);
+      t.classList.toggle('text-white', on);
+      t.classList.toggle('bg-app-surface', !on);
+      t.classList.toggle('text-app-primary', !on);
+    });
+    panels.forEach(function (p) {
+      p.classList.toggle('hidden', p.getAttribute('data-panel') !== name);
+    });
+    if (name === 'liked') loadLiked();
+  }
+
+  tabs.forEach(function (t) {
+    t.addEventListener('click', function () { activateTab(t.getAttribute('data-tab')); });
+  });
+
+  // ---- Desktop Filter Buttons ----
+  var filterBtns = document.querySelectorAll('.filter-btn');
+  filterBtns.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var filterType = btn.getAttribute('data-filter');
+      var filterValue = btn.getAttribute('data-value');
+
+      // Update active state for this filter group
+      filterBtns.forEach(function (b) {
+        if (b.getAttribute('data-filter') === filterType) {
+          b.classList.remove('active');
+          b.classList.add('bg-app-surface', 'text-app-primary');
+          b.classList.remove('bg-app-accent', 'text-white');
+        }
+      });
+      btn.classList.add('active');
+      btn.classList.remove('bg-app-surface', 'text-app-primary');
+      btn.classList.add('bg-app-accent', 'text-white');
+
+      // Update filter state
+      activeFilters[filterType] = filterValue;
+
+      // Apply desktop filters
+      applyDesktopFilters();
+    });
+  });
+
+  // ---- Desktop Filters ----
+  function applyDesktopFilters() {
+    var recommendation = activeFilters.recommendation;
+    var gender = activeFilters.gender;
+    var age = activeFilters.age;
+    var style = activeFilters.style;
+
+    // Determine which panel to show based on recommendation filter
+    panels.forEach(function (p) {
+      var panelName = p.getAttribute('data-panel');
+      var showPanel = false;
+
+      if (recommendation === 'foryou') {
+        showPanel = panelName === 'foryou';
+      } else if (recommendation === 'popular') {
+        showPanel = panelName === 'popular';
+      } else if (recommendation === 'newest') {
+        showPanel = panelName === 'foryou';
+      } else if (recommendation === 'following') {
+        showPanel = panelName === 'foryou';
+      }
+
+      p.classList.toggle('hidden', !showPanel);
     });
 
-    // ---- Liked tab (default) ----
-    var likedGrid = document.getElementById('liked-grid');
-    var likedEmpty = document.getElementById('liked-empty');
+    // Load characters with filters
+    getAllChars().then(function (list) {
+      var filtered = list;
 
-    function loadLiked() {
-      var user = null;
-      try { user = API ? API.getCurrentUser() : null; } catch (e) {}
-      if (!user || !user.id) {
+      // Apply gender filter
+      if (gender !== 'everyone') {
+        filtered = filtered.filter(function (c) {
+          var charGender = (c.gender || '').toLowerCase();
+          if (gender === 'female') return charGender === 'female' || charGender === 'woman' || charGender === 'girl';
+          if (gender === 'male') return charGender === 'male' || charGender === 'man' || charGender === 'boy';
+          return true;
+        });
+      }
+
+      // Apply age filter
+      if (age !== 'any') {
+        filtered = filtered.filter(function (c) {
+          var charAge = parseInt(c.age) || 0;
+          if (age === 'teen') return charAge >= 13 && charAge <= 17;
+          if (age === 'young-adult') return charAge >= 18 && charAge <= 25;
+          if (age === 'adult') return charAge >= 26 && charAge <= 50;
+          if (age === 'mature') return charAge >= 51;
+          return true;
+        });
+      }
+
+      // Apply style filter
+      if (style !== 'any') {
+        filtered = filtered.filter(function (c) {
+          var charStyle = (c.art_style || '').toLowerCase();
+          if (style === 'realistic') return charStyle === 'realistic';
+          if (style === 'anime') return charStyle === 'anime';
+          return true;
+        });
+      }
+
+      // Apply recommendation sorting/filtering
+      if (recommendation === 'popular') {
+        filtered.sort(function (a, b) {
+          return (b.likes_count || 0) - (a.likes_count || 0);
+        });
+      } else if (recommendation === 'newest') {
+        filtered.sort(function (a, b) {
+          return new Date(b.created_at || 0) - new Date(a.created_at || 0);
+        });
+      }
+
+      // Render to the appropriate grid
+      var gridId = recommendation === 'foryou' ? 'foryou-grid' : 
+                   recommendation === 'popular' ? 'popular-grid' : 'foryou-grid';
+      var gridEl = document.getElementById(gridId);
+      if (gridEl) {
+        renderInto(gridEl, filtered, false);
+      }
+    });
+  }
+
+  // ---- Other tabs: shared character list (cached per session) ----
+  var allCharsCache = null;
+  function getAllChars() {
+    if (allCharsCache) return Promise.resolve(allCharsCache);
+    if (!API) return Promise.resolve([]);
+    return API.getPublicCharacters().then(function (res) {
+      allCharsCache = (res && res.characters) || [];
+      return allCharsCache;
+    }).catch(function () { return []; });
+  }
+
+  // ---- Search: filter the currently visible panel ----
+  var search = document.getElementById('discover-search');
+  if (search) {
+    search.addEventListener('input', function () {
+      var q = (search.value || '').trim().toLowerCase();
+      if (!q) {
+        // Re-render with current state
+        if (isDesktop()) {
+          applyDesktopFilters();
+        } else {
+          activateTab(activeTab);
+        }
+        return;
+      }
+      getAllChars().then(function (list) {
+        var filtered = list.filter(function (c) {
+          return ((c.name || '') + ' ' + (c.about || '') + ' ' + (c.description || '')).toLowerCase().indexOf(q) !== -1;
+        });
+        var currentTab = isDesktop() ? activeFilters.recommendation : activeTab;
+        var gridId = currentTab === 'liked' ? 'liked-grid' : 
+                     currentTab === 'foryou' ? 'foryou-grid' : 
+                     currentTab === 'popular' ? 'popular-grid' : 
+                     currentTab === 'realistic' ? 'realistic-grid' : 
+                     currentTab === 'anime' ? 'anime-grid' : 'foryou-grid';
+        var el = document.getElementById(gridId);
+        if (el) renderInto(el, filtered, false);
+      });
+    });
+  }
+
+  // ---- Live wallet balance (kept in sync with other pages) ----
+  function loadBalance() {
+    var user = null;
+    try { user = API ? API.getCurrentUser() : null; } catch (e) {}
+    // Guests: swap the cash pill for the signup offer.
+    var wallet = document.getElementById('disc-wallet');
+    var offer = document.getElementById('disc-guest-offer');
+    if (!user || !user.id) {
+      if (wallet) wallet.style.display = 'none';
+      if (offer) offer.style.display = 'flex';
+      return;
+    }
+    if (wallet) wallet.style.display = 'flex';
+    if (offer) offer.style.display = 'none';
+    API.getWallet(user.id).then(function (res) {
+      var el = document.getElementById('disc-balance');
+      if (res && res.wallet && res.wallet.credits != null && el) {
+        el.textContent = Math.floor(Number(res.wallet.credits)).toLocaleString();
+      }
+    }).catch(function () {});
+  }
+  loadBalance();
+
+  // ---- Liked tab (mobile) ----
+  var likedGrid = document.getElementById('liked-grid');
+  var likedEmpty = document.getElementById('liked-empty');
+
+  function loadLiked() {
+    var user = null;
+    try { user = API ? API.getCurrentUser() : null; } catch (e) {}
+    if (!user || !user.id) {
+      likedGrid.innerHTML = '';
+      likedGrid.classList.add('hidden');
+      likedEmpty.classList.remove('hidden');
+      return;
+    }
+    likedGrid.classList.remove('hidden');
+    likedEmpty.classList.add('hidden');
+    API.getSavedCharacters(user.id).then(function (res) {
+      var chars = (res && res.characters) || [];
+      if (!chars.length) {
         likedGrid.innerHTML = '';
         likedGrid.classList.add('hidden');
         likedEmpty.classList.remove('hidden');
         return;
       }
-      likedGrid.classList.remove('hidden');
-      likedEmpty.classList.add('hidden');
-      API.getSavedCharacters(user.id).then(function (res) {
-        var chars = (res && res.characters) || [];
-        if (!chars.length) {
-          likedGrid.innerHTML = '';
-          likedGrid.classList.add('hidden');
-          likedEmpty.classList.remove('hidden');
-          return;
-        }
-        renderInto(likedGrid, chars, false);
-      }).catch(function () {
-        likedGrid.innerHTML = '<p class="text-sm text-app-secondary py-8">Could not load your likes. Try again.</p>';
+      renderInto(likedGrid, chars, false);
+    }).catch(function () {
+      likedGrid.innerHTML = '<p class="text-sm text-app-secondary py-8">Could not load your likes. Try again.</p>';
+    });
+  }
+
+  // ---- Other tabs: shared character list (cached per session) ----
+  var allCharsCache = null;
+  function getAllChars() {
+    if (allCharsCache) return Promise.resolve(allCharsCache);
+    if (!API) return Promise.resolve([]);
+    return API.getPublicCharacters().then(function (res) {
+      allCharsCache = (res && res.characters) || [];
+      return allCharsCache;
+    }).catch(function () { return []; });
+  }
+
+  function tabRenderer(name, elId) {
+    return function () {
+      var el = document.getElementById(elId);
+      getAllChars().then(function (list) {
+        var out = list;
+        if (name === 'realistic') out = list.filter(function (c) { return c.art_style === 'realistic'; });
+        if (name === 'anime') out = list.filter(function (c) { return c.art_style === 'anime'; });
+        renderInto(el, out, false);
       });
-    }
+    };
+  }
 
-    // ---- Other tabs: shared character list (cached per session) ----
-    var allCharsCache = null;
-    function getAllChars() {
-      if (allCharsCache) return Promise.resolve(allCharsCache);
-      if (!API) return Promise.resolve([]);
-      return API.getPublicCharacters().then(function (res) {
-        allCharsCache = (res && res.characters) || [];
-        return allCharsCache;
-      }).catch(function () { return []; });
-    }
-
-    function tabRenderer(name, elId) {
-      return function () {
-        var el = document.getElementById(elId);
-        getAllChars().then(function (list) {
-          var out = list;
-          if (name === 'realistic') out = list.filter(function (c) { return c.art_style === 'realistic'; });
-          if (name === 'anime') out = list.filter(function (c) { return c.art_style === 'anime'; });
-          renderInto(el, out, false);
-        });
-      };
-    }
-
+  // ---- Initialize based on device type ----
+  if (isDesktop()) {
+    // Desktop: show filter buttons, apply desktop filters
+    applyDesktopFilters();
+  } else {
+    // Mobile: show tabs, activate default tab
     var foryouEl = document.getElementById('foryou-grid');
     getAllChars().then(function (list) { renderInto(foryouEl, list, false); });
 
@@ -387,55 +655,11 @@
       }
     });
 
-    // ---- Search: filter the currently visible panel ----
-    var search = document.getElementById('discover-search');
-    if (search) {
-      search.addEventListener('input', function () {
-        var q = (search.value || '').trim().toLowerCase();
-        if (!q) {
-          // Re-render active panel with defaults
-          var active = document.querySelector('.discover-tab.active');
-          if (active) activateTab(active.getAttribute('data-tab'));
-          return;
-        }
-        getAllChars().then(function (list) {
-          var filtered = list.filter(function (c) {
-            return ((c.name || '') + ' ' + (c.about || '') + ' ' + (c.description || '')).toLowerCase().indexOf(q) !== -1;
-          });
-          var active = document.querySelector('.discover-tab.active');
-          var name = active ? active.getAttribute('data-tab') : 'foryou';
-          var el = document.getElementById(name === 'liked' ? 'liked-grid' : name + '-grid');
-          if (el && name !== 'liked') renderInto(el, filtered, false);
-        });
-      });
-    }
-
-    // ---- Live wallet balance (kept in sync with other pages) ----
-    function loadBalance() {
-      var user = null;
-      try { user = API ? API.getCurrentUser() : null; } catch (e) {}
-      // Guests: swap the cash pill for the signup offer.
-      var wallet = document.getElementById('disc-wallet');
-      var offer = document.getElementById('disc-guest-offer');
-      if (!user || !user.id) {
-        if (wallet) wallet.style.display = 'none';
-        if (offer) offer.style.display = 'flex';
-        return;
-      }
-      if (wallet) wallet.style.display = 'flex';
-      if (offer) offer.style.display = 'none';
-      API.getWallet(user.id).then(function (res) {
-        var el = document.getElementById('disc-balance');
-        if (res && res.wallet && res.wallet.credits != null && el) {
-          el.textContent = Math.floor(Number(res.wallet.credits)).toLocaleString();
-        }
-      }).catch(function () {});
-    }
-    loadBalance();
-
-    // Default tab = For you
     activateTab('foryou');
-  })();
+  }
+})();
 </script>
 <script src="js/animations.js"></script>
-</body></html>
+<script src="js/desktop-ui.js"></script>
+</body>
+</html>

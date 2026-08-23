@@ -205,8 +205,10 @@
             100% { transform: translate(-50%, calc(-50% - var(--dy))) scale(1); opacity: 0; }
         }
     </style>
+<link rel="stylesheet" href="css/desktop.css">
 </head>
 <body class="app-page">
+<div id="ds-sidebar"></div>
 <!-- BEGIN: AppContainer -->
 <div id="app-container">
 <!-- Dynamic background (image/video from the matched character's feed media) -->
@@ -537,4 +539,7 @@
   })();
 </script>
 <script src="js/animations.js"></script>
+
+<script src="js/api-client.js"></script>
+<script src="js/desktop-ui.js"></script>
 </body></html>

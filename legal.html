@@ -51,8 +51,10 @@
 <meta property="og:url" content="https://khawaidev.github.io/yours/legal.html">
 <meta property="og:image" content="https://ik.imagekit.io/0a4t1zpln/file_000000008fec82119dc760b0c03a4ca5.png">
 <meta name="twitter:card" content="summary_large_image">
+<link rel="stylesheet" href="css/desktop.css">
 </head>
 <body class="bg-blush-bg text-blush-text antialiased min-h-screen flex flex-col items-center pt-2 app-page">
+<div id="ds-sidebar"></div>
 <div class="w-full max-w-[400px] h-full flex flex-col px-4 pb-8">
 <!-- BEGIN: Header -->
 <header data-reveal class="flex items-center justify-between py-3 mb-4">
@@ -140,4 +142,8 @@ If you have questions about your data, contact <a class="text-white underline un
 </p>
 </div>
 <script src="js/animations.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/api-client.js"></script>
+<script src="js/desktop-ui.js"></script>
 </body></html>
