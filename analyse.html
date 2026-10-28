@@ -85,16 +85,23 @@
 <!-- END: Bottom Section - Loading Indicator -->
 </div>
 
+<script src="js/onboarding.js"></script>
 <script>
-  // Automatically redirect after 3 seconds of analysis
-  setTimeout(() => {
-    window.location.href = 'demo-video.html';
-  }, 3000);
-  
+  // The onboarding answers are already saved in sessionStorage. Once the
+  // "analysis" finishes, the visitor signs up — auth.html creates the account
+  // with these answers (or, for an existing account, discards them and logs in).
+  let finished = false;
+  function finishOnboarding() {
+    if (finished) return;
+    finished = true;
+    YSOnboarding.finish();
+  }
+
+  // Automatically continue after 3 seconds of analysis
+  setTimeout(finishOnboarding, 3000);
+
   // Or click anywhere to skip
-  document.body.addEventListener('click', () => {
-    window.location.href = 'demo-video.html';
-  });
+  document.body.addEventListener('click', finishOnboarding);
 </script>
 <script src="js/animations.js"></script>
 </body></html>

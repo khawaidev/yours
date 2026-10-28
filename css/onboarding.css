@@ -1,0 +1,218 @@
+/* ============================================================
+   Yours — Shared Onboarding Chrome
+   ------------------------------------------------------------
+   Every onboarding step (Age → name → preferences …) uses the
+   exact same progress bar, title spacing, card size and Continue
+   button so the flow feels like one continuous screen.
+
+   Loaded AFTER css/app.css and BEFORE each page's own styles.
+   ============================================================ */
+
+:root {
+  /* Progress bar colour is taken from the age page. */
+  --ys-ob-accent: #ff5a5f;
+  --ys-ob-track: #333333;
+
+  /* Image cards: the preferred-age card, 20% taller (56vh -> 67.2vh),
+     but never taller than the space a phone actually has. */
+  --ys-ob-card-h: min(67.2vh, calc(100dvh - 260px));
+  --ys-ob-card-radius: 24px;
+}
+
+/* ---- Top bar: back button + progress + spacer ---- */
+.ys-ob-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: max(24px, env(safe-area-inset-top, 0px)) 24px 0;
+  flex-shrink: 0;
+}
+
+.ys-ob-back {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #fff;
+  border-radius: 9999px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.ys-ob-back:active { opacity: 0.65; }
+.ys-ob-back svg { width: 24px; height: 24px; }
+
+/* Same width + height on every page. */
+.ys-ob-spacer { width: 40px; height: 40px; flex-shrink: 0; }
+
+.ys-ob-progress {
+  width: 200px;
+  max-width: calc(100% - 96px);
+  height: 6px;
+  background: var(--ys-ob-track);
+  border-radius: 9999px;
+  overflow: hidden;
+  flex-shrink: 1;
+}
+.ys-ob-progress > span {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: var(--ys-ob-accent);
+  border-radius: 9999px;
+  transition: width 0.35s ease;
+}
+
+/* ---- Title block (same gap to the cards everywhere) ---- */
+.ys-ob-title {
+  text-align: center;
+  padding: 20px 24px 0;
+  margin-bottom: 40px;
+}
+.ys-ob-title h1 {
+  margin: 0;
+  font-size: 28px;
+  line-height: 1.25;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: #fff;
+}
+.ys-ob-title p {
+  margin: 8px 0 0;
+  font-size: 16px;
+  line-height: 1.5;
+  color: #e5e2e1;
+}
+
+/* ---- Continue button (identical to the name page) ---- */
+.ys-ob-footer {
+  width: 100%;
+  padding: 16px 24px calc(40px + env(safe-area-inset-bottom, 0px));
+  margin-top: auto;
+  flex-shrink: 0;
+}
+.ys-ob-footer.is-fixed {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin-inline: auto;
+  width: 100%;
+  max-width: 430px;
+  z-index: 30;
+  background: linear-gradient(to top, #131313 0%, #131313 82%, rgba(19, 19, 19, 0) 100%);
+}
+
+.ys-ob-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  border: 0;
+  border-radius: 9999px;
+  background: #fff;
+  color: #000;
+  font-family: inherit;
+  font-size: 18px;
+  line-height: 28px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.12s ease, background 0.2s ease, opacity 0.2s ease;
+}
+.ys-ob-btn:active:not(:disabled) { transform: scale(0.98); }
+.ys-ob-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.ys-ob-hint {
+  margin: 10px 0 0;
+  text-align: center;
+  font-size: 12px;
+  line-height: 16px;
+  color: #9a9a9f;
+  min-height: 16px;
+}
+
+/* ---- Image card carousel ---- */
+.ys-ob-carousel {
+  position: relative;
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  gap: 4%;
+  padding: 0 7.5%;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.ys-ob-carousel::-webkit-scrollbar { display: none; }
+
+.ys-ob-card {
+  position: relative;
+  flex: 0 0 100%;
+  height: 56vh; /* fallback for browsers without dvh */
+  height: var(--ys-ob-card-h);
+  padding: 0;
+  border: 0;
+  border-radius: var(--ys-ob-card-radius);
+  overflow: hidden;
+  background: #201f1f;
+  scroll-snap-align: center;
+  transition: filter 0.3s ease, transform 0.3s ease, opacity 0.3s ease;
+}
+.ys-ob-card img,
+.ys-ob-card .ys-ob-card-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+}
+.ys-ob-card-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.82) 0%, rgba(0, 0, 0, 0) 45%);
+  pointer-events: none;
+}
+.ys-ob-card-label {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 28px;
+  padding: 0 16px;
+  text-align: center;
+  font-size: 28px;
+  line-height: 1.25;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: #fff;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.55);
+  pointer-events: none;
+}
+.ys-ob-card.is-inactive {
+  filter: blur(4px) brightness(0.65);
+  transform: scale(0.95);
+}
+.ys-ob-card.is-active { filter: none; transform: scale(1); }
+
+/* ---- Page shell ---- */
+.ys-ob-page {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background-color: #131313;
+  color: #fff;
+}
+.ys-ob-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}

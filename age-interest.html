@@ -1,218 +1,83 @@
-<!DOCTYPE html><html lang="en" style=""><head>
+<!DOCTYPE html><html lang="en"><head>
 <meta charset="utf-8">
-<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport">
     <meta name="description" content="Choose the age range you prefer for your AI companion on Yours.">
     <meta name="robots" content="noindex, nofollow">
 <title>Yours - Age Preference</title>
 <link rel="icon" type="image/png" href="icons/favicon-32.png">
-<!-- Include Tailwind CSS via CDN -->
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link rel="stylesheet" href="css/app.css">
-<!-- Include Plus Jakarta Sans Font -->
+<link rel="stylesheet" href="css/onboarding.css">
 <link href="https://fonts.googleapis.com" rel="preconnect">
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
-<script id="tailwind-config">
-  // Tailwind Configuration (must be a <script>, not <style>, or the custom colors never generate)
-  tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            surface: '#131313',
-            'surface-dim': '#131313',
-            'surface-bright': '#393939',
-            'surface-container-lowest': '#0e0e0e',
-            'surface-container-low': '#1c1b1b',
-            'surface-container': '#201f1f',
-            'surface-container-high': '#2b2a2a',
-            'surface-container-highest': '#363535',
-            primary: '#ffb4a4',
-            'on-primary': '#561e12',
-            'primary-container': '#ff5c35',
-            'on-primary-container': '#ffffff',
-            secondary: '#e7bdb4',
-            'on-secondary': '#442a24',
-            'secondary-container': '#5d3f38',
-            'on-secondary-container': '#ffdad3',
-            tertiary: '#d7c57f',
-            'on-tertiary': '#393000',
-            'tertiary-container': '#514600',
-            'on-tertiary-container': '#f4e098',
-            error: '#ffb4ab',
-            'on-error': '#690005',
-            'error-container': '#93000a',
-            'on-error-container': '#ffdad6',
-            'on-surface': '#f0dedb',
-            'on-surface-variant': '#d8c2be',
-            outline: '#a08c88',
-            'outline-variant': '#534340',
-            'inverse-surface': '#f0dedb',
-            'inverse-on-surface': '#382e2c',
-            'inverse-primary': '#903319',
-            scrim: '#000000',
-            shadow: '#000000',
-          },
-          fontFamily: {
-            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
-          },
-        },
-      },
-    };
-  </script>
 <style data-purpose="custom-styles">
     body {
       background-color: #131313;
       color: #ffffff;
       overflow-x: hidden;
     }
-    
-    .gradient-overlay {
-      background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 40%);
-    }
-
-    /* Hide scrollbar for cleaner look */
-    ::-webkit-scrollbar {
-      display: none;
-    }
-
-    .carousel-container {
-      display: flex;
-      overflow-x: auto;
-      scroll-snap-type: x mandatory;
-      scroll-behavior: smooth;
-      -webkit-overflow-scrolling: touch;
-      padding-left: 7.5vw;
-      padding-right: 7.5vw;
-      gap: 4vw;
-      width: 100%;
-      height: 56vh;
-      min-height: 0;
-    }
-
-    .carousel-item {
-      flex: 0 0 85vw;
-      height: 100%;
-      scroll-snap-align: center;
-      transition: filter 0.3s ease, transform 0.3s ease;
-      position: relative;
-    }
-
-    .carousel-item:not(.active) {
-      filter: blur(4px) brightness(0.7);
-      transform: scale(0.95);
-    }
-    
-    .carousel-item.active {
-      filter: blur(0) brightness(1);
-      transform: scale(1);
-    }
   </style>
 </head>
-<body class="antialiased min-h-dvh flex flex-col font-sans selection:bg-primary selection:text-on-primary app-page" style="padding-top: max(24px, env(safe-area-inset-top));">
+<body class="ys-ob-page app-page">
 <!-- BEGIN: Top Navigation & Progress -->
-<header class="w-full sticky top-0 z-20 bg-surface" data-purpose="top-navigation">
-<div class="w-full flex items-center gap-3 px-6 pb-3">
-<!-- Back Button (SVG icon, no text flash) -->
-<button onclick="window.location.href='name.html'" aria-label="Go back" class="p-2 -ml-2 rounded-full cursor-pointer shrink-0 focus:outline-none">
-<svg class="h-6 w-6 text-white font-bold" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-<path d="M15 19l-7-7 7-7" stroke-linecap="round" stroke-linejoin="round"></path>
+<header class="ys-ob-header" data-purpose="top-navigation">
+<!-- Back Button -->
+<button aria-label="Go back" class="ys-ob-back" onclick="window.location.href='name.html'" type="button">
+<svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="3" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M15 19l-7-7 7-7"></path>
 </svg>
 </button>
-<!-- Progress Bar (inline with the back arrow) -->
-<div class="flex-1 h-1 bg-surface-container-highest overflow-hidden rounded-full">
-<div id="progress-fill" class="h-full bg-primary-container rounded-full w-[35%] transition-all duration-500"></div>
-</div>
-</div>
-<!-- Title & Subtitle below the arrow + progress row -->
-<div class="px-6 pb-4" data-purpose="page-headers">
-<h1 class="text-[28px] leading-tight font-extrabold text-white tracking-tight">What age do you prefer?</h1>
-</div>
+<!-- Progress Bar (identical on every onboarding step) -->
+<div class="ys-ob-progress"><span data-ob-progress></span></div>
+<div class="ys-ob-spacer" aria-hidden="true"></div>
 </header>
 <!-- END: Top Navigation & Progress -->
 <!-- BEGIN: Main Content Area -->
-<main class="flex-grow flex flex-col items-center pt-6 pb-3 w-full relative" data-purpose="main-content">
+<main class="ys-ob-main" data-purpose="main-content">
+<!-- Header Text -->
+<div class="ys-ob-title" data-purpose="page-headers">
+<h1>What age do you prefer?</h1>
+</div>
 <!-- Carousel -->
-<div class="carousel-container" id="carousel">
+<div class="ys-ob-carousel" data-purpose="carousel" id="carousel">
 <!-- Option 1: Young -->
-<div aria-label="Select Young preference" class="carousel-item rounded-3xl overflow-hidden shadow-2xl relative group cursor-pointer active" data-index="0">
-<img alt="Young Woman" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" src="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/ChatGPT%20Image%20Aug%208%2C%202026%2C%2012_42_32%20AM.png">
-<div class="absolute inset-0 gradient-overlay pointer-events-none"></div>
-
-<div class="absolute bottom-8 w-full text-center px-4 pointer-events-none">
-<h2 class="text-white text-3xl font-bold tracking-wide drop-shadow-md">Young</h2>
-</div>
-</div>
+<button aria-label="Select Young preference" class="ys-ob-card is-active" data-value="young" type="button">
+<img alt="Young Woman" src="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/ChatGPT%20Image%20Aug%208%2C%202026%2C%2012_42_32%20AM.png">
+<div class="ys-ob-card-overlay"></div>
+<span class="ys-ob-card-label">Young</span>
+</button>
 <!-- Option 2: Mature -->
-<div aria-label="Select Mature preference" class="carousel-item rounded-3xl overflow-hidden shadow-2xl relative group cursor-pointer" data-index="1">
-<img alt="Mature Woman" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" src="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/ChatGPT%20Image%20Aug%207%2C%202026%2C%2002_52_19%20AM.png">
-<div class="absolute inset-0 gradient-overlay pointer-events-none"></div>
-
-<div class="absolute bottom-8 w-full text-center px-4 pointer-events-none">
-<h2 class="text-white text-3xl font-bold tracking-wide drop-shadow-md">Mature</h2>
-</div>
-</div>
+<button aria-label="Select Mature preference" class="ys-ob-card is-inactive" data-value="mature" type="button">
+<img alt="Mature Woman" src="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/ChatGPT%20Image%20Aug%207%2C%202026%2C%2002_52_19%20AM.png">
+<div class="ys-ob-card-overlay"></div>
+<span class="ys-ob-card-label">Mature</span>
+</button>
 </div>
 </main>
 <!-- END: Main Content Area -->
-<!-- Fixed Bottom Action -->
-<div class="fixed bottom-0 left-0 right-0 p-container-margin bg-gradient-to-t from-background via-background/90 to-transparent z-20" style="padding-bottom: max(16px, env(safe-area-inset-bottom));">
-<button onclick="window.location.href='art-interest.html'" class="w-full bg-white text-black font-bold py-4 rounded-full text-[18px] active:scale-[0.98] transition-transform shadow-lg cursor-pointer">
+<!-- BEGIN: Footer Action -->
+<footer class="ys-ob-footer">
+<button class="ys-ob-btn" id="continue-btn" type="button">
     Continue
   </button>
-</div>
+</footer>
+<!-- END: Footer Action -->
+<script src="js/onboarding.js"></script>
 <script>
   document.addEventListener('DOMContentLoaded', () => {
-    const carousel = document.getElementById('carousel');
-    const items = document.querySelectorAll('.carousel-item');
-    
-    // Function to update active class based on scroll position
-    const updateActiveItem = () => {
-      let minDiff = Infinity;
-      let activeIndex = 0;
-      const carouselCenter = carousel.scrollLeft + carousel.clientWidth / 2;
+    const carousel = YSOnboarding.bindCarousel({ root: '#carousel', key: 'ageInterest' });
 
-      items.forEach((item, index) => {
-        const itemCenter = item.offsetLeft + item.clientWidth / 2;
-        const diff = Math.abs(carouselCenter - itemCenter);
-        if (diff < minDiff) {
-          minDiff = diff;
-          activeIndex = index;
-        }
-      });
+    // Restore a previous choice (back/forward navigation).
+    const saved = YSOnboarding.get('ageInterest');
+    if (saved && carousel) carousel.select(saved);
 
-      items.forEach((item, index) => {
-        if (index === activeIndex) {
-          item.classList.add('active');
-        } else {
-          item.classList.remove('active');
-        }
-      });
-
-      // Functional progress bar: fill advances with the active card
-      const progressFill = document.getElementById('progress-fill');
-      if (progressFill) {
-        progressFill.style.width = (35 + activeIndex * 35) + '%';
-      }
-    };
-
-    carousel.addEventListener('scroll', updateActiveItem);
-    
-    // Allow clicking to snap a card into view
-    items.forEach(item => {
-      item.addEventListener('click', () => {
-        const scrollTarget = item.offsetLeft - (carousel.clientWidth - item.clientWidth) / 2;
-        carousel.scrollTo({
-          left: scrollTarget,
-          behavior: 'smooth'
-        });
-      });
+    document.getElementById('continue-btn').addEventListener('click', () => {
+      const active = document.querySelector('.ys-ob-card.is-active');
+      if (active) YSOnboarding.set('ageInterest', active.getAttribute('data-value'));
+      window.location.href = 'art-interest.html';
     });
-
-    // Initial check
-    updateActiveItem();
   });
 </script>
-
-
 <script src="js/animations.js"></script>
 </body></html>

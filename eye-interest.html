@@ -1,4 +1,4 @@
-<!DOCTYPE html><html class="dark" lang="en" style=""><head>
+<!DOCTYPE html><html class="dark" lang="en"><head>
 <meta charset="utf-8">
 <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport">
     <meta name="description" content="Choose what catches your eye — appearance preferences for your ideal AI companion.">
@@ -7,249 +7,84 @@
 <link rel="icon" type="image/png" href="icons/favicon-32.png">
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link rel="stylesheet" href="css/app.css">
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/onboarding.css">
 <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@500;600;700;800&amp;display=swap" rel="stylesheet">
-<script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    "colors": {
-                        "inverse-on-surface": "#313030",
-                        "on-tertiary-fixed": "#291800",
-                        "surface-tint": "#ffb4a3",
-                        "surface": "#131313",
-                        "surface-container-highest": "#353534",
-                        "tertiary": "#ffb951",
-                        "primary": "#ffb4a3",
-                        "surface-bright": "#393939",
-                        "on-surface-variant": "#e3beb6",
-                        "outline-variant": "#5b413a",
-                        "on-tertiary-container": "#3f2700",
-                        "primary-fixed": "#ffdad2",
-                        "secondary": "#ffafd5",
-                        "tertiary-container": "#c5861c",
-                        "surface-container-high": "#2a2a2a",
-                        "background": "#000000",
-                        "on-error": "#690005",
-                        "on-secondary-fixed": "#3d0027",
-                        "surface-container-low": "#1c1b1b",
-                        "on-secondary": "#620042",
-                        "primary-container": "#ff5c35",
-                        "on-primary-container": "#5a0e00",
-                        "secondary-fixed-dim": "#ffafd5",
-                        "on-surface": "#e5e2e1",
-                        "error": "#ffb4ab",
-                        "tertiary-fixed-dim": "#ffb951",
-                        "on-primary-fixed-variant": "#8a1c00",
-                        "on-error-container": "#ffdad6",
-                        "on-tertiary-fixed-variant": "#633f00",
-                        "surface-container": "#201f1f",
-                        "error-container": "#93000a",
-                        "surface-dim": "#131313",
-                        "on-secondary-container": "#ffd5e6",
-                        "secondary-fixed": "#ffd8e8",
-                        "outline": "#aa8982",
-                        "inverse-surface": "#e5e2e1",
-                        "tertiary-fixed": "#ffddb3",
-                        "secondary-container": "#bd0183",
-                        "on-primary-fixed": "#3d0700",
-                        "on-background": "#e5e2e1",
-                        "on-tertiary": "#452b00",
-                        "on-primary": "#621100",
-                        "surface-variant": "#353534",
-                        "surface-container-lowest": "#0e0e0e",
-                        "primary-fixed-dim": "#ffb4a3",
-                        "on-secondary-fixed-variant": "#8a005e",
-                        "inverse-primary": "#b52701"
-                    },
-                    "borderRadius": {
-                        "DEFAULT": "1rem",
-                        "lg": "2rem",
-                        "xl": "3rem",
-                        "full": "9999px"
-                    },
-                    "spacing": {
-                        "gutter": "16px",
-                        "container-margin": "24px",
-                        "unit": "8px",
-                        "section-gap": "48px",
-                        "stack-sm": "8px",
-                        "stack-lg": "32px",
-                        "stack-md": "16px"
-                    },
-                    "fontFamily": {
-                        "body-md": ["Be Vietnam Pro"],
-                        "label-md": ["Plus Jakarta Sans"],
-                        "headline-lg": ["Plus Jakarta Sans"],
-                        "body-lg": ["Be Vietnam Pro"],
-                        "label-sm": ["Plus Jakarta Sans"],
-                        "headline-lg-mobile": ["Plus Jakarta Sans"],
-                        "headline-xl": ["Plus Jakarta Sans"]
-                    },
-                    "fontSize": {
-                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
-                        "label-md": ["14px", { "lineHeight": "20px", "fontWeight": "600" }],
-                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
-                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
-                        "label-sm": ["12px", { "lineHeight": "16px", "fontWeight": "500" }],
-                        "headline-lg-mobile": ["28px", { "lineHeight": "36px", "fontWeight": "700" }],
-                        "headline-xl": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "800" }]
-                    }
-                }
-            }
-        }
-    </script>
-<style>
-        .glass-overlay {
-            background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 50%);
-        }
-        
-        .swipe-container {
-            display: flex;
-            overflow-x: auto;
-            scroll-snap-type: x mandatory;
-            scroll-behavior: smooth;
-            -webkit-overflow-scrolling: touch;
-            scrollbar-width: none; /* Firefox */
-            -ms-overflow-style: none;  /* IE and Edge */
-            padding-left: 7.5vw;
-            padding-right: 7.5vw;
-            gap: 16px; /* Spacing between cards */
-        }
-        .swipe-container::-webkit-scrollbar {
-            display: none; /* Safari and Chrome */
-        }
-        .swipe-card {
-            flex: 0 0 85vw;
-            scroll-snap-align: center;
-            height: 56vh; /* Adjust height based on available space */
-            transition: filter 0.3s ease, transform 0.3s ease, opacity 0.3s ease;
-        }
-        .card-active {
-            border-color: rgba(255, 255, 255, 0.4);
-            filter: blur(0px);
-            opacity: 1;
-            transform: scale(1);
-        }
-        .card-inactive {
-            filter: blur(4px);
-            opacity: 0.6;
-            transform: scale(0.95);
-        }
-    </style>
 <style>
     body {
-      min-height: 100dvh;
+      background-color: #131313;
+      color: #fff;
+      overflow-x: hidden;
     }
   </style>
 </head>
-<body class="bg-black text-on-background min-h-screen font-body-md flex flex-col antialiased selection:bg-primary-container selection:text-on-primary-container relative app-page" style="padding-top: max(8px, env(safe-area-inset-top));">
-<!-- Top App Bar (Transactional / Onboarding Mode - Navigation Suppressed) -->
-<header class="w-full flex items-center justify-between px-container-margin pb-2 bg-transparent z-10 sticky top-0">
-<button onclick="window.location.href='art-interest.html'" aria-label="Go back" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-variant transition-colors cursor-pointer">
-<svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M15 19l-7-7 7-7" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+<body class="ys-ob-page app-page">
+<!-- BEGIN: Top Navigation & Progress -->
+<header class="ys-ob-header">
+<button aria-label="Go back" class="ys-ob-back" onclick="window.location.href='art-interest.html'" type="button">
+<svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="3" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M15 19l-7-7 7-7"></path></svg>
 </button>
-<!-- Progress Bar (same style as the other onboarding pages) -->
-<div class="flex-1 max-w-[200px] mx-4">
-<div class="h-1 bg-surface-container rounded-full overflow-hidden">
-<div class="h-full bg-primary-container w-[60%] rounded-full"></div>
-</div>
-</div>
-<div class="w-10"></div> <!-- Spacer to balance back button -->
+<!-- Progress Bar (identical on every onboarding step) -->
+<div class="ys-ob-progress"><span data-ob-progress></span></div>
+<div class="ys-ob-spacer" aria-hidden="true"></div>
 </header>
-<!-- Main Content Canvas -->
-<main class="flex-1 flex flex-col pt-3 w-full mx-auto relative pb-32">
+<!-- END: Top Navigation & Progress -->
+<!-- BEGIN: Main Content Area -->
+<main class="ys-ob-main">
 <!-- Header Section -->
-<div class="text-center mb-4 px-container-margin">
-<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-white">Who catches your eye?</h1>
+<div class="ys-ob-title">
+<h1>Who catches your eye?</h1>
 </div>
 <!-- Swipe Gallery -->
-<div class="swipe-container flex-1 items-center pb-8">
-<!-- Card 1: Boss Lady -->
-<button class="swipe-card relative rounded-xl overflow-hidden bg-surface group border hover:border-white/30 text-left card-inactive border-white/10" onclick="selectCard(this)">
-<div class="absolute inset-0 bg-cover bg-center" data-alt="A portrait of a sophisticated, confident woman in her 40s wearing stylish, dark-rimmed glasses and a crisp white silk blouse." style="background-image: url(&quot;https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/ChatGPT%20Image%20Aug%208%2C%202026%2C%2001_11_43%20AM.png&quot;);"></div>
-<div class="absolute inset-0 glass-overlay"></div>
-<!-- Label -->
-<div class="absolute bottom-6 left-0 right-0 text-center px-4">
-<span class="font-headline-lg-mobile text-headline-lg-mobile text-white drop-shadow-md">Empress lady</span>
-</div>
+<div class="ys-ob-carousel" id="carousel">
+<!-- Card 1: Empress lady -->
+<button aria-label="Select Empress lady" class="ys-ob-card is-inactive" data-value="empress_lady" type="button">
+<div class="ys-ob-card-img" data-alt="A portrait of a sophisticated, confident woman in her 40s wearing stylish, dark-rimmed glasses and a crisp white silk blouse." style="background-image: url(&quot;https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/ChatGPT%20Image%20Aug%208%2C%202026%2C%2001_11_43%20AM.png&quot;);"></div>
+<div class="ys-ob-card-overlay"></div>
+<span class="ys-ob-card-label">Empress lady</span>
 </button>
 <!-- Card 2: MILF -->
-<button class="swipe-card relative rounded-xl overflow-hidden bg-surface group border hover:border-white/30 text-left card-inactive border-white/10" onclick="selectCard(this)">
-<div class="absolute inset-0 bg-cover bg-center" data-alt="A captivating portrait of an attractive, mature woman with blonde hair styled in a messy chic updo." style="background-image: url(&quot;https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/ChatGPT%20Image%20Aug%208%2C%202026%2C%2001_21_33%20AM.png&quot;);"></div>
-<div class="absolute inset-0 glass-overlay"></div>
-<!-- Label -->
-<div class="absolute bottom-6 left-0 right-0 text-center px-4">
-<span class="font-headline-lg-mobile text-headline-lg-mobile text-white drop-shadow-md">MILF</span>
-</div>
+<button aria-label="Select MILF" class="ys-ob-card is-inactive" data-value="milf" type="button">
+<div class="ys-ob-card-img" data-alt="A captivating portrait of an attractive, mature woman with blonde hair styled in a messy chic updo." style="background-image: url(&quot;https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/ChatGPT%20Image%20Aug%208%2C%202026%2C%2001_21_33%20AM.png&quot;);"></div>
+<div class="ys-ob-card-overlay"></div>
+<span class="ys-ob-card-label">MILF</span>
 </button>
-<!-- Card 3: Sugar Mama -->
-<button class="swipe-card relative rounded-xl overflow-hidden bg-surface group border hover:border-white/30 text-left card-inactive border-white/10" onclick="selectCard(this)">
-<div class="absolute inset-0 bg-cover bg-center" data-alt="A vibrant portrait of a stunning, wealthy-looking woman with rich brown skin and voluminous dark hair." style="background-image: url(&quot;https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/ChatGPT%20Image%20Aug%208%2C%202026%2C%2001_29_36%20AM.png&quot;);"></div>
-<div class="absolute inset-0 glass-overlay"></div>
-<!-- Label -->
-<div class="absolute bottom-6 left-0 right-0 text-center px-4">
-<span class="font-headline-lg-mobile text-headline-lg-mobile text-white drop-shadow-md">Adult Collage Girl</span>
-</div>
+<!-- Card 3: Adult College Girl -->
+<button aria-label="Select Adult Collage Girl" class="ys-ob-card is-inactive" data-value="adult_collage_girl" type="button">
+<div class="ys-ob-card-img" data-alt="A vibrant portrait of a stunning, wealthy-looking woman with rich brown skin and voluminous dark hair." style="background-image: url(&quot;https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/ChatGPT%20Image%20Aug%208%2C%202026%2C%2001_29_36%20AM.png&quot;);"></div>
+<div class="ys-ob-card-overlay"></div>
+<span class="ys-ob-card-label">Adult Collage Girl</span>
 </button>
-<!-- Card 4: BDSM Queen -->
-<button class="swipe-card relative rounded-xl overflow-hidden bg-surface group border hover:border-white/30 text-left card-active border-white/10" onclick="selectCard(this)">
-<div class="absolute inset-0 bg-cover bg-center" data-alt="A dramatic portrait of an intense, authoritative woman with dark hair." style="background-image: url(&quot;https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/ChatGPT%20Image%20Aug%208%2C%202026%2C%2001_40_45%20AM.png&quot;);"></div>
-<div class="absolute inset-0 glass-overlay"></div>
-<!-- Label -->
-<div class="absolute bottom-6 left-0 right-0 text-center px-4">
-<span class="font-headline-lg-mobile text-headline-lg-mobile text-white drop-shadow-md">Sweet Girl</span>
-</div>
+<!-- Card 4: Sweet Girl -->
+<button aria-label="Select Sweet Girl" class="ys-ob-card is-active" data-value="sweet_girl" type="button">
+<div class="ys-ob-card-img" data-alt="A dramatic portrait of an intense, authoritative woman with dark hair." style="background-image: url(&quot;https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/ChatGPT%20Image%20Aug%208%2C%202026%2C%2001_40_45%20AM.png&quot;);"></div>
+<div class="ys-ob-card-overlay"></div>
+<span class="ys-ob-card-label">Sweet Girl</span>
 </button>
 </div>
 </main>
-<!-- Continue Button -->
-<div class="fixed bottom-0 left-0 right-0 p-container-margin bg-gradient-to-t from-black via-black/80 to-transparent z-20">
-<button onclick="window.location.href='explore-interest.html'" class="w-full bg-white text-black font-label-md text-lg py-4 rounded-full shadow-lg hover:bg-gray-100 transition-colors cursor-pointer">
-        Continue
-    </button>
-</div>
+<!-- END: Main Content Area -->
+<!-- BEGIN: Footer Action -->
+<footer class="ys-ob-footer">
+<button class="ys-ob-btn" id="continue-btn" type="button">
+    Continue
+  </button>
+</footer>
+<!-- END: Footer Action -->
+<script src="js/onboarding.js"></script>
 <script>
-        function selectCard(clickedButton) {
-            clickedButton.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
-        }
+  document.addEventListener('DOMContentLoaded', () => {
+    const carousel = YSOnboarding.bindCarousel({ root: '#carousel', key: 'archetype' });
 
-        document.addEventListener('DOMContentLoaded', () => {
-            const container = document.querySelector('.swipe-container');
-            const cards = document.querySelectorAll('.swipe-card');
+    // Restore a previous choice (back/forward navigation).
+    const saved = YSOnboarding.get('archetype');
+    if (saved && carousel) carousel.select(saved);
 
-            const updateActiveCard = () => {
-                let minDistance = Infinity;
-                let centerCard = null;
-                const containerCenter = container.scrollLeft + container.clientWidth / 2;
-
-                cards.forEach(card => {
-                    const cardCenter = card.offsetLeft + card.clientWidth / 2;
-                    const distance = Math.abs(containerCenter - cardCenter);
-                    if (distance < minDistance) {
-                        minDistance = distance;
-                        centerCard = card;
-                    }
-                });
-
-                cards.forEach(card => {
-                    if (card === centerCard) {
-                        card.classList.add('card-active');
-                        card.classList.remove('card-inactive', 'border-white/10');
-                    } else {
-                        card.classList.remove('card-active');
-                        card.classList.add('card-inactive', 'border-white/10');
-                    }
-                });
-            };
-
-            container.addEventListener('scroll', updateActiveCard);
-            // Run initially to set correct state
-            updateActiveCard();
-        });
-    </script>
-
-
+    document.getElementById('continue-btn').addEventListener('click', () => {
+      const active = document.querySelector('.ys-ob-card.is-active');
+      if (active) YSOnboarding.set('archetype', active.getAttribute('data-value'));
+      window.location.href = 'explore-interest.html';
+    });
+  });
+</script>
 <script src="js/animations.js"></script>
 </body></html>

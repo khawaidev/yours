@@ -611,10 +611,35 @@
             localStorage.removeItem('yours_demo_mode');
             applyMode(true);
             maybeStartFunnel();
-            // A brand-new account (created by this bootstrap) must go through
-            // onboarding even if it landed here straight from Google OAuth.
+            // A brand-new account must go through onboarding — unless it was
+            // created from answers collected just before sign-up.
             bootstrapProfile(res.data.session).then(function (r) {
-              if (r && r.created) window.location.replace('Age.html');
+              if (!r || !r.created) return;
+              var pending = null;
+              try { pending = JSON.parse(sessionStorage.getItem('yours_onboarding_v1') || 'null'); } catch (e) {}
+              if (!pending || (!pending.name && !pending.age)) {
+                window.location.replace('Age.html');
+                return;
+              }
+              // The visitor already completed onboarding — write those answers
+              // onto the fresh profile instead of asking again.
+              var uid = res.data.session.user.id;
+              var prefs = { onboarding_completed: true };
+              if (pending.ageInterest) prefs.age_interest = pending.ageInterest;
+              if (pending.artStyle) prefs.art_style = pending.artStyle;
+              if (pending.archetype) prefs.archetypes = [pending.archetype];
+              if (pending.interests && pending.interests.length) prefs.relationship_interests = pending.interests;
+              if (pending.personality) prefs.personality_preferences = [pending.personality];
+              var jobs = [YoursAPI.updateOnboardingState(uid, 'completed', prefs)];
+              if (pending.name || pending.age) {
+                jobs.push(YoursAPI.updateProfile(uid, {
+                  displayName: pending.name || undefined,
+                  declaredAge: pending.age || undefined,
+                }));
+              }
+              Promise.all(jobs).catch(function () {}).then(function () {
+                try { sessionStorage.removeItem('yours_onboarding_v1'); } catch (e) {}
+              });
             });
           } else if (demoMode === 'auth') {
             applyMode(true);
@@ -623,7 +648,8 @@
           } else if (savedDemo === 'auth') {
             applyMode(true);
           } else {
-            applyMode(false);
+            // No saved login session → the onboarding flow comes first.
+            window.location.replace('Age.html');
           }
         }).catch(function () {
           // If the session lookup fails, fall back to the demo override or guest.

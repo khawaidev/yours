@@ -7,6 +7,7 @@
 <link rel="icon" type="image/png" href="icons/favicon-32.png">
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link rel="stylesheet" href="css/app.css">
+<link rel="stylesheet" href="css/onboarding.css">
 <style data-purpose="custom-styles">
     /* Hide scrollbar for the picker to match the design */
     .no-scrollbar::-webkit-scrollbar {
@@ -46,33 +47,23 @@
   </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
-<body class="bg-[#18181a] text-white font-sans antialiased h-dvh flex flex-col items-center pt-8 pb-10 px-6 app-page">
-<!-- BEGIN: Top Navigation & Progress -->
-<header class="w-full max-w-md flex items-center justify-between mb-8 relative">
-<!-- Back Button -->
-<button onclick="window.location.href='auth.html'" aria-label="Go back" class="p-2 -ml-2 text-white hover:text-gray-300 transition-colors z-10 cursor-pointer">
-<svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-<path d="M15 19l-7-7 7-7" stroke-linecap="round" stroke-linejoin="round"></path>
-</svg>
-</button>
-<!-- Progress Bar Container -->
-<div class="absolute left-0 right-0 flex justify-center pointer-events-none">
-<div class="w-48 h-1.5 bg-[#333333] rounded-full overflow-hidden flex">
-<!-- Active Progress -->
-<div class="w-1/5 bg-[#ff5a5f] h-full rounded-full"></div>
-</div>
-</div>
+<body class="ys-ob-page app-page" style="background-color:#18181a;">
+<!-- BEGIN: Top Navigation & Progress (first step — no back button) -->
+<header class="ys-ob-header">
+<div class="ys-ob-spacer" aria-hidden="true"></div>
+<div class="ys-ob-progress"><span data-ob-progress></span></div>
+<div class="ys-ob-spacer" aria-hidden="true"></div>
 </header>
 <!-- END: Top Navigation & Progress -->
 <!-- BEGIN: Main Content Area -->
-<main class="flex-1 w-full max-w-md flex flex-col">
+<main class="ys-ob-main">
 <!-- Header Text -->
-<div class="text-center mb-8">
-<h1 class="text-3xl font-extrabold tracking-tight mb-2 text-[#f5f5f5]">How old are you?</h1>
-<p class="text-sm text-gray-300 font-medium tracking-wide">You must be 18+ to use Yours</p>
+<div class="ys-ob-title">
+<h1>How old are you?</h1>
+<p>You must be 18+ to use Yours</p>
 </div>
 <!-- Age Picker Container -->
-<div class="relative flex-1 flex flex-col justify-center items-center overflow-hidden mb-8">
+<div class="relative flex-1 flex flex-col justify-center items-center overflow-hidden mb-6">
 <!-- Fading edges for the scroll effect -->
 <div class="absolute top-0 left-0 right-0 h-12 bg-gradient-to-b from-[#18181a] to-transparent z-10 pointer-events-none"></div>
 <div class="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-[#18181a] to-transparent z-10 pointer-events-none"></div>
@@ -82,8 +73,8 @@
 </main>
 <!-- END: Main Content Area -->
 <!-- BEGIN: Footer Actions -->
-<footer class="w-full max-w-md mt-auto">
-<button onclick="window.location.href='name.html'" class="w-full bg-white text-black font-bold text-lg py-4 rounded-3xl hover:bg-gray-100 transition-colors active:scale-[0.98] cursor-pointer">
+<footer class="ys-ob-footer">
+<button class="ys-ob-btn" id="age-continue" type="button">
       Continue
     </button>
 <!-- Privacy note -->
@@ -95,6 +86,7 @@
 </div>
 </footer>
 <!-- END: Footer Actions -->
+<script src="js/onboarding.js"></script>
 <script>
   document.addEventListener('DOMContentLoaded', () => {
     const list = document.getElementById('age-list');
@@ -137,6 +129,14 @@
     } else {
       updateSelection();
     }
+
+    // ---- Continue: store the age and go to the name step ----
+    const continueBtn = document.getElementById('age-continue');
+    continueBtn.addEventListener('click', () => {
+      // There is always a snapped age, so the step is always valid.
+      const age = Number(window.selectedAge) || 26;
+      YSOnboarding.go('age', age, 'name.html');
+    });
   });
 </script>
 <script>
