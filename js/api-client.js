@@ -8,6 +8,18 @@ const API_BASE_URL =
     ? 'http://' + (window.location.hostname || 'localhost') + ':5000/api/v1'
     : 'https://yours-backend-e38m.onrender.com/api/v1');
 
+/** True when `code` looks like a real ISO-3166-1 alpha-2 region. */
+function isCountryCode(code) {
+  if (!/^[A-Z]{2}$/.test(code)) return false;
+  try {
+    // Invalid region codes are echoed back unchanged by Intl.DisplayNames.
+    var name = new Intl.DisplayNames(['en'], { type: 'region' }).of(code);
+    return !!name && name.toUpperCase() !== code;
+  } catch (e) {
+    return false;
+  }
+}
+
 class YoursAPI {
   // In-memory cache bucket (per-page lifetime). sessionStorage is used as a
   // persistence layer for the larger, rarely-changing reads (characters).
@@ -116,24 +128,39 @@ class YoursAPI {
   static detectCountry() {
     try {
       const cached = sessionStorage.getItem('yours_country');
-      if (cached) return cached;
+      // Older builds could cache a language subtag ("EN") instead of a region.
+      if (cached && isCountryCode(cached)) return cached;
+      if (cached) sessionStorage.removeItem('yours_country');
     } catch (e) {}
     let code = '';
     try {
-      const locale =
-        (navigator.language || navigator.languages?.[0] || '').toLowerCase() || '';
-      const match = locale.match(/(?:^|-)([a-z]{2})(?:$|-)/);
-      if (match && match[1]) code = match[1].toUpperCase();
+      // Prefer the region subtag: "en-US" → US, "pt-BR" → BR, "zh-Hant-HK" → HK.
+      const locales =
+        (navigator.languages && navigator.languages.length)
+          ? navigator.languages
+          : [navigator.language || ''];
+      for (let l = 0; l < locales.length && !code; l++) {
+        const parts = String(locales[l] || '').toLowerCase().split(/[-_]/);
+        for (let i = parts.length - 1; i >= 1; i--) {
+          if (/^[a-z]{2}$/.test(parts[i])) { code = parts[i].toUpperCase(); break; }
+        }
+      }
     } catch (e) {}
-    if (!code) {
+    if (!code || !isCountryCode(code)) {
+      code = '';
       try {
         const region = Intl.DateTimeFormat().resolvedOptions().locale;
         const m = region.match(/[_-]([A-Za-z]{2})$/);
         if (m) code = m[1].toUpperCase();
       } catch (e) {}
     }
-    if (!code) code = 'US';
-    try { sessionStorage.setItem('yours_country', code); } catch (e) {}
+    if (!code || !isCountryCode(code)) code = 'US';
+    try {
+      sessionStorage.setItem('yours_country', code);
+      // Remember that this is only a locale guess; detectLocation() may still
+      // replace it with the IP-based country.
+      sessionStorage.setItem('yours_country_source', 'locale');
+    } catch (e) {}
     return code;
   }
 
@@ -146,7 +173,9 @@ class YoursAPI {
   static async detectLocation() {
     try {
       const cached = sessionStorage.getItem('yours_country');
-      if (cached) return cached;
+      const source = sessionStorage.getItem('yours_country_source');
+      // A locale guess must not short-circuit the IP lookup.
+      if (cached && (source === 'ip' || source === 'fallback') && isCountryCode(cached)) return cached;
     } catch (e) {}
 
     const services = ['https://ipwho.is/', 'https://ipapi.co/json/'];
@@ -160,15 +189,21 @@ class YoursAPI {
         if (!res.ok) continue;
         const data = await res.json();
         const code = (data.country_code2 || data.country_code || data.countryCode || '').toUpperCase();
-        if (/^[A-Z]{2}$/.test(code)) {
-          try { sessionStorage.setItem('yours_country', code); } catch (e) {}
+        if (isCountryCode(code)) {
+          try {
+            sessionStorage.setItem('yours_country', code);
+            sessionStorage.setItem('yours_country_source', 'ip');
+          } catch (e) {}
           return code;
         }
       } catch (e) { /* try next service */ }
     }
 
     const code = this.detectCountry();
-    try { sessionStorage.setItem('yours_country', code); } catch (e) {}
+    try {
+      sessionStorage.setItem('yours_country', code);
+      sessionStorage.setItem('yours_country_source', 'fallback');
+    } catch (e) {}
     return code;
   }
 

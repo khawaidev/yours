@@ -161,7 +161,7 @@
 </div>
 <!-- Footer Text -->
 <p id="subscribe-price-footer" class="text-sm font-medium text-onSurfaceVariant">
-      Dynamic multi-region pricing loaded via backend
+      Prices in your local currency · confirmed at checkout
     </p>
 </main>
 <!-- END: Main Content -->
@@ -187,12 +187,75 @@
       if (cu) USER_ID = cu.id;
     } catch (e) {}
 
-    // Detect the user's real location (IP-based, falls back to locale).
+    // Country for the local price catalog: the cached/IP value when we have
+    // one, otherwise the browser locale. The IP lookup is refined below
+    // without blocking the first paint.
     var country = 'US';
-    try { country = await YoursAPI.detectLocation(); } catch (e) {
-      try { country = YoursAPI.detectCountry(); } catch (e2) {}
-    }
+    try { country = YoursAPI.detectCountry(); } catch (e) {}
     var isIndia = country === 'IN';
+
+    // ---- Local pricing catalog -------------------------------------------
+    // Prices ship with the app so the cards render instantly, per country,
+    // without waiting on the network. The backend is asked for the current
+    // published price only when the visitor taps a purchase button.
+    var LOCAL_PRICING = {
+      US: { region: 'US', premium_price: 9.99, premium_annual_price: 79.99, premium_annual_monthly_price: 6.67, premium_save_percent: 33.3, premium_free_months: 1, currency: 'USD', currency_symbol: '$' },
+      CA: { region: 'CA', premium_price: 12.99, premium_annual_price: 104.99, premium_annual_monthly_price: 8.75, premium_save_percent: 32.7, premium_free_months: 1, currency: 'CAD', currency_symbol: 'C$' },
+      GB: { region: 'GB', premium_price: 8.99, premium_annual_price: 71.99, premium_annual_monthly_price: 6.0, premium_save_percent: 33.3, premium_free_months: 1, currency: 'GBP', currency_symbol: '£' },
+      AU: { region: 'AU', premium_price: 14.99, premium_annual_price: 119.99, premium_annual_monthly_price: 10.0, premium_save_percent: 33.3, premium_free_months: 1, currency: 'AUD', currency_symbol: 'A$' },
+      IN: { region: 'IN', premium_price: 399, premium_annual_price: 3199, premium_annual_monthly_price: 266, premium_save_percent: 33.3, premium_free_months: 1, currency: 'INR', currency_symbol: '₹' },
+      BR: { region: 'BR', premium_price: 29.9, premium_annual_price: 239.9, premium_annual_monthly_price: 19.99, premium_save_percent: 33.3, premium_free_months: 1, currency: 'BRL', currency_symbol: 'R$' },
+      MX: { region: 'MX', premium_price: 129, premium_annual_price: 1029, premium_annual_monthly_price: 85.75, premium_save_percent: 33.5, premium_free_months: 1, currency: 'MXN', currency_symbol: 'MX$' },
+      PH: { region: 'PH', premium_price: 299, premium_annual_price: 2399, premium_annual_monthly_price: 199.92, premium_save_percent: 33.1, premium_free_months: 1, currency: 'PHP', currency_symbol: '₱' },
+      ID: { region: 'ID', premium_price: 149000, premium_annual_price: 1199000, premium_annual_monthly_price: 99916.67, premium_save_percent: 32.9, premium_free_months: 1, currency: 'IDR', currency_symbol: 'Rp' },
+      TR: { region: 'TR', premium_price: 249, premium_annual_price: 1999, premium_annual_monthly_price: 166.58, premium_save_percent: 33.1, premium_free_months: 1, currency: 'TRY', currency_symbol: '₺' },
+      ZA: { region: 'ZA', premium_price: 199, premium_annual_price: 1599, premium_annual_monthly_price: 133.25, premium_save_percent: 33.0, premium_free_months: 1, currency: 'ZAR', currency_symbol: 'R' },
+    };
+    var PRICING_CACHE_PREFIX = 'yours_pricing_v1_';
+    var PRICING_CACHE_TTL = 24 * 60 * 60 * 1000; // 24h
+
+    function normalizeCountry(code) {
+      var c = String(code || 'US').toUpperCase();
+      if (c === 'UK') c = 'GB';
+      return c;
+    }
+
+    // Last backend-verified price for this country (kept locally), otherwise
+    // the hardcoded catalog entry, otherwise US.
+    function localPricing(code) {
+      var c = normalizeCountry(code);
+      try {
+        var cached = JSON.parse(localStorage.getItem(PRICING_CACHE_PREFIX + c) || 'null');
+        if (cached && cached.__savedAt && cached.pricing &&
+            Date.now() - cached.__savedAt < PRICING_CACHE_TTL &&
+            cached.pricing.currency_symbol && cached.pricing.premium_price != null) {
+          return cached.pricing;
+        }
+      } catch (e) {}
+      return LOCAL_PRICING[c] || LOCAL_PRICING.US;
+    }
+
+    function rememberPricing(code, pricing) {
+      if (!pricing || pricing.premium_price == null) return;
+      try {
+        localStorage.setItem(PRICING_CACHE_PREFIX + normalizeCountry(code),
+          JSON.stringify({ __savedAt: Date.now(), pricing: pricing }));
+      } catch (e) {}
+    }
+
+    function updatePricingBadge(p) {
+      if (!p) return;
+      var savePct = p.premium_save_percent != null ? Number(p.premium_save_percent) : 33.3;
+      var freeMonths = p.premium_free_months != null ? Number(p.premium_free_months) : 1;
+      var badgeEl = document.getElementById('annual-badge');
+      if (badgeEl) badgeEl.textContent = savePct + '% OFF + ' + freeMonths + (freeMonths === 1 ? ' month' : ' months') + ' free';
+    }
+
+    function renderLocalPricing() {
+      var p = localPricing(country);
+      renderPrices(p);
+      updatePricingBadge(p);
+    }
 
     function showToast(msg) {
       var t = document.createElement('div');
@@ -228,15 +291,31 @@
       var subSpan = document.getElementById('subscribe-price-annual-sub');
       if (subSpan) subSpan.textContent = '';
 
-      var savePct = p.premium_save_percent != null ? Number(p.premium_save_percent) : Math.round((1 - annual / (p.premium_price * 12)) * 1000) / 10;
-      var freeMonths = p.premium_free_months != null ? Number(p.premium_free_months) : 1;
       var footer = document.getElementById('subscribe-price-footer');
-      if (footer) footer.textContent = 'Save ' + savePct + '% + ' + freeMonths + (freeMonths === 1 ? ' month' : ' months') + ' free';
+      if (footer) footer.textContent = 'Prices in ' + (p.currency || 'your local currency') + ' · confirmed at checkout';
     }
 
-    // Direct Razorpay checkout for the premium plans. Before opening the
-    // payment sheet we re-fetch pricing with `fresh=1` (bypasses the backend
-    // cache) so the shown/charged price is the current DB price.
+    // If the backend order uses a different currency/amount than the card
+    // (e.g. a regional display price while Razorpay charges USD), update the
+    // button so the visitor sees exactly what will be charged.
+    function syncPriceWithOrder(order, itemId) {
+      if (!order || !order.currency || !order.amountInSmallestUnit) return;
+      var symbols = { INR: '₹', USD: '$', GBP: '£', EUR: '€', AUD: 'A$', CAD: 'C$', BRL: 'R$', MXN: 'MX$', PHP: '₱', IDR: 'Rp', TRY: '₺', ZAR: 'R' };
+      var sym = symbols[order.currency] || (order.currency + ' ');
+      var amount = order.amountInSmallestUnit / 100;
+      var text = Number.isInteger(amount) ? String(amount) : String(Math.round(amount * 100) / 100);
+      if (itemId === 'premium_annual') {
+        var annualEl = document.getElementById('subscribe-price-annual-btn');
+        if (annualEl) annualEl.textContent = 'Billed ' + sym + text + '/yr';
+      } else {
+        var monthlyEl = document.getElementById('subscribe-price-btn');
+        if (monthlyEl) monthlyEl.textContent = 'Subscribe for ' + sym + text + '/month';
+      }
+    }
+
+    // Direct Razorpay checkout for the premium plans. The cards show local
+    // prices; right before checkout we ask the backend for the current
+    // published price, render it, then create the order.
     function purchase(itemId) {
       itemId = itemId || 'premium_monthly';
       if (!USER_ID) { showToast('Please sign in to subscribe to Premium.'); return; }
@@ -255,13 +334,19 @@
       }
       YoursAPI.getCountryPricing(country, true)
         .then(function (fresh) {
-          renderPrices(fresh);
+          if (fresh) {
+            rememberPricing(country, fresh);
+            renderPrices(fresh);
+            updatePricingBadge(fresh);
+          }
           return YoursAPI.createPaymentOrder(USER_ID, itemId, country);
         })
         .then(function (res) {
           stopBusy();
           var order = res.order;
           if (typeof Razorpay === 'undefined') throw new Error('Razorpay SDK failed to load');
+          // Keep the label in sync with the amount Razorpay will actually charge.
+          syncPriceWithOrder(order, itemId);
           var options = {
             key: order.keyId,
             amount: order.amountInSmallestUnit,
@@ -302,19 +387,22 @@
     var annualBtn = document.getElementById('premium-subscribe-annual-btn');
     if (annualBtn) annualBtn.addEventListener('click', function () { purchase('premium_annual'); });
 
-    try {
-      // Fetch dynamic pricing for the detected region (DB-backed, cached).
-      const p = await YoursAPI.getCountryPricing(country);
-      if (p) {
-        renderPrices(p);
-        var savePct = p.premium_save_percent != null ? Number(p.premium_save_percent) : 33.3;
-        var freeMonths = p.premium_free_months != null ? Number(p.premium_free_months) : 1;
-        var badgeEl = document.getElementById('annual-badge');
-        if (badgeEl) badgeEl.textContent = savePct + '% OFF + ' + freeMonths + (freeMonths === 1 ? ' month' : ' months') + ' free';
-      }
-    } catch (e) {
-      console.log('Dynamic pricing fallback active');
-    }
+    // Prices come from the local catalog (instant, no network). The backend is
+    // only consulted when the visitor taps a purchase button.
+    renderLocalPricing();
+
+    // Refine the country from the IP lookup in the background; if it differs
+    // from the locale guess, swap the local prices for the correct ones.
+    YoursAPI.detectLocation().then(function (located) {
+      if (!located) return;
+      located = normalizeCountry(located);
+      if (located === normalizeCountry(country)) return;
+      country = located;
+      isIndia = country === 'IN';
+      renderLocalPricing();
+    }).catch(function () {
+      // Locale-based prices stay in place.
+    });
   });
 </script>
 <script src="js/animations.js"></script>

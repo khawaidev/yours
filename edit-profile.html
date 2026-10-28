@@ -109,7 +109,7 @@
 <div>
 <label class="text-blush-subtext text-xs font-semibold uppercase tracking-wider px-2 mb-2 block" for="declared-age">Age</label>
 <input class="field" id="declared-age" min="18" max="120" inputmode="numeric" placeholder="18" type="number">
-<p class="text-blush-subtext text-xs px-2 mt-2">Your age must be 18 or older.</p>
+<p class="text-blush-subtext text-xs px-2 mt-2" id="age-hint">Your age must be 18 or older.</p>
 </div>
 <div>
 <label class="text-blush-subtext text-xs font-semibold uppercase tracking-wider px-2 mb-2 block">Profile icon</label>
@@ -138,6 +138,7 @@ Save changes
 
   var nameInput = document.getElementById('display-name');
   var ageInput = document.getElementById('declared-age');
+  var ageHint = document.getElementById('age-hint');
   var saveBtn = document.getElementById('save-btn');
   var toast = document.getElementById('toast');
   var avatar = document.getElementById('avatar-preview');
@@ -149,6 +150,9 @@ Save changes
   var ICON_NAMES = ['usericon1', 'usericon2', 'usericon3', 'usericon4', 'usericon5'];
   var loaded = { name: '', age: null, icon: null };
   var selectedIcon = null;
+  // True only when the visitor taps an icon themselves — the icon pre-selected
+  // on load must not count as a change.
+  var userPickedIcon = false;
   var saving = false;
 
   function iconUrl(name) { return ICON_BASE + name + '.png'; }
@@ -169,7 +173,7 @@ Save changes
       img.alt = name;
       img.className = 'w-full h-full object-cover';
       btn.appendChild(img);
-      btn.addEventListener('click', function () { selectIcon(name); });
+      btn.addEventListener('click', function () { userPickedIcon = true; selectIcon(name); });
       iconPicker.appendChild(btn);
     });
     selectIcon(current || loaded.icon || ICON_NAMES[0]);
@@ -207,10 +211,26 @@ Save changes
   }
 
   function refreshSave() {
-    var changed = nameInput.value.trim() !== loaded.name ||
-      (ageInput.value !== '' && String(loaded.age) !== String(parseInt(ageInput.value, 10))) ||
-      (selectedIcon != null && loaded.icon != null && selectedIcon !== loaded.icon);
-    saveBtn.disabled = saving || !changed;
+    var ageRaw = String(ageInput.value || '').trim();
+    var ageNum = ageRaw === '' ? null : parseInt(ageRaw, 10);
+    var ageInvalid = ageRaw !== '' && (isNaN(ageNum) || ageNum < 18 || ageNum > 120);
+
+    // Under-18 blocks saving outright — not just on click.
+    if (ageHint) {
+      ageHint.textContent = ageInvalid
+        ? 'You must be 18 or older to use Yours.'
+        : 'Your age must be 18 or older.';
+      ageHint.style.color = ageInvalid ? '#F87171' : '';
+    }
+    ageInput.setAttribute('aria-invalid', ageInvalid ? 'true' : 'false');
+
+    var nameChanged = nameInput.value.trim() !== loaded.name;
+    var ageChanged = ageRaw !== '' && String(loaded.age) !== String(ageNum);
+    // Tapping any available icon makes Save clickable (even when it is the one
+    // already selected), per the profile-icon selection flow.
+    var iconPicked = userPickedIcon && selectedIcon != null;
+
+    saveBtn.disabled = saving || ageInvalid || !(nameChanged || ageChanged || iconPicked);
   }
 
   function avatarColorFor(seed) {
