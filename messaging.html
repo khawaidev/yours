@@ -86,10 +86,11 @@
 
     /* ---- Gap between UI and the bottom screen edge (safe-area aware) ---- */
     .chat-footer {
-      padding-bottom: calc(3.5rem + env(safe-area-inset-bottom, 0px));
+      padding-bottom: calc(0.75rem + env(safe-area-inset-bottom, 0px));
     }
     #chat-area {
-      padding-bottom: calc(11rem + env(safe-area-inset-bottom, 0px)); /* keeps the latest bubble clear of the taller floating footer */
+      padding-top: 0.85rem; /* breathing room below the header */
+      padding-bottom: calc(9rem + env(safe-area-inset-bottom, 0px)); /* keeps the latest bubble clear of the floating footer */
     }
 
     /* ---- Chat message bubbles ---- */
@@ -338,7 +339,7 @@
     }
   </style>
 </head>
-<body class="text-white h-screen flex flex-col overflow-hidden bg-black/60 app-page" style="font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif;">
+<body class="text-white h-screen flex flex-col overflow-hidden bg-black/60 app-page" style="font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif; height: 100dvh;">
 <!-- Fixed background layer (mobile-safe; stays pinned when the keyboard opens) -->
 <div class="chat-bg" aria-hidden="true"></div>
 <!-- BEGIN: Custom skeleton loader (mirrors page layout) -->
@@ -1572,8 +1573,9 @@
   if (backBtn) {
     backBtn.addEventListener('click', function () {
       if (window.ysPane) { window.ysNotify('go-back'); return; }
-      if (window.history.length > 1) window.history.back();
-      else window.location.href = 'index.html';
+      // Always land on the messages list — never on the call page or any
+      // other page the user passed through (e.g. after a call ended).
+      window.location.replace('chat.html');
     });
   }
   if (avatarBtn) {

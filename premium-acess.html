@@ -33,6 +33,19 @@
     .bg-gradient-overlay {
       background: linear-gradient(to top, rgba(19, 19, 19, 1) 0%, rgba(19, 19, 19, 0.9) 30%, rgba(19, 19, 19, 0) 100%);
     }
+    /* ---- Payment button spinner ---- */
+    .btn-spinner {
+      display: inline-block;
+      width: 18px;
+      height: 18px;
+      border: 2px solid rgba(255, 255, 255, 0.35);
+      border-top-color: #ffffff;
+      border-radius: 50%;
+      animation: btnSpin 0.7s linear infinite;
+      vertical-align: middle;
+      flex-shrink: 0;
+    }
+    @keyframes btnSpin { to { transform: rotate(360deg); } }
   </style>
 </head>
 <body class="bg-surface text-onSurface font-sans antialiased h-screen w-screen overflow-hidden flex flex-col justify-end relative app-page">
@@ -230,15 +243,23 @@
       var btnId = itemId === 'premium_annual' ? 'premium-subscribe-annual-btn' : 'premium-subscribe-btn';
       var btn = document.getElementById(btnId);
       btn.disabled = true;
-      var originalText = btn.textContent;
-      btn.textContent = '...';
+      btn.setAttribute('aria-busy', 'true');
+      var spinner = document.createElement('span');
+      spinner.className = 'btn-spinner';
+      spinner.setAttribute('aria-hidden', 'true');
+      btn.prepend(spinner);
+      function stopBusy() {
+        btn.disabled = false;
+        btn.removeAttribute('aria-busy');
+        if (spinner && spinner.parentNode) spinner.parentNode.removeChild(spinner);
+      }
       YoursAPI.getCountryPricing(country, true)
         .then(function (fresh) {
           renderPrices(fresh);
           return YoursAPI.createPaymentOrder(USER_ID, itemId, country);
         })
         .then(function (res) {
-          btn.textContent = originalText;
+          stopBusy();
           var order = res.order;
           if (typeof Razorpay === 'undefined') throw new Error('Razorpay SDK failed to load');
           var options = {
@@ -251,6 +272,7 @@
             order_id: order.orderId,
             method: isIndia ? 'upi' : 'card',
             prefill: { email: '' },
+            modal: { ondismiss: function () { stopBusy(); } },
             handler: function (payResp) {
               YoursAPI.verifyPayment(USER_ID, {
                 orderId: payResp.razorpay_order_id,
@@ -270,8 +292,7 @@
           rzp.open();
         })
         .catch(function (err) {
-          btn.disabled = false;
-          btn.textContent = originalText;
+          stopBusy();
           showToast('Could not start checkout: ' + (err.message || 'error'));
         });
     }

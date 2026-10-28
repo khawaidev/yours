@@ -971,10 +971,12 @@ Continue
 
   function goBackToChat() {
     // The call page redirects home when the character is unknown.
+    // Use replace() so the call page never stays in history — otherwise
+    // the chat's back button could land the user back on the call screen.
     if (character && character.id) {
-      window.location.href = 'messaging.html';
+      window.location.replace('messaging.html');
     } else {
-      window.location.href = 'user-profile.html';
+      window.location.replace('user-profile.html');
     }
   }
 

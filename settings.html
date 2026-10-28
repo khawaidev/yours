@@ -46,6 +46,22 @@
       transform: scale(0.98);
       background: rgba(255, 255, 255, 0.06);
     }
+
+    /* ---- Logout overlay: blurs the app while signing out ---- */
+    #logout-overlay .logout-backdrop {
+      background: rgba(10, 10, 10, 0.55);
+      -webkit-backdrop-filter: blur(14px);
+      backdrop-filter: blur(14px);
+    }
+    .logout-spinner {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      border: 3px solid rgba(255, 255, 255, 0.18);
+      border-top-color: #FF4D6D;
+      animation: logoutSpin 0.8s linear infinite;
+    }
+    @keyframes logoutSpin { to { transform: rotate(360deg); } }
   </style>
 </head>
 <body class="bg-blush-bg text-blush-text antialiased min-h-screen flex flex-col items-center pt-2 app-page">
@@ -211,6 +227,16 @@ Delete account
 </div>
 <!-- END: Confirmation Modal -->
 
+<!-- BEGIN: Logout overlay (blurs the app while signing out) -->
+<div class="fixed inset-0 z-[60] items-center justify-center" id="logout-overlay" style="display:none;">
+<div class="absolute inset-0 logout-backdrop"></div>
+<div class="relative flex flex-col items-center gap-4">
+<div class="logout-spinner"></div>
+<p class="text-sm font-semibold text-white/90 tracking-wide">Logging out&hellip;</p>
+</div>
+</div>
+<!-- END: Logout overlay -->
+
 <script>
 (function () {
   var SUPABASE_URL = 'https://dgbxcakkqrgrapwsvrol.supabase.co';
@@ -248,6 +274,16 @@ Delete account
 
   function goHome() {
     window.location.href = 'index.html';
+  }
+
+  // Signing out always ends on the auth screen.
+  function goAuth() {
+    window.location.replace('auth.html');
+  }
+
+  var logoutOverlay = document.getElementById('logout-overlay');
+  function showLogoutOverlay() {
+    if (logoutOverlay) logoutOverlay.style.display = 'flex';
   }
 
   function getCurrentUserId() {
@@ -291,21 +327,22 @@ Delete account
     if (pending) pending();
   });
 
-  // ---- Log out: invalidate the Supabase session, then clear local state ----
+  // ---- Log out: show a blurring spinner overlay, invalidate the Supabase
+  // session, clear local state, then land on the auth page ----
   document.getElementById('logout-btn').addEventListener('click', function () {
     showConfirm('Log out', 'You will need to sign in again to continue.', 'Log out', function () {
-      if (!supabase) {
+      showLogoutOverlay();
+      // Keep the overlay visible long enough to read even if signOut is instant.
+      var minDelay = new Promise(function (resolve) { setTimeout(resolve, 700); });
+      var signOut = supabase
+        ? supabase.auth.signOut().catch(function () {})
+        : Promise.resolve();
+      Promise.all([signOut, minDelay]).then(function () {
         clearSession();
-        goHome();
-        return;
-      }
-      setBusy(true);
-      supabase.auth.signOut().then(function () {
-        clearSession();
-        goHome();
+        goAuth();
       }).catch(function () {
         clearSession();
-        goHome();
+        goAuth();
       });
     });
   });

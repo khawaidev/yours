@@ -105,6 +105,18 @@
         .badge-scallop {
             clip-path: polygon(50% 0%, 61% 11%, 76% 5%, 82% 20%, 97% 20%, 95% 36%, 100% 50%, 95% 64%, 97% 80%, 82% 80%, 76% 95%, 61% 89%, 50% 100%, 39% 89%, 24% 95%, 18% 80%, 3% 80%, 5% 64%, 0% 50%, 5% 36%, 3% 20%, 18% 20%, 24% 5%, 39% 11%);
         }
+        /* ---- Payment button spinner ---- */
+        .btn-spinner {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(19, 19, 19, 0.25);
+            border-top-color: #131313;
+            border-radius: 50%;
+            animation: btnSpin 0.7s linear infinite;
+            vertical-align: middle;
+        }
+        @keyframes btnSpin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body class="bg-background text-white min-h-screen flex flex-col font-body-md pb-8 app-page">
@@ -291,6 +303,8 @@
     function renderCatalog(isIndia) {
       var buttons = document.querySelectorAll('button[data-item]');
       for (var i = 0; i < buttons.length; i++) {
+        // Don't repaint a button whose checkout is in progress (it shows a spinner).
+        if (buttons[i].disabled) continue;
         var item = buttons[i].getAttribute('data-item');
         var pack = null;
         if (CATALOG && CATALOG.tokenPacks) {
@@ -354,8 +368,9 @@
       }
 
       btn.disabled = true;
+      btn.setAttribute('aria-busy', 'true');
       var original = btn.textContent;
-      btn.textContent = '...';
+      btn.innerHTML = '<span class="btn-spinner" aria-hidden="true"></span>';
 
       YoursAPI.getPaymentCatalog(true)
         .then(function (res) {
@@ -397,7 +412,7 @@
               });
             },
             modal: {
-              ondismiss: function () { btn.disabled = false; btn.textContent = original; }
+              ondismiss: function () { btn.disabled = false; btn.removeAttribute('aria-busy'); btn.textContent = original; }
             }
           };
           var rzp = new Razorpay(options);
@@ -406,6 +421,7 @@
         })
         .catch(function (err) {
           btn.disabled = false;
+          btn.removeAttribute('aria-busy');
           btn.textContent = original;
           showToast('Could not start checkout: ' + (err.message || 'error'));
         });
