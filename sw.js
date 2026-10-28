@@ -21,6 +21,8 @@ var PRECACHE = [
   'icons/icon-192.png',
   'icons/icon-512.png',
   'icons/favicon-32.png',
+  'Assets/yours-screen1-trim.jpg',
+  'Assets/yours-screen2-trim.jpg',
   'manifest.webmanifest'
 ];
 

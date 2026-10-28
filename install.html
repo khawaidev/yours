@@ -6,12 +6,13 @@
 <meta name="robots" content="noindex">
 <meta name="description" content="Install Yours — chat, voice call and build a real connection with your own AI companion. Works on Android, iPhone and desktop.">
 <title>Get the Yours app</title>
-<meta name="theme-color" content="#000000">
+<meta name="theme-color" content="#ffffff">
+<meta name="color-scheme" content="light">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" href="icons/favicon-32.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Yours">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -21,19 +22,23 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
   :root {
-    --accent: #ff4d6d;
+    --accent: #f4245e;
     --accent-2: #ff7a45;
-    --text: #f5f5f7;
-    --muted: rgba(245, 245, 247, 0.58);
-    --faint: rgba(245, 245, 247, 0.4);
-    --line: rgba(255, 255, 255, 0.09);
-    --card: rgba(255, 255, 255, 0.045);
+    --grad: linear-gradient(120deg, #f4245e 0%, #ff6a3d 100%);
+    --bg: #faf8f7;
+    --surface: #ffffff;
+    --text: #131316;
+    --muted: #6f6f7a;
+    --faint: #9a9aa4;
+    --line: #eceaeb;
+    --shadow-card: 0 1px 2px rgba(19, 19, 22, 0.04), 0 12px 32px rgba(19, 19, 22, 0.06);
+    --shadow-btn: 0 8px 24px rgba(244, 36, 94, 0.28);
   }
   * { box-sizing: border-box; }
   html, body { height: 100%; }
   body {
     margin: 0;
-    background: #000;
+    background: var(--bg);
     color: var(--text);
     font-family: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
@@ -41,103 +46,200 @@
     display: flex;
     justify-content: center;
   }
-  .shell {
+  a { color: inherit; }
+
+  .page {
     width: 100%;
-    max-width: 430px;
+    max-width: 1180px;
     min-height: 100dvh;
-    padding: clamp(28px, 6vh, 56px) 24px 28px;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    position: relative;
-    z-index: 1;
+    padding: clamp(20px, 3vw, 32px) clamp(20px, 4vw, 48px) 24px;
   }
 
-  /* Ambient brand glow */
-  .glow, .glow-b {
-    position: fixed;
-    border-radius: 50%;
-    pointer-events: none;
-    z-index: 0;
-  }
-  .glow {
-    top: -180px; left: 50%;
-    transform: translateX(-50%);
-    width: 480px; height: 480px;
-    background: radial-gradient(circle, rgba(255, 77, 109, 0.16) 0%, rgba(255, 77, 109, 0) 62%);
-  }
-  .glow-b {
-    bottom: -220px; right: -160px;
-    width: 420px; height: 420px;
-    background: radial-gradient(circle, rgba(255, 122, 69, 0.1) 0%, rgba(255, 122, 69, 0) 60%);
-  }
-
-  /* Brand lockup */
-  .brand {
+  /* ---------- Top bar ---------- */
+  .site-head {
     display: flex;
-    flex-direction: column;
     align-items: center;
-    gap: 14px;
-    animation: rise .5s ease-out both;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: clamp(28px, 5vh, 56px);
   }
-  .app-icon {
-    width: 92px; height: 92px;
-    border-radius: 22px;
-    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08), 0 18px 50px rgba(255, 77, 109, 0.28);
+  .brand { display: flex; align-items: center; gap: 12px; }
+  .brand-icon {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    box-shadow: 0 0 0 1px rgba(19, 19, 22, 0.06), 0 4px 12px rgba(244, 36, 94, 0.16);
   }
-  .wordmark { height: 26px; opacity: 0.95; }
-
-  .headline {
-    margin: 26px 0 0;
-    font-size: clamp(24px, 6vw, 30px);
-    font-weight: 800;
-    letter-spacing: -0.02em;
-    text-align: center;
-    line-height: 1.15;
-    animation: rise .5s ease-out .06s both;
-  }
-  .sub {
-    margin: 10px 0 0;
-    font-size: 14.5px;
-    line-height: 1.55;
-    color: var(--muted);
-    text-align: center;
-    max-width: 310px;
-    animation: rise .5s ease-out .12s both;
-  }
-
-  /* Feature pills */
-  .perks {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 8px;
-    margin: 18px 0 26px;
-    animation: rise .5s ease-out .18s both;
-  }
-  .perk {
+  .brand-mark { height: 19px; display: block; }
+  .head-badge {
     display: inline-flex;
     align-items: center;
     gap: 7px;
     padding: 7px 13px;
     border-radius: 999px;
+    background: var(--surface);
     border: 1px solid var(--line);
-    background: var(--card);
     font-size: 12px;
     font-weight: 600;
-    color: rgba(245, 245, 247, 0.75);
+    color: var(--muted);
     white-space: nowrap;
   }
-  .perk i { color: var(--accent); font-size: 10px; }
+  .head-badge i { color: var(--accent); font-size: 11px; }
 
-  /* Install panel */
-  .panel {
+  /* ---------- Grid ---------- */
+  .grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+    grid-template-areas:
+      "intro hero"
+      "install hero";
+    column-gap: clamp(32px, 5vw, 72px);
+    row-gap: 30px;
+    align-items: center;
+    flex: 1;
+  }
+  .intro { grid-area: intro; }
+  .hero { grid-area: hero; }
+  .install { grid-area: install; align-self: start; }
+
+  /* ---------- Intro ---------- */
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+  .eyebrow::before {
+    content: "";
+    width: 22px; height: 2px;
+    border-radius: 2px;
+    background: var(--grad);
+  }
+  h1 {
+    margin: 0;
+    font-size: clamp(34px, 4.2vw, 56px);
+    font-weight: 800;
+    letter-spacing: -0.035em;
+    line-height: 1.04;
+  }
+  h1 .grad {
+    background: var(--grad);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .sub {
+    margin: 18px 0 0;
+    font-size: clamp(15px, 1.4vw, 16.5px);
+    line-height: 1.6;
+    color: var(--muted);
+    max-width: 430px;
+  }
+
+  .perks {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 22px;
+  }
+  .perk {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    font-size: 12.5px;
+    font-weight: 600;
+    color: #4c4c55;
+    white-space: nowrap;
+  }
+  .perk i { color: var(--accent); font-size: 11px; }
+
+  /* ---------- Hero screenshots ---------- */
+  .hero {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 0;
+  }
+  .hero-blob {
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    width: min(560px, 92%);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background:
+      radial-gradient(circle at 35% 30%, rgba(244, 36, 94, 0.16), rgba(244, 36, 94, 0) 55%),
+      radial-gradient(circle at 70% 70%, rgba(255, 122, 69, 0.18), rgba(255, 122, 69, 0) 55%),
+      radial-gradient(circle at 60% 25%, rgba(255, 214, 224, 0.7), rgba(255, 214, 224, 0) 60%);
+    filter: blur(6px);
+    pointer-events: none;
+  }
+  .hero-ring {
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    width: min(640px, 104%);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    border: 1px solid rgba(244, 36, 94, 0.10);
+    pointer-events: none;
+  }
+  .shots {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     width: 100%;
-    background: var(--card);
+    max-width: 620px;
+  }
+  .shot {
+    width: 50%;
+    max-width: 300px;
+    height: auto;
+    mix-blend-mode: multiply;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-user-drag: none;
+  }
+  .shot-1 {
+    transform: rotate(-4deg) translateY(2.5%);
+    z-index: 1;
+    animation: floatA 7s ease-in-out infinite;
+  }
+  .shot-2 {
+    transform: rotate(3.5deg) translateY(-2%);
+    margin-left: -7%;
+    z-index: 2;
+    animation: floatB 8s ease-in-out infinite;
+  }
+  @keyframes floatA {
+    0%, 100% { transform: rotate(-4deg) translateY(2.5%); }
+    50% { transform: rotate(-4deg) translateY(0.8%); }
+  }
+  @keyframes floatB {
+    0%, 100% { transform: rotate(3.5deg) translateY(-2%); }
+    50% { transform: rotate(3.5deg) translateY(-3.6%); }
+  }
+
+  /* ---------- Install panel ---------- */
+  .panel {
+    background: var(--surface);
     border: 1px solid var(--line);
     border-radius: 22px;
-    padding: 22px 20px;
-    animation: rise .5s ease-out .24s both;
+    box-shadow: var(--shadow-card);
+    padding: 22px 22px 20px;
+    max-width: 470px;
   }
   .panel-head {
     display: flex;
@@ -146,18 +248,23 @@
     margin-bottom: 4px;
   }
   .panel-head i {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px; height: 30px;
+    border-radius: 9px;
+    background: linear-gradient(135deg, rgba(244, 36, 94, 0.1), rgba(255, 122, 69, 0.1));
     color: var(--accent);
-    font-size: 15px;
+    font-size: 14px;
   }
   .panel-head h2 {
     margin: 0;
-    font-size: 16px;
+    font-size: 15.5px;
     font-weight: 700;
     letter-spacing: -0.01em;
   }
-  .hint { margin: 0 0 16px; font-size: 13px; color: var(--muted); }
+  .hint { margin: 2px 0 16px; font-size: 13px; color: var(--muted); line-height: 1.5; }
 
-  /* Android install button */
   .install-btn {
     display: flex;
     align-items: center;
@@ -167,93 +274,105 @@
     padding: 15px 20px;
     border: none;
     border-radius: 999px;
-    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    background: var(--grad);
     color: #fff;
     font-size: 15.5px;
     font-weight: 700;
     font-family: inherit;
     letter-spacing: 0.01em;
     cursor: pointer;
-    box-shadow: 0 10px 30px rgba(255, 77, 109, 0.35);
+    box-shadow: var(--shadow-btn);
     transition: transform .15s ease, box-shadow .15s ease, opacity .15s ease;
   }
-  .install-btn:hover { transform: translateY(-1px); box-shadow: 0 14px 34px rgba(255, 77, 109, 0.42); }
-  .install-btn:active { transform: scale(0.98); }
+  .install-btn:hover { transform: translateY(-1px); box-shadow: 0 12px 28px rgba(244, 36, 94, 0.34); }
+  .install-btn:active { transform: scale(0.985); }
   .install-btn[disabled] { opacity: 0.45; cursor: default; transform: none; box-shadow: none; }
 
   .fallback-note {
     display: none;
     margin: 14px 0 0;
-    font-size: 13px;
+    font-size: 12.5px;
     color: var(--muted);
     line-height: 1.55;
   }
   .fallback-note strong { color: var(--text); font-weight: 600; }
 
   /* iOS steps */
-  .steps { list-style: none; margin: 0; padding: 0; text-align: left; }
+  .steps { list-style: none; margin: 0; padding: 0; }
   .steps li {
     display: flex;
     align-items: center;
     gap: 13px;
-    padding: 11px 0;
-    font-size: 14px;
+    padding: 10px 0;
+    font-size: 13.5px;
     line-height: 1.45;
-    color: rgba(245, 245, 247, 0.88);
+    color: #3d3d45;
   }
   .steps li + li { border-top: 1px solid var(--line); }
   .step-num {
     flex: 0 0 auto;
-    width: 27px; height: 27px;
+    width: 26px; height: 26px;
     border-radius: 50%;
-    background: rgba(255, 77, 109, 0.14);
+    background: linear-gradient(135deg, rgba(244, 36, 94, 0.1), rgba(255, 122, 69, 0.12));
     color: var(--accent);
     font-weight: 700;
-    font-size: 12.5px;
+    font-size: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
   }
   .steps i.fa-solid { color: var(--accent); margin: 0 1px; }
   .steps kbd {
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: #f4f2f3;
+    border: 1px solid #e8e5e7;
     border-radius: 6px;
-    padding: 2px 9px;
+    padding: 2px 8px;
     font-family: inherit;
-    font-size: 12.5px;
+    font-size: 12px;
     font-weight: 700;
     white-space: nowrap;
+    color: var(--text);
   }
 
   /* Desktop QR */
   .qr-box {
     display: flex;
     align-items: center;
-    gap: 20px;
-    text-align: left;
+    gap: 18px;
   }
   #qr {
     flex: 0 0 auto;
     background: #fff;
-    padding: 10px;
+    border: 1px solid var(--line);
     border-radius: 14px;
+    padding: 9px;
   }
-  #qr img, #qr canvas { display: block; }
-  .qr-copy p { margin: 0; font-size: 13.5px; line-height: 1.5; color: rgba(245, 245, 247, 0.85); }
-  .qr-copy .qr-note { margin-top: 8px; font-size: 12.5px; color: var(--muted); }
+  #qr img, #qr canvas { display: block; border-radius: 4px; }
+  .qr-copy p { margin: 0; font-size: 13.5px; line-height: 1.5; color: #3d3d45; }
+  .qr-copy .qr-note { margin-top: 6px; font-size: 12px; color: var(--faint); }
 
-  /* Footer */
-  .foot {
-    margin-top: auto;
-    padding-top: 34px;
+  .fine {
+    margin: 14px 0 0;
     display: flex;
-    flex-direction: column;
     align-items: center;
     gap: 8px;
-    animation: rise .5s ease-out .3s both;
+    font-size: 12px;
+    color: var(--faint);
   }
-  .foot-links { display: flex; gap: 18px; }
+  .fine i { color: #b9b9c1; font-size: 11px; }
+
+  /* ---------- Footer ---------- */
+  .foot {
+    margin-top: clamp(36px, 6vh, 56px);
+    padding-top: 18px;
+    border-top: 1px solid var(--line);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .foot-links { display: flex; gap: 20px; }
   .foot-links a {
     color: var(--faint);
     font-size: 12px;
@@ -265,75 +384,109 @@
   .foot small { color: var(--faint); font-size: 11.5px; }
 
   .hidden { display: none !important; }
-  @keyframes rise {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+
+  /* ---------- Mobile ---------- */
+  @media (max-width: 899px) {
+    .grid {
+      grid-template-columns: 1fr;
+      grid-template-areas:
+        "intro"
+        "hero"
+        "install";
+      row-gap: 26px;
+    }
+    h1 { font-size: clamp(32px, 8.6vw, 42px); }
+    .sub { margin-top: 14px; max-width: none; }
+    .perks { margin-top: 18px; }
+    .hero { padding: 0; order: 0; }
+    .hero-ring { display: none; }
+    .shot { max-width: 47vw; }
+    .shot-2 { margin-left: -6%; }
+    .panel { max-width: none; }
+    .site-head { margin-bottom: 30px; }
+    .head-badge { display: none; }
+    .foot { flex-direction: column; align-items: flex-start; }
   }
-  @media (max-width: 360px) {
-    .qr-box { flex-direction: column; text-align: center; }
+  @media (max-width: 380px) {
+    .shot { max-width: 46vw; }
   }
 </style>
 </head>
 <body>
 
-<div class="glow" aria-hidden="true"></div>
-<div class="glow-b" aria-hidden="true"></div>
-
-<main class="shell">
-  <!-- Brand -->
-  <div class="brand">
-    <img class="app-icon" src="icons/icon-512.png" alt="Yours app icon" width="92" height="92">
-    <img class="wordmark" src="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/file_000000003704823093c6cccb8ba71cd1.png" alt="Yours">
-  </div>
-
-  <h1 class="headline">Take Yours everywhere</h1>
-  <p class="sub">Add Yours to your home screen and chat with your AI companion straight from your own app — no app store needed.</p>
-
-  <div class="perks">
-    <span class="perk"><i class="fa-solid fa-comment-dots" aria-hidden="true"></i>Unlimited chats</span>
-    <span class="perk"><i class="fa-solid fa-phone-volume" aria-hidden="true"></i>Voice calls</span>
-    <span class="perk"><i class="fa-solid fa-bolt" aria-hidden="true"></i>Free to start</span>
-  </div>
-
-  <!-- Android / Chrome: direct install -->
-  <section class="panel" id="panel-android" hidden>
-    <div class="panel-head"><i class="fa-brands fa-android" aria-hidden="true"></i><h2>Install on Android</h2></div>
-    <p class="hint">One tap and Chrome takes care of the rest.</p>
-    <button class="install-btn" id="btn-install" type="button" disabled>
-      <i class="fa-solid fa-download" aria-hidden="true"></i>
-      <span>Install the app</span>
-    </button>
-    <p class="fallback-note" id="android-fallback">
-      Don&rsquo;t see a button? Open your browser menu (<i class="fa-solid fa-ellipsis-vertical" aria-hidden="true"></i>) and choose
-      <strong>&ldquo;Install app&rdquo;</strong> or <strong>&ldquo;Add to Home screen&rdquo;</strong>.
-    </p>
-  </section>
-
-  <!-- iOS / iPadOS: manual guide -->
-  <section class="panel" id="panel-ios" hidden>
-    <div class="panel-head"><i class="fa-brands fa-apple" aria-hidden="true"></i><h2>Install on iPhone &amp; iPad</h2></div>
-    <p class="hint">Three quick steps in Safari:</p>
-    <ol class="steps">
-      <li><span class="step-num">1</span><span>Tap the <i class="fa-solid fa-arrow-up-from-bracket" aria-hidden="true"></i>&nbsp;<kbd>Share</kbd> button at the bottom of the screen.</span></li>
-      <li><span class="step-num">2</span><span>Scroll down and tap <strong>Add to Home Screen</strong>.</span></li>
-      <li><span class="step-num">3</span><span>Tap <strong>Add</strong> — Yours lands on your home screen.</span></li>
-    </ol>
-  </section>
-
-  <!-- Desktop / laptop: QR code -->
-  <section class="panel" id="panel-desktop" hidden>
-    <div class="panel-head"><i class="fa-solid fa-mobile-screen-button" aria-hidden="true"></i><h2>Install on your phone</h2></div>
-    <p class="hint">Yours is made for mobile — point your phone&rsquo;s camera at this code:</p>
-    <div class="qr-box">
-      <div id="qr" role="img" aria-label="QR code linking to the Yours app"></div>
-      <div class="qr-copy">
-        <p>Scan with your phone to open Yours, then install it as an app.</p>
-        <p class="qr-note">Works with iPhone, Android and any modern phone camera.</p>
-      </div>
+<div class="page">
+  <header class="site-head">
+    <div class="brand">
+      <img class="brand-icon" src="icons/icon-512.png" alt="Yours" width="36" height="36">
+      <img class="brand-mark" src="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/file_000000003704823093c6cccb8ba71cd1.png" alt="Yours">
     </div>
-  </section>
+    <span class="head-badge"><i class="fa-solid fa-lock" aria-hidden="true"></i>Installs in seconds</span>
+  </header>
 
-  <!-- Footer -->
+  <main class="grid">
+    <section class="intro">
+      <span class="eyebrow">Your AI companion, everywhere</span>
+      <h1>Take Yours <span class="grad">everywhere</span></h1>
+      <p class="sub">Add Yours to your home screen and chat with your AI companion straight from your own app — no app store needed.</p>
+      <div class="perks">
+        <span class="perk"><i class="fa-solid fa-comment-dots" aria-hidden="true"></i>Unlimited chats</span>
+        <span class="perk"><i class="fa-solid fa-phone-volume" aria-hidden="true"></i>Voice calls</span>
+        <span class="perk"><i class="fa-solid fa-bolt" aria-hidden="true"></i>Free to start</span>
+      </div>
+    </section>
+
+    <section class="hero" aria-label="Yours app preview">
+      <div class="hero-blob" aria-hidden="true"></div>
+      <div class="hero-ring" aria-hidden="true"></div>
+      <div class="shots">
+        <img class="shot shot-1" src="Assets/yours-screen1-trim.jpg" alt="Discover AI companions in the Yours app" width="300" height="542">
+        <img class="shot shot-2" src="Assets/yours-screen2-trim.jpg" alt="Chat with your AI companion in the Yours app" width="300" height="537">
+      </div>
+    </section>
+
+    <div class="install">
+      <!-- Android / Chrome: direct install -->
+      <section class="panel" id="panel-android" hidden>
+        <div class="panel-head"><i class="fa-brands fa-android" aria-hidden="true"></i><h2>Install on Android</h2></div>
+        <p class="hint">One tap and Chrome takes care of the rest.</p>
+        <button class="install-btn" id="btn-install" type="button" disabled>
+          <i class="fa-solid fa-download" aria-hidden="true"></i>
+          <span>Install the app</span>
+        </button>
+        <p class="fallback-note" id="android-fallback">
+          Don&rsquo;t see a button? Open your browser menu (<i class="fa-solid fa-ellipsis-vertical" aria-hidden="true"></i>) and choose
+          <strong>&ldquo;Install app&rdquo;</strong> or <strong>&ldquo;Add to Home screen&rdquo;</strong>.
+        </p>
+      </section>
+
+      <!-- iOS / iPadOS: manual guide -->
+      <section class="panel" id="panel-ios" hidden>
+        <div class="panel-head"><i class="fa-brands fa-apple" aria-hidden="true"></i><h2>Install on iPhone &amp; iPad</h2></div>
+        <p class="hint">Three quick steps in Safari:</p>
+        <ol class="steps">
+          <li><span class="step-num">1</span><span>Tap the <i class="fa-solid fa-arrow-up-from-bracket" aria-hidden="true"></i>&nbsp;<kbd>Share</kbd> button at the bottom of the screen.</span></li>
+          <li><span class="step-num">2</span><span>Scroll down and tap <strong>Add to Home Screen</strong>.</span></li>
+          <li><span class="step-num">3</span><span>Tap <strong>Add</strong> — Yours lands on your home screen.</span></li>
+        </ol>
+      </section>
+
+      <!-- Desktop / laptop: QR code -->
+      <section class="panel" id="panel-desktop" hidden>
+        <div class="panel-head"><i class="fa-solid fa-mobile-screen-button" aria-hidden="true"></i><h2>Install on your phone</h2></div>
+        <p class="hint">Yours is made for mobile — point your phone&rsquo;s camera at this code:</p>
+        <div class="qr-box">
+          <div id="qr" role="img" aria-label="QR code linking to the Yours app"></div>
+          <div class="qr-copy">
+            <p>Scan with your phone to open Yours, then install it as an app.</p>
+            <p class="qr-note">Works with iPhone, Android and any modern phone camera.</p>
+          </div>
+        </div>
+      </section>
+
+      <p class="fine"><i class="fa-solid fa-shield-halved" aria-hidden="true"></i>Safe &amp; secure · Your data stays yours</p>
+    </div>
+  </main>
+
   <footer class="foot">
     <nav class="foot-links" aria-label="Legal">
       <a href="terms.html">Terms</a>
@@ -342,7 +495,7 @@
     </nav>
     <small>&copy; 2026 Yours &middot; 18+ only &middot; AI-generated companions</small>
   </footer>
-</main>
+</div>
 
 <script>
 (function () {
@@ -394,9 +547,9 @@
     if (window.QRCode) {
       new QRCode(document.getElementById('qr'), {
         text: landingUrl(),
-        width: 168,
-        height: 168,
-        colorDark: '#000000',
+        width: 156,
+        height: 156,
+        colorDark: '#131316',
         colorLight: '#ffffff',
         correctLevel: QRCode.CorrectLevel.M
       });
