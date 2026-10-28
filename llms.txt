@@ -1,6 +1,6 @@
 # Yours
 
-> Yours is an AI companion platform where users chat with, voice-call and build ongoing relationships with personalized AI characters — available on mobile and desktop web.
+> Yours is an AI companion platform where users chat with, voice-call and build ongoing relationships with personalized AI characters — installed as a Progressive Web App (PWA). Desktop visitors get a QR code to install on their phone.
 
 Yours ("Blush" branding appears in some onboarding screens) lets each user discover or create an AI companion, customize its personality, voice, relationship type and interests, then interact through text chat and real-time voice calls. Conversations persist per character, and a coin-based store unlocks premium features and virtual gifts.
 

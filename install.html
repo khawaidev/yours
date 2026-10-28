@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<meta name="description" content="Install Yours — chat, voice call and build a real connection with your own AI companion. Works on Android, iPhone and desktop.">
+<title>Install Yours</title>
+<meta name="theme-color" content="#000000">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Yours">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<script src="js/pwa.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+  :root {
+    --accent: #ff4d6d;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    margin: 0;
+    background: #000;
+    color: #f5f5f7;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    min-height: 100dvh;
+    display: flex;
+    justify-content: center;
+  }
+  .shell {
+    width: 100%;
+    max-width: 430px;
+    min-height: 100dvh;
+    padding: max(24px, env(safe-area-inset-top)) 24px max(24px, env(safe-area-inset-bottom));
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    position: relative;
+  }
+  .glow {
+    position: fixed;
+    top: -140px; left: 50%;
+    transform: translateX(-50%);
+    width: 420px; height: 420px;
+    background: radial-gradient(circle, rgba(255, 77, 109, 0.22) 0%, rgba(255, 77, 109, 0) 65%);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .logo {
+    width: 88px; height: 88px;
+    border-radius: 24px;
+    box-shadow: 0 12px 40px rgba(255, 77, 109, 0.35);
+    z-index: 1;
+  }
+  h1 {
+    margin: 22px 0 8px;
+    font-size: 30px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    z-index: 1;
+  }
+  .sub {
+    margin: 0 0 30px;
+    font-size: 15px;
+    line-height: 1.5;
+    color: rgba(245, 245, 247, 0.6);
+    max-width: 300px;
+    z-index: 1;
+  }
+  .panel {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 24px;
+    padding: 24px 20px;
+    z-index: 1;
+  }
+  .panel + .panel { margin-top: 16px; }
+  .panel h2 {
+    margin: 0 0 4px;
+    font-size: 16px;
+    font-weight: 700;
+  }
+  .panel .hint { margin: 0 0 16px; font-size: 13px; color: rgba(245, 245, 247, 0.55); }
+
+  /* Android install button */
+  .install-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    padding: 15px 20px;
+    border: none;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #ff4d6d, #ff7a59);
+    color: #fff;
+    font-size: 16px;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    transition: transform .15s ease, opacity .15s ease;
+  }
+  .install-btn:hover { transform: translateY(-1px); }
+  .install-btn:active { transform: scale(0.98); }
+  .install-btn[disabled] { opacity: 0.45; cursor: default; transform: none; }
+
+  .fallback-note {
+    display: none;
+    margin: 14px 0 0;
+    font-size: 13px;
+    color: rgba(245, 245, 247, 0.55);
+    line-height: 1.5;
+  }
+
+  /* iOS steps */
+  .steps { list-style: none; margin: 0; padding: 0; text-align: left; }
+  .steps li {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 0;
+    font-size: 14px;
+    line-height: 1.45;
+  }
+  .steps li + li { border-top: 1px solid rgba(255, 255, 255, 0.08); }
+  .step-num {
+    flex: 0 0 auto;
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: rgba(255, 77, 109, 0.18);
+    color: var(--accent);
+    font-weight: 700;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .steps i { color: var(--accent); margin: 0 2px; }
+  .steps kbd {
+    background: rgba(255, 255, 255, 0.12);
+    border-radius: 6px;
+    padding: 2px 8px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  /* Desktop QR */
+  .qr-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+  }
+  #qr {
+    background: #fff;
+    padding: 12px;
+    border-radius: 16px;
+  }
+  #qr img, #qr canvas { display: block; }
+  .qr-note { margin: 0; font-size: 13px; color: rgba(245, 245, 247, 0.55); line-height: 1.5; }
+
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<div class="glow" aria-hidden="true"></div>
+
+<main class="shell">
+  <img class="logo" src="icons/icon-512.png" alt="Yours" width="88" height="88">
+  <h1>Get the Yours app</h1>
+  <p class="sub">Install Yours to your home screen — it works just like a native app, no app store needed.</p>
+
+  <!-- Android / Chrome: direct install -->
+  <section class="panel" id="panel-android" hidden>
+    <h2>Install on Android</h2>
+    <p class="hint">One tap — Chrome will handle the rest.</p>
+    <button class="install-btn" id="btn-install" type="button" disabled>
+      <i class="fa-solid fa-download" aria-hidden="true"></i>
+      <span>Install app</span>
+    </button>
+    <p class="fallback-note" id="android-fallback">
+      No install button? Open your browser menu (<i class="fa-solid fa-ellipsis-vertical" aria-hidden="true"></i>) and choose
+      <strong>&ldquo;Install app&rdquo;</strong> or <strong>&ldquo;Add to Home screen&rdquo;</strong>.
+    </p>
+  </section>
+
+  <!-- iOS / iPadOS: manual guide -->
+  <section class="panel" id="panel-ios" hidden>
+    <h2>Install on iPhone &amp; iPad</h2>
+    <p class="hint">Three quick steps in Safari:</p>
+    <ol class="steps">
+      <li><span class="step-num">1</span><span>Tap the <i class="fa-solid fa-arrow-up-from-bracket" aria-hidden="true"></i>&nbsp;<kbd>Share</kbd> button at the bottom of the screen.</span></li>
+      <li><span class="step-num">2</span><span>Scroll down and tap <strong>Add to Home Screen</strong>.</span></li>
+      <li><span class="step-num">3</span><span>Tap <strong>Add</strong> — Yours appears on your home screen.</span></li>
+    </ol>
+  </section>
+
+  <!-- Desktop / laptop: QR code -->
+  <section class="panel" id="panel-desktop" hidden>
+    <h2>Install on your phone</h2>
+    <p class="hint">Yours is made for mobile — scan this code with your phone camera to get it there:</p>
+    <div class="qr-box">
+      <div id="qr" role="img" aria-label="QR code linking to the Yours app"></div>
+      <p class="qr-note">Point your phone&rsquo;s camera at the code, then install the app on your phone.</p>
+    </div>
+  </section>
+</main>
+
+<script>
+(function () {
+  'use strict';
+
+  // Already running as the installed PWA: never show the install page.
+  if (window.YoursPWA.isInstalled()) {
+    window.location.replace('./index.html');
+    return;
+  }
+
+  var ua = navigator.userAgent || '';
+  var isIOS = /iPad|iPhone|iPod/.test(ua) ||
+    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  var isAndroid = /Android/.test(ua);
+  var isStandaloneAware = !isIOS && !isAndroid; // desktop / laptop / other
+
+  var androidPanel = document.getElementById('panel-android');
+  var iosPanel = document.getElementById('panel-ios');
+  var desktopPanel = document.getElementById('panel-desktop');
+  var btn = document.getElementById('btn-install');
+  var androidFallback = document.getElementById('android-fallback');
+
+  function landingUrl() {
+    // Same folder as this page, without the file name -> the app root.
+    var path = window.location.pathname.replace(/install\.html.*$/i, '');
+    return window.location.origin + path;
+  }
+
+  function show(panel) { panel.hidden = false; }
+
+  /* ---------- Platform routing ---------- */
+  if (isIOS) {
+    show(iosPanel);
+  } else if (isAndroid) {
+    show(androidPanel);
+    // The button enables when Chrome fires beforeinstallprompt.
+    window.YoursPWA.onInstallPrompt(function () {
+      btn.disabled = false;
+      androidFallback.style.display = 'none';
+    });
+    // If no prompt arrives (Firefox, already installed, etc.),
+    // surface the manual menu instructions after a beat.
+    setTimeout(function () {
+      if (btn.disabled) androidFallback.style.display = 'block';
+    }, 1200);
+  } else {
+    show(desktopPanel);
+    // QR code pointing at the app's landing page.
+    if (window.QRCode) {
+      new QRCode(document.getElementById('qr'), {
+        text: landingUrl(),
+        width: 200,
+        height: 200,
+        colorDark: '#000000',
+        colorLight: '#ffffff',
+        correctLevel: QRCode.CorrectLevel.M
+      });
+    }
+  }
+
+  /* ---------- Android install flow ---------- */
+  btn.addEventListener('click', function () {
+    btn.disabled = true;
+    window.YoursPWA.promptInstall().then(function (choice) {
+      if (!choice || choice.outcome !== 'accepted') {
+        btn.disabled = false;
+      }
+    });
+  });
+
+  // If the app gets installed from the browser menu while this
+  // page is open, jump straight into the app.
+  window.onYoursAppInstalled = function () {
+    window.location.replace('./index.html');
+  };
+
+  // Catch late standalone transitions (e.g. user just installed).
+  if (window.matchMedia) {
+    var mq = window.matchMedia('(display-mode: standalone)');
+    var onModeChange = function (e) {
+      if (e.matches) window.location.replace('./index.html');
+    };
+    if (mq.addEventListener) mq.addEventListener('change', onModeChange);
+  }
+})();
+</script>
+</body>
+</html>
