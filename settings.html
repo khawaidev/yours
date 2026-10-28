@@ -323,8 +323,10 @@ Delete account
   cancelBtn.addEventListener('click', hideConfirm);
   backdrop.addEventListener('click', hideConfirm);
   okBtn.addEventListener('click', function () {
+    // Grab the action before hideConfirm() clears `pending`.
+    var action = pending;
     hideConfirm();
-    if (pending) pending();
+    if (typeof action === 'function') action();
   });
 
   // ---- Log out: show a blurring spinner overlay, invalidate the Supabase
@@ -334,10 +336,17 @@ Delete account
       showLogoutOverlay();
       // Keep the overlay visible long enough to read even if signOut is instant.
       var minDelay = new Promise(function (resolve) { setTimeout(resolve, 700); });
-      var signOut = supabase
-        ? supabase.auth.signOut().catch(function () {})
-        : Promise.resolve();
-      Promise.all([signOut, minDelay]).then(function () {
+      var signOut;
+      try {
+        signOut = supabase
+          ? supabase.auth.signOut().catch(function () {})
+          : Promise.resolve();
+      } catch (e) {
+        signOut = Promise.resolve();
+      }
+      // Never hang on the network: redirect at the latest after 4s.
+      var timeout = new Promise(function (resolve) { setTimeout(resolve, 4000); });
+      Promise.race([Promise.all([signOut, minDelay]), timeout]).then(function () {
         clearSession();
         goAuth();
       }).catch(function () {
