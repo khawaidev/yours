@@ -272,13 +272,10 @@ Delete account
     } catch (e) {}
   }
 
-  function goHome() {
-    window.location.href = 'index.html';
-  }
-
-  // Signing out always ends on the auth screen.
-  function goAuth() {
-    window.location.replace('auth.html');
+  // Logging out (or deleting the account) restarts the onboarding flow
+  // from its first step. Age.html is the beginning of onboarding.
+  function goOnboarding() {
+    window.location.replace('Age.html');
   }
 
   var logoutOverlay = document.getElementById('logout-overlay');
@@ -348,10 +345,10 @@ Delete account
       var timeout = new Promise(function (resolve) { setTimeout(resolve, 4000); });
       Promise.race([Promise.all([signOut, minDelay]), timeout]).then(function () {
         clearSession();
-        goAuth();
+        goOnboarding();
       }).catch(function () {
         clearSession();
-        goAuth();
+        goOnboarding();
       });
     });
   });
@@ -362,7 +359,7 @@ Delete account
       getCurrentUserId().then(function (userId) {
         if (!userId) {
           clearSession();
-          goHome();
+          goOnboarding();
           return;
         }
         setBusy(true);
@@ -373,7 +370,7 @@ Delete account
           return null;
         }).then(function () {
           clearSession();
-          goHome();
+          goOnboarding();
         }).catch(function (err) {
           setBusy(false);
           alert('Could not delete account: ' + (err && err.message ? err.message : 'Unknown error'));
