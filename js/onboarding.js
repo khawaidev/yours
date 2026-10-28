@@ -34,6 +34,9 @@
   // short-lived backup so the answers still reach the new account.
   var BACKUP_KEY = 'yours_onboarding_backup_v1';
   var BACKUP_TTL = 2 * 60 * 60 * 1000; // 2 hours
+  // Last percentage that was drawn, so each page fills on from where the
+  // previous one stopped instead of restarting from zero.
+  var PROGRESS_KEY = 'yours_onboarding_progress_v1';
 
   function read() {
     try {
@@ -69,24 +72,76 @@
     return parts[parts.length - 1] || 'Age.html';
   }
 
-  function stepIndex() {
+  /**
+   * 1-based position in the flow. Pages declare it explicitly with
+   * data-step="N" on the progress container (or <body>), so the bar is
+   * correct even when the file is opened under a different name
+   * (e.g. /yours/ without the .html suffix). Falls back to the filename.
+   */
+  function stepNumber() {
+    var holder = document.querySelector('[data-ob-progress]');
+    var declared = (holder && holder.closest('[data-step]')) || document.querySelector('[data-step]');
+    if (declared) {
+      var n = parseInt(declared.getAttribute('data-step'), 10);
+      if (n >= 1 && n <= STEPS.length) return n;
+    }
     var i = STEPS.indexOf(fileName());
-    return i < 0 ? 0 : i;
+    return (i < 0 ? 0 : i) + 1;
+  }
+
+  function stepIndex() {
+    return stepNumber() - 1;
   }
 
   // 1 of 7 -> 14%, 7 of 7 -> 100%
   function progressPercent() {
-    return Math.round(((stepIndex() + 1) / STEPS.length) * 100);
+    return Math.round((stepNumber() / STEPS.length) * 100);
+  }
+
+  function storedProgress() {
+    try {
+      var n = Number(sessionStorage.getItem(PROGRESS_KEY));
+      return isFinite(n) && n > 0 ? n : 0;
+    } catch (e) {
+      return 0;
+    }
   }
 
   function renderProgress() {
     var fill = document.querySelector('[data-ob-progress]');
     if (!fill) return;
-    // Start at zero so the bar animates in, then set the real value.
-    fill.style.width = '0%';
+
+    var target = progressPercent();
+    var from = storedProgress();
+
+    // Never animate backwards: on the first step, or when the visitor walks
+    // back through the flow, start from the previous page's value instead of
+    // resetting the bar to zero (which made it look like it never filled).
+    if (from > target) from = Math.max(0, target - 15);
+
+    fill.style.transition = 'none';
+    fill.style.width = from + '%';
+    // Force a style flush so the browser registers the starting width before
+    // the target is applied — without this both writes land in the same frame
+    // and the transition is skipped entirely.
+    void fill.offsetWidth;
+
     requestAnimationFrame(function () {
-      fill.style.width = progressPercent() + '%';
+      fill.style.transition = '';
+      requestAnimationFrame(function () {
+        fill.style.width = target + '%';
+      });
     });
+
+    // Safety net: whatever happens above, the bar must end up at the target.
+    setTimeout(function () {
+      if (fill.style.width !== target + '%') {
+        fill.style.transition = 'none';
+        fill.style.width = target + '%';
+      }
+    }, 700);
+
+    try { sessionStorage.setItem(PROGRESS_KEY, String(target)); } catch (e) {}
   }
 
   var api = {

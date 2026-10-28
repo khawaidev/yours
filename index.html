@@ -617,6 +617,16 @@
               if (!r || !r.created) return;
               var pending = null;
               try { pending = JSON.parse(sessionStorage.getItem('yours_onboarding_v1') || 'null'); } catch (e) {}
+              if (!pending) {
+                // A confirmation link opened in a new tab has no sessionStorage;
+                // the short-lived backup carries the answers across.
+                try {
+                  var backup = JSON.parse(localStorage.getItem('yours_onboarding_backup_v1') || 'null');
+                  if (backup && backup.__savedAt && Date.now() - backup.__savedAt < 2 * 60 * 60 * 1000) {
+                    pending = backup;
+                  }
+                } catch (e) {}
+              }
               if (!pending || (!pending.name && !pending.age)) {
                 window.location.replace('Age.html');
                 return;
@@ -639,6 +649,7 @@
               }
               Promise.all(jobs).catch(function () {}).then(function () {
                 try { sessionStorage.removeItem('yours_onboarding_v1'); } catch (e) {}
+                try { localStorage.removeItem('yours_onboarding_backup_v1'); } catch (e) {}
               });
             });
           } else if (demoMode === 'auth') {

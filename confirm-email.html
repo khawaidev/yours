@@ -1,0 +1,292 @@
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport">
+    <meta name="description" content="Confirm your email to finish creating your Yours account.">
+    <meta name="robots" content="noindex, nofollow">
+<title>Yours - Confirm your email</title>
+<link rel="icon" type="image/png" href="icons/favicon-32.png">
+<!-- Font -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link rel="stylesheet" href="css/app.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style data-purpose="custom-styles">
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: #0e0e0e;
+      color: #ffffff;
+    }
+    .bg-image-overlay {
+      background: linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.6) 40%, rgba(0,0,0,0.95) 100%);
+    }
+    .mail-card {
+      background: rgba(30, 30, 30, 0.72);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+    }
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 9999px;
+      background: #ff5a5f;
+      box-shadow: 0 0 0 0 rgba(255, 90, 95, 0.7);
+      animation: pulse 1.6s ease-out infinite;
+    }
+    @keyframes pulse {
+      0%   { box-shadow: 0 0 0 0 rgba(255, 90, 95, 0.55); }
+      70%  { box-shadow: 0 0 0 10px rgba(255, 90, 95, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(255, 90, 95, 0); }
+    }
+    @keyframes riseIn {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .rise { animation: riseIn 0.6s cubic-bezier(0.22, 1, 0.36, 1) both; }
+    .spin {
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255, 255, 255, 0.25);
+      border-top-color: #ffffff;
+      border-radius: 9999px;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body class="antialiased min-h-screen flex flex-col items-center justify-center relative overflow-hidden app-page">
+<!-- Background -->
+<div class="absolute inset-0 z-0 h-full">
+<img alt="" class="w-full h-full object-cover opacity-70 mix-blend-overlay" src="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/IMG_20260807_032009.png">
+<div class="absolute inset-0 bg-image-overlay"></div>
+</div>
+
+<main class="relative z-10 w-full max-w-md px-6 py-10 flex flex-col items-center text-center">
+<!-- Logo -->
+<div class="mb-8 rise" style="animation-delay: 40ms">
+<img alt="Yours" class="h-16 w-auto object-contain drop-shadow-lg" src="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/file_000000003704823093c6cccb8ba71cd1.png">
+</div>
+
+<div class="mail-card w-full rounded-3xl px-6 py-8 flex flex-col items-center gap-4 rise" style="animation-delay: 120ms">
+<div class="w-16 h-16 rounded-full bg-white/10 flex items-center justify-center text-3xl">📬</div>
+
+<h1 class="text-3xl font-extrabold leading-tight tracking-tight">Check your email</h1>
+
+<p class="text-white/70 text-sm font-medium leading-relaxed">
+        We sent a confirmation link to
+      </p>
+<p class="text-white font-semibold text-sm break-all -mt-3" id="confirm-email">your inbox</p>
+<p class="text-white/70 text-sm font-medium leading-relaxed -mt-3">
+        Open it to activate your account — this page will continue on its own.
+      </p>
+
+<!-- Live waiting status -->
+<div class="flex items-center gap-2 mt-1 text-white/60 text-sm font-medium">
+<span class="pulse-dot" aria-hidden="true"></span>
+<span id="status-text">Waiting for confirmation…</span>
+</div>
+
+<p id="confirm-error" class="hidden text-red-400 text-sm font-medium"></p>
+
+<!-- Actions -->
+<div class="w-full flex flex-col gap-3 mt-3">
+<button id="resend-btn" type="button" class="w-full bg-white text-black hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed font-bold py-3.5 px-6 rounded-full flex items-center justify-center gap-3 transition-colors duration-200">
+<span id="resend-label">Resend confirmation email</span>
+</button>
+<button id="change-email-btn" type="button" class="w-full bg-white/10 hover:bg-white/15 text-white font-bold py-3.5 px-6 rounded-full transition-colors duration-200">
+          Use a different email
+        </button>
+</div>
+</div>
+
+<p class="text-white/40 text-xs font-medium mt-6 leading-relaxed rise" style="animation-delay: 200ms">
+      Tip: the link can take a minute to arrive. Check your spam folder if you don't see it.
+    </p>
+</main>
+
+<script>
+  (function () {
+    // Same Supabase project as auth.html (anon key is safe for browsers).
+    var SUPABASE_URL = 'https://dgbxcakkqrgrapwsvrol.supabase.co';
+    var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRnYnhjYWtrcXJncmFwd3N2cm9sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYxOTM0NDksImV4cCI6MjEwMTc2OTQ0OX0.v2gOgC28bfXXVjRVki1lL0ulgCHVloUAv1eF5HVSzuk';
+
+    // Supabase stores the session under this key; the confirmation link usually
+    // opens in another tab, so we also read the shared storage directly.
+    var SESSION_KEY = 'sb-dgbxcakkqrgrapwsvrol-auth-token';
+    var PENDING_EMAIL_KEY = 'yours_pending_email';
+    var AUTH_PAGE = 'auth.html';
+    var POLL_MS = 3000;
+
+    var supabase = null;
+    try {
+      if (window.supabase) supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    } catch (e) { supabase = null; }
+
+    var params = new URLSearchParams(window.location.search);
+    var email = (params.get('email') || '').trim();
+    if (!email) {
+      try { email = (sessionStorage.getItem(PENDING_EMAIL_KEY) || '').trim(); } catch (e) {}
+    }
+    if (!email) {
+      try { email = (localStorage.getItem(PENDING_EMAIL_KEY) || '').trim(); } catch (e) {}
+    }
+
+    var emailEl = document.getElementById('confirm-email');
+    var statusEl = document.getElementById('status-text');
+    var errorEl = document.getElementById('confirm-error');
+    var resendBtn = document.getElementById('resend-btn');
+    var resendLabel = document.getElementById('resend-label');
+    var changeBtn = document.getElementById('change-email-btn');
+
+    if (email) {
+      emailEl.textContent = email;
+      try { sessionStorage.setItem(PENDING_EMAIL_KEY, email); } catch (e) {}
+    } else {
+      emailEl.textContent = 'your inbox';
+      resendBtn.disabled = true;
+      resendLabel.textContent = 'Email address unknown';
+    }
+
+    function showError(msg) {
+      errorEl.textContent = msg;
+      errorEl.classList.remove('hidden');
+    }
+    function clearError() {
+      errorEl.textContent = '';
+      errorEl.classList.add('hidden');
+    }
+
+    // ---- Waiting for the confirmation link ----
+    var leaving = false;
+
+    function storedSession() {
+      try {
+        var raw = localStorage.getItem(SESSION_KEY);
+        if (!raw) return null;
+        var parsed = JSON.parse(raw);
+        var s = parsed.currentSession || parsed;
+        if (s && typeof s.access_token === 'string' && typeof s.refresh_token === 'string') return s;
+      } catch (e) {}
+      return null;
+    }
+
+    async function checkForSession() {
+      if (leaving) return;
+      clearError();
+
+      var session = null;
+
+      if (supabase) {
+        try {
+          var res = await supabase.auth.getSession();
+          session = (res.data && res.data.session) || null;
+        } catch (e) { /* keep polling */ }
+      }
+
+      // A link clicked in another tab writes to localStorage; adopt it here.
+      if (!session) {
+        var stored = storedSession();
+        if (stored && supabase) {
+          try {
+            var adopted = await supabase.auth.setSession({
+              access_token: stored.access_token,
+              refresh_token: stored.refresh_token,
+            });
+            session = (adopted.data && adopted.data.session) || null;
+          } catch (e) { /* ignore and retry */ }
+        }
+      }
+
+      if (session) {
+        leaving = true;
+        statusEl.textContent = 'Confirmed! Taking you in…';
+        try { sessionStorage.removeItem(PENDING_EMAIL_KEY); } catch (e) {}
+        // auth.html consumes the session, writes the onboarding answers onto the
+        // new account and routes into the app.
+        window.location.replace(AUTH_PAGE);
+        return;
+      }
+
+      statusEl.textContent = 'Waiting for confirmation…';
+    }
+
+    // Handle an expired / invalid link passed back in the URL.
+    var hash = new URLSearchParams((window.location.hash || '').replace(/^#/, ''));
+    var linkError = hash.get('error_description') || params.get('error_description');
+    if (linkError) {
+      showError(decodeURIComponent(linkError.replace(/\+/g, ' ')));
+    }
+
+    if (supabase) {
+      supabase.auth.onAuthStateChange(function (event, session) {
+        if ((event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') && session) {
+          leaving = true;
+          statusEl.textContent = 'Confirmed! Taking you in…';
+          try { sessionStorage.removeItem(PENDING_EMAIL_KEY); } catch (e) {}
+          window.location.replace(AUTH_PAGE);
+        }
+      });
+    }
+
+    // Poll actively (3s) plus whenever the tab regains focus — so the moment the
+    // link is clicked the visitor is signed in without touching anything.
+    setInterval(checkForSession, POLL_MS);
+    document.addEventListener('visibilitychange', function () {
+      if (document.visibilityState === 'visible') checkForSession();
+    });
+    window.addEventListener('focus', checkForSession);
+    window.addEventListener('storage', function (e) {
+      if (e.key === SESSION_KEY) checkForSession();
+    });
+    checkForSession();
+
+    // ---- Resend ----
+    var cooldownUntil = 0;
+    var timer = null;
+
+    function renderCooldown() {
+      var left = Math.ceil((cooldownUntil - Date.now()) / 1000);
+      if (left > 0) {
+        resendBtn.disabled = true;
+        resendLabel.textContent = 'Resend in ' + left + 's';
+      } else {
+        resendBtn.disabled = !email;
+        resendLabel.textContent = email ? 'Resend confirmation email' : 'Email address unknown';
+        if (timer) { clearInterval(timer); timer = null; }
+      }
+    }
+
+    resendBtn.addEventListener('click', async function () {
+      if (!supabase || !email) return;
+      clearError();
+      resendBtn.disabled = true;
+      resendLabel.textContent = 'Sending…';
+
+      var res = await supabase.auth.resend({
+        type: 'signup',
+        email: email,
+        options: { emailRedirectTo: new URL('confirm-email.html', window.location.href).href },
+      });
+
+      if (res.error) {
+        resendBtn.disabled = false;
+        resendLabel.textContent = 'Resend confirmation email';
+        showError(res.error.message);
+        return;
+      }
+
+      cooldownUntil = Date.now() + 45000;
+      renderCooldown();
+      timer = setInterval(renderCooldown, 1000);
+    });
+
+    changeBtn.addEventListener('click', function () {
+      try { sessionStorage.removeItem(PENDING_EMAIL_KEY); } catch (e) {}
+      window.location.href = AUTH_PAGE;
+    });
+  })();
+</script>
+</body></html>

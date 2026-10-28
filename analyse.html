@@ -48,7 +48,7 @@
 <div class="relative z-10 flex flex-col min-h-screen p-6 pt-24 pb-12">
 <!-- BEGIN: Top Section - Statistic -->
 <main class="flex-grow flex flex-col items-center justify-start text-center space-y-4">
-<h1 class="text-7xl font-extrabold tracking-tighter shadow-sm" style="text-shadow: rgba(0, 0, 0, 0.5) 0px 2px 10px;">98%</h1>
+<h1 id="stat-value" class="text-7xl font-extrabold tracking-tighter shadow-sm" style="text-shadow: rgba(0, 0, 0, 0.5) 0px 2px 10px;">1%</h1>
 <p class="text-2xl font-bold leading-tight max-w-[280px] shadow-sm" style="text-shadow: rgba(0, 0, 0, 0.5) 0px 1px 5px;">
         of Yours users explored fantasies they never could before
       </p>
@@ -97,10 +97,51 @@
     YSOnboarding.finish();
   }
 
-  // Automatically continue after 3 seconds of analysis
-  setTimeout(finishOnboarding, 3000);
+  // Count 1% -> 98% over 4 seconds. The interval between updates is
+  // deliberately irregular (and eases out towards the end) so it reads like
+  // real analysis instead of a linear timer.
+  (function countUp() {
+    const stat = document.getElementById('stat-value');
+    const DURATION = 4000;
+    const START = 1;
+    const END = 98;
+    const started = performance.now();
+    let value = START;
 
-  // Or click anywhere to skip
+    if (!stat) {
+      setTimeout(finishOnboarding, DURATION);
+      return;
+    }
+    stat.textContent = START + '%';
+
+    function tick() {
+      const elapsed = performance.now() - started;
+      if (elapsed >= DURATION) {
+        stat.textContent = END + '%';
+        // Hold the final number for a beat, then continue to sign-up.
+        setTimeout(finishOnboarding, 450);
+        return;
+      }
+
+      // Ease-out curve: fast at first, slower as it approaches 98.
+      const t = elapsed / DURATION;
+      const eased = 1 - Math.pow(1 - t, 2.4);
+      const target = Math.min(END, Math.round(START + eased * (END - START)));
+
+      if (target > value) {
+        value = target;
+        stat.textContent = value + '%';
+      }
+
+      // Variable interval: 35–150ms, with extra jitter near the end.
+      const delay = 35 + Math.random() * 115 + t * 60;
+      setTimeout(tick, delay);
+    }
+
+    setTimeout(tick, 60);
+  })();
+
+  // Clicking anywhere skips straight to sign-up.
   document.body.addEventListener('click', finishOnboarding);
 </script>
 <script src="js/animations.js"></script>
