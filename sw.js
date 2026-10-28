@@ -8,7 +8,7 @@
    - Cross-origin requests (Supabase, CDNs, R2 images) are
      never touched — they go straight to the network.
 */
-var CACHE = 'yours-v1';
+var CACHE = 'yours-v2';
 
 var PRECACHE = [
   './',
@@ -20,6 +20,7 @@ var PRECACHE = [
   'js/desktop-shell.js',
   'icons/icon-192.png',
   'icons/icon-512.png',
+  'icons/favicon-32.png',
   'manifest.webmanifest'
 ];
 
