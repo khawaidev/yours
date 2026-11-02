@@ -57,14 +57,7 @@
     padding: clamp(20px, 3vw, 32px) clamp(20px, 4vw, 48px) 24px;
   }
 
-  /* ---------- Top bar ---------- */
-  .site-head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    margin-bottom: clamp(28px, 5vh, 56px);
-  }
+  /* ---------- Brand ---------- */
   .brand { display: flex; align-items: center; gap: 12px; }
   .brand-icon {
     width: 40px; height: 40px;
@@ -72,20 +65,6 @@
     box-shadow: 0 0 0 1px rgba(19, 19, 22, 0.06), 0 4px 12px rgba(244, 36, 94, 0.16);
   }
   .brand-mark { height: 27px; display: block; }
-  .head-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-    padding: 7px 13px;
-    border-radius: 999px;
-    background: var(--surface);
-    border: 1px solid var(--line);
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--muted);
-    white-space: nowrap;
-  }
-  .head-badge i { color: var(--accent); font-size: 11px; }
 
   /* ---------- Grid ---------- */
   .grid {
@@ -99,34 +78,18 @@
     align-items: center;
     flex: 1;
   }
-  .intro { grid-area: intro; }
+  .intro { grid-area: intro; display: flex; flex-direction: column; align-items: flex-start; }
   .hero { grid-area: hero; }
   .install { grid-area: install; align-self: start; }
 
   /* ---------- Intro ---------- */
-  .eyebrow {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 11.5px;
-    font-weight: 700;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--accent);
-    margin-bottom: 14px;
-  }
-  .eyebrow::before {
-    content: "";
-    width: 22px; height: 2px;
-    border-radius: 2px;
-    background: var(--grad);
-  }
+  .intro .brand { margin-bottom: clamp(22px, 4vh, 38px); }
   h1 {
     margin: 0;
-    font-size: clamp(34px, 4.2vw, 56px);
+    font-size: clamp(42px, 5.6vw, 72px);
     font-weight: 800;
-    letter-spacing: -0.035em;
-    line-height: 1.04;
+    letter-spacing: -0.04em;
+    line-height: 1.02;
   }
   h1 .grad {
     background: var(--grad);
@@ -395,7 +358,8 @@
         "install";
       row-gap: 26px;
     }
-    h1 { font-size: clamp(32px, 8.6vw, 42px); }
+    h1 { font-size: clamp(36px, 9.6vw, 48px); }
+    .intro .brand { margin-bottom: 26px; }
     .sub { margin-top: 14px; max-width: none; }
     .perks { margin-top: 18px; }
     .hero { padding: 0; order: 0; }
@@ -403,8 +367,6 @@
     .shot { max-width: 47vw; }
     .shot-2 { margin-left: -6%; }
     .panel { max-width: none; }
-    .site-head { margin-bottom: 30px; }
-    .head-badge { display: none; }
     .foot { flex-direction: column; align-items: flex-start; }
   }
   @media (max-width: 380px) {
@@ -415,17 +377,12 @@
 <body>
 
 <div class="page">
-  <header class="site-head">
-    <div class="brand">
-      <img class="brand-icon" src="icons/icon-512.png" alt="Yours" width="40" height="40">
-      <img class="brand-mark" src="icons/wordmark.png" alt="Yours">
-    </div>
-    <span class="head-badge"><i class="fa-solid fa-lock" aria-hidden="true"></i>Installs in seconds</span>
-  </header>
-
   <main class="grid">
     <section class="intro">
-      <span class="eyebrow">Your AI companion, everywhere</span>
+      <div class="brand">
+        <img class="brand-icon" src="icons/icon-512.png" alt="Yours" width="40" height="40">
+        <img class="brand-mark" src="icons/wordmark.png" alt="Yours">
+      </div>
       <h1>Take Yours <span class="grad">everywhere</span></h1>
       <p class="sub">Add Yours to your home screen and chat with your AI companion straight from your own app — no app store needed.</p>
       <div class="perks">
