@@ -624,7 +624,7 @@
     .panel { max-width: none; }
     .showcase { margin-top: 34px; }
     .slide { flex-basis: min(80vw, 340px); }
-    .foot { grid-template-columns: 1fr 1fr; }
+    .foot { grid-template-columns: 1fr 1fr; margin-top: 24px; }
     .foot-brand { grid-column: 1 / -1; }
     .foot-bottom { flex-direction: column; align-items: flex-start; }
   }
@@ -663,9 +663,9 @@
       </p>
 
       <div class="perks">
-        <span class="perk"><i class="fa-solid fa-comment-dots" aria-hidden="true"></i>Unlimited chats</span>
+        <span class="perk"><i class="fa-solid fa-comment-dots" aria-hidden="true"></i>Uncensored chats</span>
         <span class="perk"><i class="fa-solid fa-phone-volume" aria-hidden="true"></i>Voice calls</span>
-        <span class="perk"><i class="fa-solid fa-bolt" aria-hidden="true"></i>Free to start</span>
+        <span class="perk"><i class="fa-solid fa-images" aria-hidden="true"></i>Uncensored images and videos</span>
       </div>
     </section>
 
@@ -946,8 +946,6 @@
       });
     });
 
-    hero.addEventListener('pointerenter', stopHero);
-    hero.addEventListener('pointerleave', playHero);
     hero.addEventListener('focusin', stopHero);
     hero.addEventListener('focusout', function (e) {
       if (!hero.contains(e.relatedTarget)) playHero();
