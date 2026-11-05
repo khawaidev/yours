@@ -19,7 +19,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 <script src="js/pwa.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
   :root {
     --accent: #f4245e;
@@ -44,17 +43,18 @@
     -webkit-font-smoothing: antialiased;
     min-height: 100dvh;
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
   }
   a { color: inherit; }
 
   .page {
     width: 100%;
-    max-width: 1180px;
+    max-width: none;
     min-height: 100dvh;
     display: flex;
     flex-direction: column;
     padding: clamp(20px, 3vw, 32px) clamp(20px, 4vw, 48px) 24px;
+    padding-left: clamp(16px, 2vw, 32px);
   }
 
   /* ---------- Brand ---------- */
@@ -311,8 +311,62 @@
     padding: 9px;
   }
   #qr img, #qr canvas { display: block; border-radius: 4px; }
+  #qr img { width: 156px; height: 156px; object-fit: contain; }
   .qr-copy p { margin: 0; font-size: 13.5px; line-height: 1.5; color: #3d3d45; }
   .qr-copy .qr-note { margin-top: 6px; font-size: 12px; color: var(--faint); }
+
+  /* ---------- Screens carousel ---------- */
+  .showcase {
+    margin-top: clamp(40px, 7vh, 72px);
+    width: 100%;
+  }
+  .showcase-bar {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .carousel-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    color: var(--text);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: var(--shadow-card);
+    transition: transform .15s ease, opacity .15s ease;
+  }
+  .carousel-btn:hover { transform: translateY(-1px); }
+  .carousel-btn:active { transform: scale(0.96); }
+  .carousel-btn[disabled] { opacity: 0.35; cursor: default; transform: none; }
+  .carousel {
+    display: flex;
+    gap: clamp(14px, 2vw, 24px);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    padding: 4px 2px 16px;
+    scrollbar-width: none;
+  }
+  .carousel::-webkit-scrollbar { display: none; }
+  .slide {
+    flex: 0 0 clamp(250px, 32vw, 460px);
+    margin: 0;
+    scroll-snap-align: start;
+  }
+  .slide img {
+    display: block;
+    width: 100%;
+    height: auto;
+    mix-blend-mode: multiply;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-user-drag: none;
+  }
 
   .fine {
     margin: 14px 0 0;
@@ -367,6 +421,8 @@
     .shot { max-width: 47vw; }
     .shot-2 { margin-left: -6%; }
     .panel { max-width: none; }
+    .showcase { margin-top: 34px; }
+    .slide { flex-basis: min(80vw, 340px); }
     .foot { flex-direction: column; align-items: flex-start; }
   }
   @media (max-width: 380px) {
@@ -432,7 +488,9 @@
         <div class="panel-head"><i class="fa-solid fa-mobile-screen-button" aria-hidden="true"></i><h2>Install on your phone</h2></div>
         <p class="hint">Yours is made for mobile — point your phone&rsquo;s camera at this code:</p>
         <div class="qr-box">
-          <div id="qr" role="img" aria-label="QR code linking to the Yours app"></div>
+          <div id="qr">
+            <img src="Assets/qrcode001.png" alt="QR code linking to the Yours app" width="156" height="156" loading="lazy" decoding="async">
+          </div>
           <div class="qr-copy">
             <p>Scan with your phone to open Yours, then install it as an app.</p>
             <p class="qr-note">Works with iPhone, Android and any modern phone camera.</p>
@@ -443,6 +501,28 @@
       <p class="fine"><i class="fa-solid fa-shield-halved" aria-hidden="true"></i>Safe &amp; secure · Your data stays yours</p>
     </div>
   </main>
+
+  <section class="showcase" aria-label="Yours app screens">
+    <div class="showcase-bar">
+      <button class="carousel-btn" type="button" data-carousel-prev aria-label="Previous screens" aria-controls="screens-carousel">
+        <i class="fa-solid fa-chevron-left" aria-hidden="true"></i>
+      </button>
+      <button class="carousel-btn" type="button" data-carousel-next aria-label="Next screens" aria-controls="screens-carousel">
+        <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
+      </button>
+    </div>
+    <div class="carousel" id="screens-carousel">
+      <figure class="slide">
+        <img src="Assets/screen001.png" alt="Discover AI companions in the Yours app" width="1086" height="1448" loading="lazy" decoding="async">
+      </figure>
+      <figure class="slide">
+        <img src="Assets/screen002.png" alt="Chat with your AI companion in the Yours app" width="1086" height="1448" loading="lazy" decoding="async">
+      </figure>
+      <figure class="slide">
+        <img src="Assets/screen003.png" alt="Voice call with your AI companion in the Yours app" width="1086" height="1448" loading="lazy" decoding="async">
+      </figure>
+    </div>
+  </section>
 
   <footer class="foot">
     <nav class="foot-links" aria-label="Legal">
@@ -475,12 +555,6 @@
   var btn = document.getElementById('btn-install');
   var androidFallback = document.getElementById('android-fallback');
 
-  function landingUrl() {
-    // Same folder as this page, without the file name -> the app root.
-    var path = window.location.pathname.replace(/install\.html.*$/i, '');
-    return window.location.origin + path;
-  }
-
   function show(panel) { panel.hidden = false; }
 
   /* ---------- Platform routing ---------- */
@@ -500,17 +574,37 @@
     }, 1200);
   } else {
     show(desktopPanel);
-    // QR code pointing at the app's landing page.
-    if (window.QRCode) {
-      new QRCode(document.getElementById('qr'), {
-        text: landingUrl(),
-        width: 156,
-        height: 156,
-        colorDark: '#131316',
-        colorLight: '#ffffff',
-        correctLevel: QRCode.CorrectLevel.M
-      });
-    }
+  }
+
+  /* ---------- Screens carousel ---------- */
+  var carousel = document.getElementById('screens-carousel');
+  var prevBtn = document.querySelector('[data-carousel-prev]');
+  var nextBtn = document.querySelector('[data-carousel-next]');
+
+  if (carousel && prevBtn && nextBtn) {
+    var carouselStep = function () {
+      var slide = carousel.querySelector('.slide');
+      if (!slide) return carousel.clientWidth * 0.8;
+      var styles = window.getComputedStyle(carousel);
+      var gap = parseFloat(styles.columnGap || styles.gap || 0) || 0;
+      return slide.getBoundingClientRect().width + gap;
+    };
+
+    var updateCarouselButtons = function () {
+      var max = carousel.scrollWidth - carousel.clientWidth;
+      prevBtn.disabled = carousel.scrollLeft <= 1;
+      nextBtn.disabled = carousel.scrollLeft >= max - 1;
+    };
+
+    prevBtn.addEventListener('click', function () {
+      carousel.scrollBy({ left: -carouselStep(), behavior: 'smooth' });
+    });
+    nextBtn.addEventListener('click', function () {
+      carousel.scrollBy({ left: carouselStep(), behavior: 'smooth' });
+    });
+    carousel.addEventListener('scroll', updateCarouselButtons, { passive: true });
+    window.addEventListener('resize', updateCarouselButtons);
+    updateCarouselButtons();
   }
 
   /* ---------- Android install flow ---------- */
