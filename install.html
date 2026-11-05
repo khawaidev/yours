@@ -46,6 +46,7 @@
     justify-content: flex-start;
   }
   a { color: inherit; }
+  [hidden] { display: none !important; }
 
   .page {
     width: 100%;
@@ -105,6 +106,26 @@
     max-width: 430px;
   }
 
+  /* Mid-page install button (Android + iOS) */
+  .install-btn.intro-install {
+    width: auto;
+    align-self: flex-start;
+    margin-top: clamp(20px, 3vh, 28px);
+    padding: 14px 26px;
+    font-size: 15px;
+  }
+
+  .fallback-note {
+    display: none;
+    max-width: 430px;
+    margin: 14px 0 0;
+    font-size: 12.5px;
+    color: var(--muted);
+    line-height: 1.55;
+  }
+  .fallback-note.is-visible { display: block; }
+  .fallback-note strong { color: var(--text); font-weight: 600; }
+
   .perks {
     display: flex;
     flex-wrap: wrap;
@@ -126,7 +147,7 @@
   }
   .perk i { color: var(--accent); font-size: 11px; }
 
-  /* ---------- Hero screenshots ---------- */
+  /* ---------- Hero carousel ---------- */
   .hero {
     position: relative;
     display: flex;
@@ -158,31 +179,58 @@
     border: 1px solid rgba(244, 36, 94, 0.10);
     pointer-events: none;
   }
-  .shots {
+  .hero-carousel {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 640px;
+  }
+  .hero-viewport {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    height: clamp(380px, 38vw, 560px);
+  }
+  .hero-track {
+    display: flex;
+    height: 100%;
+    transition: transform 0.7s cubic-bezier(0.65, 0, 0.35, 1);
+    will-change: transform;
+  }
+  .hero-slide {
+    flex: 0 0 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 12px;
+  }
+  .pair {
     position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
     width: 100%;
-    max-width: 620px;
+    height: 100%;
   }
-  .shot {
-    width: 50%;
-    max-width: 300px;
-    height: auto;
+  .pair img {
+    width: auto;
+    height: 92%;
+    max-width: 50%;
+    object-fit: contain;
     mix-blend-mode: multiply;
     -webkit-user-select: none;
     user-select: none;
     -webkit-user-drag: none;
   }
-  .shot-1 {
+  .pair-left {
     transform: rotate(-4deg) translateY(2.5%);
     z-index: 1;
     animation: floatA 7s ease-in-out infinite;
   }
-  .shot-2 {
+  .pair-right {
+    margin-left: -5%;
     transform: rotate(3.5deg) translateY(-2%);
-    margin-left: -7%;
     z-index: 2;
     animation: floatB 8s ease-in-out infinite;
   }
@@ -193,6 +241,43 @@
   @keyframes floatB {
     0%, 100% { transform: rotate(3.5deg) translateY(-2%); }
     50% { transform: rotate(3.5deg) translateY(-3.6%); }
+  }
+  .hero-screen {
+    width: auto;
+    height: 96%;
+    max-width: 100%;
+    object-fit: contain;
+    border-radius: 18px;
+    background: #fff;
+    box-shadow: 0 20px 55px rgba(19, 19, 22, 0.14);
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-user-drag: none;
+  }
+  .hero-dots {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 14px;
+  }
+  .hero-dot {
+    width: 8px;
+    height: 8px;
+    padding: 0;
+    border: 0;
+    border-radius: 999px;
+    background: #d8d4d6;
+    cursor: pointer;
+    transition: width 0.2s ease, background 0.2s ease;
+  }
+  .hero-dot[aria-current="true"] {
+    width: 24px;
+    background: var(--accent);
+  }
+  .hero-dot:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
   }
 
   /* ---------- Install panel ---------- */
@@ -249,16 +334,10 @@
   }
   .install-btn:hover { transform: translateY(-1px); box-shadow: 0 12px 28px rgba(244, 36, 94, 0.34); }
   .install-btn:active { transform: scale(0.985); }
-  .install-btn[disabled] { opacity: 0.45; cursor: default; transform: none; box-shadow: none; }
-
-  .fallback-note {
-    display: none;
-    margin: 14px 0 0;
-    font-size: 12.5px;
-    color: var(--muted);
-    line-height: 1.55;
+  .install-btn:focus-visible {
+    outline: 3px solid rgba(244, 36, 94, 0.3);
+    outline-offset: 3px;
   }
-  .fallback-note strong { color: var(--text); font-weight: 600; }
 
   /* iOS steps */
   .steps { list-style: none; margin: 0; padding: 0; }
@@ -314,6 +393,71 @@
   #qr img { width: 156px; height: 156px; object-fit: contain; }
   .qr-copy p { margin: 0; font-size: 13.5px; line-height: 1.5; color: #3d3d45; }
   .qr-copy .qr-note { margin-top: 6px; font-size: 12px; color: var(--faint); }
+
+  /* ---------- iOS install modal ---------- */
+  .modal {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(19, 19, 22, 0.42);
+    -webkit-backdrop-filter: blur(12px) saturate(120%);
+    backdrop-filter: blur(12px) saturate(120%);
+  }
+  .modal-card {
+    position: relative;
+    z-index: 1;
+    width: min(430px, 100%);
+    max-height: calc(100dvh - 40px);
+    overflow-y: auto;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 24px;
+    padding: 26px 24px 24px;
+    box-shadow: 0 30px 90px rgba(19, 19, 22, 0.28);
+    animation: modalIn 0.28s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  @keyframes modalIn {
+    from { opacity: 0; transform: translateY(12px) scale(0.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  .modal .panel-head { padding-right: 36px; margin-bottom: 6px; }
+  .modal .panel-head h2 { font-size: 18px; }
+  .modal .hint { margin-bottom: 12px; }
+  .modal-close {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: 1px solid var(--line);
+    background: #fff;
+    color: var(--muted);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+  .modal-close:hover { background: #f6f3f4; color: var(--text); }
+  .modal-close:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .modal-note {
+    margin: 14px 0 0;
+    padding-top: 14px;
+    border-top: 1px solid var(--line);
+    font-size: 12px;
+    line-height: 1.55;
+    color: var(--faint);
+  }
+  body.modal-open { overflow: hidden; }
 
   /* ---------- Screens carousel ---------- */
   .showcase {
@@ -380,27 +524,78 @@
 
   /* ---------- Footer ---------- */
   .foot {
-    margin-top: clamp(36px, 6vh, 56px);
-    padding-top: 18px;
+    margin-top: clamp(48px, 8vh, 84px);
+    padding-top: 30px;
     border-top: 1px solid var(--line);
-    display: flex;
+    display: grid;
+    grid-template-columns: minmax(240px, 1.3fr) repeat(2, minmax(150px, 0.7fr));
+    gap: clamp(26px, 4vw, 56px);
+    align-items: start;
+  }
+  .foot-brand .brand { margin-bottom: 12px; }
+  .foot-brand p {
+    margin: 0;
+    max-width: 330px;
+    font-size: 13px;
+    line-height: 1.55;
+    color: var(--muted);
+  }
+  .age-badge {
+    display: inline-flex;
     align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 12px;
+    gap: 8px;
+    margin-top: 14px;
+    padding: 7px 12px;
+    border: 1px solid rgba(244, 36, 94, 0.28);
+    border-radius: 999px;
+    background: rgba(244, 36, 94, 0.06);
+    color: var(--accent);
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
   }
-  .foot-links { display: flex; gap: 20px; }
-  .foot-links a {
-    color: var(--faint);
+  .age-badge i { font-size: 11px; }
+  .foot-col h2 {
+    margin: 4px 0 12px;
     font-size: 12px;
-    font-weight: 600;
-    text-decoration: none;
-    transition: color .15s ease;
+    font-weight: 700;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--faint);
   }
-  .foot-links a:hover { color: var(--text); }
-  .foot small { color: var(--faint); font-size: 11.5px; }
-
-  .hidden { display: none !important; }
+  .foot-col a {
+    display: block;
+    width: fit-content;
+    margin: 0 0 10px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #4c4c55;
+    text-decoration: none;
+    transition: color 0.15s ease;
+  }
+  .foot-col a:hover { color: var(--accent); }
+  .foot-bottom {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 18px;
+    margin-top: 6px;
+    padding-top: 20px;
+    border-top: 1px solid var(--line);
+    flex-wrap: wrap;
+  }
+  .adult-note {
+    margin: 0;
+    max-width: 760px;
+    font-size: 12px;
+    line-height: 1.6;
+    color: var(--faint);
+  }
+  .adult-note strong { color: var(--text); }
+  .adult-note a { color: #4c4c55; text-decoration: underline; text-underline-offset: 2px; }
+  .adult-note a:hover { color: var(--accent); }
+  .foot-bottom small { font-size: 11.5px; color: var(--faint); white-space: nowrap; }
 
   /* ---------- Mobile ---------- */
   @media (max-width: 899px) {
@@ -415,18 +610,31 @@
     h1 { font-size: clamp(36px, 9.6vw, 48px); }
     .intro .brand { margin-bottom: 26px; }
     .sub { margin-top: 14px; max-width: none; }
+    .install-btn.intro-install { margin-top: 20px; }
     .perks { margin-top: 18px; }
     .hero { padding: 0; order: 0; }
     .hero-ring { display: none; }
-    .shot { max-width: 47vw; }
-    .shot-2 { margin-left: -6%; }
+    .hero-viewport { height: min(112vw, 470px); }
+    .hero-slide { padding: 0 6px; }
+    .pair img { max-width: 50%; }
+    .hero-dots { margin-top: 8px; }
     .panel { max-width: none; }
     .showcase { margin-top: 34px; }
     .slide { flex-basis: min(80vw, 340px); }
-    .foot { flex-direction: column; align-items: flex-start; }
+    .foot { grid-template-columns: 1fr 1fr; }
+    .foot-brand { grid-column: 1 / -1; }
+    .foot-bottom { flex-direction: column; align-items: flex-start; }
   }
-  @media (max-width: 380px) {
-    .shot { max-width: 46vw; }
+  @media (max-width: 560px) {
+    .foot { grid-template-columns: 1fr; }
+    .modal-card { padding: 24px 20px 20px; }
+    .modal .panel-head h2 { font-size: 16.5px; }
+    .foot-bottom small { white-space: normal; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hero-track { transition: none; }
+    .pair-left, .pair-right { animation: none; }
+    .modal-card { animation: none; }
   }
 </style>
 </head>
@@ -441,6 +649,16 @@
       </div>
       <h1>Take Yours <span class="grad">everywhere</span></h1>
       <p class="sub">Add Yours to your home screen and chat with your AI companion straight from your own app — no app store needed.</p>
+
+      <button class="install-btn intro-install" id="btn-install" type="button" hidden>
+        <i class="fa-solid fa-download" aria-hidden="true"></i>
+        <span id="btn-install-label">Install the app</span>
+      </button>
+      <p class="fallback-note" id="install-fallback" role="status">
+        Don&rsquo;t see a prompt? Open your browser menu (<i class="fa-solid fa-ellipsis-vertical" aria-hidden="true"></i>) and choose
+        <strong>&ldquo;Install app&rdquo;</strong> or <strong>&ldquo;Add to Home screen&rdquo;</strong>.
+      </p>
+
       <div class="perks">
         <span class="perk"><i class="fa-solid fa-comment-dots" aria-hidden="true"></i>Unlimited chats</span>
         <span class="perk"><i class="fa-solid fa-phone-volume" aria-hidden="true"></i>Voice calls</span>
@@ -451,45 +669,43 @@
     <section class="hero" aria-label="Yours app preview">
       <div class="hero-blob" aria-hidden="true"></div>
       <div class="hero-ring" aria-hidden="true"></div>
-      <div class="shots">
-        <img class="shot shot-1" src="Assets/yours-screen1-trim.jpg" alt="Discover AI companions in the Yours app" width="300" height="542">
-        <img class="shot shot-2" src="Assets/yours-screen2-trim.jpg" alt="Chat with your AI companion in the Yours app" width="300" height="537">
+      <div class="hero-carousel" id="hero-carousel" aria-roledescription="carousel" aria-label="Yours app screens">
+        <div class="hero-viewport">
+          <div class="hero-track" id="hero-track">
+            <div class="hero-slide" role="group" aria-roledescription="slide" aria-label="1 of 4">
+              <div class="pair">
+                <img class="pair-left" src="Assets/left.png" alt="AI companion profile in the Yours app" width="1024" height="1536" decoding="async">
+                <img class="pair-right" src="Assets/right.png" alt="Chatting with an AI companion in the Yours app" width="1024" height="1536" decoding="async">
+              </div>
+            </div>
+            <div class="hero-slide" role="group" aria-roledescription="slide" aria-label="2 of 4">
+              <img class="hero-screen" src="Assets/screen001.png" alt="Discover AI companions in the Yours app" width="1086" height="1448" decoding="async">
+            </div>
+            <div class="hero-slide" role="group" aria-roledescription="slide" aria-label="3 of 4">
+              <img class="hero-screen" src="Assets/screen002.png" alt="Chat with your AI companion in the Yours app" width="1086" height="1448" decoding="async">
+            </div>
+            <div class="hero-slide" role="group" aria-roledescription="slide" aria-label="4 of 4">
+              <img class="hero-screen" src="Assets/screen003.png" alt="Voice call with your AI companion in the Yours app" width="1086" height="1448" decoding="async">
+            </div>
+          </div>
+        </div>
+        <div class="hero-dots" aria-label="Choose a slide">
+          <button class="hero-dot" type="button" data-hero-dot aria-label="Show slide 1: app preview" aria-current="true"></button>
+          <button class="hero-dot" type="button" data-hero-dot aria-label="Show slide 2: discover"></button>
+          <button class="hero-dot" type="button" data-hero-dot aria-label="Show slide 3: chat"></button>
+          <button class="hero-dot" type="button" data-hero-dot aria-label="Show slide 4: voice calls"></button>
+        </div>
       </div>
     </section>
 
     <div class="install">
-      <!-- Android / Chrome: direct install -->
-      <section class="panel" id="panel-android" hidden>
-        <div class="panel-head"><i class="fa-brands fa-android" aria-hidden="true"></i><h2>Install on Android</h2></div>
-        <p class="hint">One tap and Chrome takes care of the rest.</p>
-        <button class="install-btn" id="btn-install" type="button" disabled>
-          <i class="fa-solid fa-download" aria-hidden="true"></i>
-          <span>Install the app</span>
-        </button>
-        <p class="fallback-note" id="android-fallback">
-          Don&rsquo;t see a button? Open your browser menu (<i class="fa-solid fa-ellipsis-vertical" aria-hidden="true"></i>) and choose
-          <strong>&ldquo;Install app&rdquo;</strong> or <strong>&ldquo;Add to Home screen&rdquo;</strong>.
-        </p>
-      </section>
-
-      <!-- iOS / iPadOS: manual guide -->
-      <section class="panel" id="panel-ios" hidden>
-        <div class="panel-head"><i class="fa-brands fa-apple" aria-hidden="true"></i><h2>Install on iPhone &amp; iPad</h2></div>
-        <p class="hint">Three quick steps in Safari:</p>
-        <ol class="steps">
-          <li><span class="step-num">1</span><span>Tap the <i class="fa-solid fa-arrow-up-from-bracket" aria-hidden="true"></i>&nbsp;<kbd>Share</kbd> button at the bottom of the screen.</span></li>
-          <li><span class="step-num">2</span><span>Scroll down and tap <strong>Add to Home Screen</strong>.</span></li>
-          <li><span class="step-num">3</span><span>Tap <strong>Add</strong> — Yours lands on your home screen.</span></li>
-        </ol>
-      </section>
-
       <!-- Desktop / laptop: QR code -->
       <section class="panel" id="panel-desktop" hidden>
         <div class="panel-head"><i class="fa-solid fa-mobile-screen-button" aria-hidden="true"></i><h2>Install on your phone</h2></div>
         <p class="hint">Yours is made for mobile — point your phone&rsquo;s camera at this code:</p>
         <div class="qr-box">
           <div id="qr">
-            <img src="Assets/qrcode001.png" alt="QR code linking to the Yours app" width="156" height="156" loading="lazy" decoding="async">
+            <img src="Assets/qrode-new.png" alt="QR code linking to the Yours app" width="156" height="156" loading="lazy" decoding="async">
           </div>
           <div class="qr-copy">
             <p>Scan with your phone to open Yours, then install it as an app.</p>
@@ -525,13 +741,61 @@
   </section>
 
   <footer class="foot">
-    <nav class="foot-links" aria-label="Legal">
-      <a href="terms.html">Terms</a>
-      <a href="privacy-policy.html">Privacy</a>
-      <a href="community-guidelines.html">Guidelines</a>
+    <div class="foot-brand">
+      <div class="brand">
+        <img class="brand-icon" src="icons/icon-512.png" alt="" width="40" height="40" loading="lazy" decoding="async">
+        <img class="brand-mark" src="icons/wordmark.png" alt="Yours" loading="lazy" decoding="async">
+      </div>
+      <p>AI companions and voice calls for adults. All characters are fictional and AI-generated. No app store needed.</p>
+      <span class="age-badge"><i class="fa-solid fa-shield-halved" aria-hidden="true"></i>18+ only · Adults only</span>
+    </div>
+
+    <nav class="foot-col" aria-label="Legal">
+      <h2>Legal</h2>
+      <a href="terms.html">Terms &amp; Conditions</a>
+      <a href="privacy-policy.html">Privacy Policy</a>
+      <a href="cookie-policy.html">Cookie Policy</a>
+      <a href="community-guidelines.html">Community Guidelines</a>
+      <a href="legal.html">Legal Centre</a>
     </nav>
-    <small>&copy; 2026 Yours &middot; 18+ only &middot; AI-generated companions</small>
+
+    <div class="foot-col">
+      <h2>Support</h2>
+      <a href="mailto:khawain.in@gmail.com">Contact us</a>
+      <a href="index.html">Open Yours</a>
+      <a href="install.html">Install guide</a>
+    </div>
+
+    <div class="foot-bottom">
+      <p class="adult-note">
+        <strong>18+ only.</strong> You must be at least 18 years old to use Yours. Content may include mature themes.
+        By using the service you agree to our <a href="terms.html">Terms &amp; Conditions</a> and
+        <a href="privacy-policy.html">Privacy Policy</a>.
+      </p>
+      <small>&copy; 2026 Yours. All rights reserved.</small>
+    </div>
   </footer>
+</div>
+
+<!-- iOS / iPadOS install guide -->
+<div class="modal" id="ios-modal" hidden>
+  <div class="modal-backdrop" data-modal-close></div>
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="ios-modal-title" aria-describedby="ios-modal-hint">
+    <button class="modal-close" type="button" data-modal-close aria-label="Close install guide">
+      <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+    </button>
+    <div class="panel-head">
+      <i class="fa-brands fa-apple" aria-hidden="true"></i>
+      <h2 id="ios-modal-title">Install on iPhone &amp; iPad</h2>
+    </div>
+    <p class="hint" id="ios-modal-hint">Three quick steps in Safari:</p>
+    <ol class="steps">
+      <li><span class="step-num">1</span><span>Tap the <i class="fa-solid fa-arrow-up-from-bracket" aria-hidden="true"></i>&nbsp;<kbd>Share</kbd> button at the bottom of the screen.</span></li>
+      <li><span class="step-num">2</span><span>Scroll down and tap <strong>Add to Home Screen</strong>.</span></li>
+      <li><span class="step-num">3</span><span>Tap <strong>Add</strong> — Yours lands on your home screen.</span></li>
+    </ol>
+    <p class="modal-note">This works in Safari. If you opened this page in another browser, open it in Safari first, then follow the steps above.</p>
+  </div>
 </div>
 
 <script>
@@ -549,34 +813,179 @@
     (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
   var isAndroid = /Android/.test(ua);
 
-  var androidPanel = document.getElementById('panel-android');
-  var iosPanel = document.getElementById('panel-ios');
   var desktopPanel = document.getElementById('panel-desktop');
   var btn = document.getElementById('btn-install');
-  var androidFallback = document.getElementById('android-fallback');
+  var btnLabel = document.getElementById('btn-install-label');
+  var fallback = document.getElementById('install-fallback');
 
-  function show(panel) { panel.hidden = false; }
+  function show(el) { if (el) el.hidden = false; }
+
+  /* ---------- iOS install guide modal ---------- */
+  var modal = document.getElementById('ios-modal');
+  var modalClose = modal ? modal.querySelector('.modal-close') : null;
+  var lastFocus = null;
+
+  function openModal() {
+    if (!modal) return;
+    lastFocus = document.activeElement;
+    stopHero();
+    document.body.classList.add('modal-open');
+    modal.hidden = false;
+    if (modalClose) modalClose.focus();
+    document.addEventListener('keydown', onModalKeydown);
+  }
+
+  function closeModal() {
+    if (!modal || modal.hidden) return;
+    modal.hidden = true;
+    document.body.classList.remove('modal-open');
+    document.removeEventListener('keydown', onModalKeydown);
+    if (lastFocus && typeof lastFocus.focus === 'function') lastFocus.focus();
+    playHero();
+  }
+
+  function onModalKeydown(e) {
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      closeModal();
+      return;
+    }
+    if (e.key !== 'Tab') return;
+    var focusable = Array.prototype.filter.call(
+      modal.querySelectorAll('a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'),
+      function (el) { return el.offsetParent !== null; }
+    );
+    if (!focusable.length) return;
+    var first = focusable[0];
+    var last = focusable[focusable.length - 1];
+    if (e.shiftKey && document.activeElement === first) {
+      e.preventDefault();
+      last.focus();
+    } else if (!e.shiftKey && document.activeElement === last) {
+      e.preventDefault();
+      first.focus();
+    }
+  }
+
+  if (modal) {
+    modal.addEventListener('click', function (e) {
+      if (e.target.closest('[data-modal-close]')) closeModal();
+    });
+  }
 
   /* ---------- Platform routing ---------- */
   if (isIOS) {
-    show(iosPanel);
+    btnLabel.textContent = 'Install on iPhone & iPad';
+    btn.querySelector('i').className = 'fa-brands fa-apple';
+    show(btn);
+    btn.addEventListener('click', openModal);
   } else if (isAndroid) {
-    show(androidPanel);
-    // The button enables when Chrome fires beforeinstallprompt.
+    show(btn);
     window.YoursPWA.onInstallPrompt(function () {
-      btn.disabled = false;
-      androidFallback.style.display = 'none';
+      fallback.classList.remove('is-visible');
     });
-    // If no prompt arrives (Firefox, already installed, etc.),
-    // surface the manual menu instructions after a beat.
+    btn.addEventListener('click', function () {
+      window.YoursPWA.promptInstall().then(function (choice) {
+        if (!choice || choice.outcome === 'unavailable' || choice.outcome === 'error') {
+          fallback.classList.add('is-visible');
+        } else {
+          fallback.classList.remove('is-visible');
+        }
+      });
+    });
+    // If Chrome never offers the native prompt, show the manual path instead
+    // of leaving the button looking broken.
     setTimeout(function () {
-      if (btn.disabled) androidFallback.style.display = 'block';
-    }, 1200);
+      if (!window.YoursPWA.canPromptInstall()) {
+        fallback.classList.add('is-visible');
+      }
+    }, 1600);
   } else {
     show(desktopPanel);
   }
 
-  /* ---------- Screens carousel ---------- */
+  /* ---------- Hero auto carousel ---------- */
+  var hero = document.getElementById('hero-carousel');
+  var track = document.getElementById('hero-track');
+  var slides = track ? Array.prototype.slice.call(track.children) : [];
+  var dots = Array.prototype.slice.call(document.querySelectorAll('[data-hero-dot]'));
+  var heroIndex = 0;
+  var heroTimer = null;
+  var reduceMotion = window.matchMedia &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function renderHero() {
+    track.style.transform = 'translateX(-' + (heroIndex * 100) + '%)';
+    dots.forEach(function (dot, i) {
+      if (i === heroIndex) {
+        dot.setAttribute('aria-current', 'true');
+      } else {
+        dot.removeAttribute('aria-current');
+      }
+    });
+  }
+
+  function goTo(index) {
+    if (!slides.length) return;
+    heroIndex = (index + slides.length) % slides.length;
+    renderHero();
+  }
+
+  function stopHero() {
+    if (heroTimer) {
+      clearInterval(heroTimer);
+      heroTimer = null;
+    }
+  }
+
+  function playHero() {
+    if (reduceMotion || !slides.length) return;
+    stopHero();
+    heroTimer = setInterval(function () {
+      goTo(heroIndex + 1);
+    }, 4800);
+  }
+
+  if (hero && track && slides.length) {
+    dots.forEach(function (dot, i) {
+      dot.addEventListener('click', function () {
+        goTo(i);
+        playHero();
+      });
+    });
+
+    hero.addEventListener('pointerenter', stopHero);
+    hero.addEventListener('pointerleave', playHero);
+    hero.addEventListener('focusin', stopHero);
+    hero.addEventListener('focusout', function (e) {
+      if (!hero.contains(e.relatedTarget)) playHero();
+    });
+    document.addEventListener('visibilitychange', function () {
+      if (document.hidden) stopHero();
+      else playHero();
+    });
+
+    var touchStartX = 0;
+    var touchStartY = 0;
+    hero.addEventListener('touchstart', function (e) {
+      touchStartX = e.touches[0].clientX;
+      touchStartY = e.touches[0].clientY;
+      stopHero();
+    }, { passive: true });
+    hero.addEventListener('touchend', function (e) {
+      var dx = e.changedTouches[0].clientX - touchStartX;
+      var dy = e.changedTouches[0].clientY - touchStartY;
+      if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) {
+        goTo(heroIndex + (dx < 0 ? 1 : -1));
+      }
+      playHero();
+    }, { passive: true });
+
+    renderHero();
+    playHero();
+  }
+
+  /* ---------- Bottom screens carousel ---------- */
   var carousel = document.getElementById('screens-carousel');
   var prevBtn = document.querySelector('[data-carousel-prev]');
   var nextBtn = document.querySelector('[data-carousel-next]');
@@ -606,16 +1015,6 @@
     window.addEventListener('resize', updateCarouselButtons);
     updateCarouselButtons();
   }
-
-  /* ---------- Android install flow ---------- */
-  btn.addEventListener('click', function () {
-    btn.disabled = true;
-    window.YoursPWA.promptInstall().then(function (choice) {
-      if (!choice || choice.outcome !== 'accepted') {
-        btn.disabled = false;
-      }
-    });
-  });
 
   // If the app gets installed from the browser menu while this
   // page is open, jump straight into the app.
