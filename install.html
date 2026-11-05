@@ -169,16 +169,6 @@
     filter: blur(6px);
     pointer-events: none;
   }
-  .hero-ring {
-    position: absolute;
-    inset: 0;
-    margin: auto;
-    width: min(640px, 104%);
-    aspect-ratio: 1;
-    border-radius: 50%;
-    border: 1px solid rgba(244, 36, 94, 0.10);
-    pointer-events: none;
-  }
   .hero-carousel {
     position: relative;
     width: 100%;
@@ -207,43 +197,6 @@
     justify-content: center;
     padding: 4px 12px;
     scroll-snap-align: start;
-  }
-  .pair {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 100%;
-  }
-  .pair img {
-    width: auto;
-    height: 92%;
-    max-width: 50%;
-    object-fit: contain;
-    mix-blend-mode: multiply;
-    -webkit-user-select: none;
-    user-select: none;
-    -webkit-user-drag: none;
-  }
-  .pair-left {
-    transform: rotate(-4deg) translateY(2.5%);
-    z-index: 1;
-    animation: floatA 7s ease-in-out infinite;
-  }
-  .pair-right {
-    margin-left: -5%;
-    transform: rotate(3.5deg) translateY(-2%);
-    z-index: 2;
-    animation: floatB 8s ease-in-out infinite;
-  }
-  @keyframes floatA {
-    0%, 100% { transform: rotate(-4deg) translateY(2.5%); }
-    50% { transform: rotate(-4deg) translateY(0.8%); }
-  }
-  @keyframes floatB {
-    0%, 100% { transform: rotate(3.5deg) translateY(-2%); }
-    50% { transform: rotate(3.5deg) translateY(-3.6%); }
   }
   .hero-screen {
     width: auto;
@@ -616,10 +569,8 @@
     .install-btn.intro-install { margin-top: 20px; }
     .perks { margin-top: 18px; }
     .hero { padding: 0; order: 0; }
-    .hero-ring { display: none; }
     .hero-viewport { height: min(112vw, 470px); }
     .hero-slide { padding: 0 6px; }
-    .pair img { max-width: 50%; }
     .hero-dots { margin-top: 8px; }
     .panel { max-width: none; }
     .showcase { margin-top: 34px; }
@@ -635,8 +586,6 @@
     .foot-bottom small { white-space: normal; }
   }
   @media (prefers-reduced-motion: reduce) {
-    .hero-track { transition: none; }
-    .pair-left, .pair-right { animation: none; }
     .modal-card { animation: none; }
   }
 </style>
@@ -671,32 +620,32 @@
 
     <section class="hero" aria-label="Yours app preview">
       <div class="hero-blob" aria-hidden="true"></div>
-      <div class="hero-ring" aria-hidden="true"></div>
       <div class="hero-carousel" id="hero-carousel" aria-roledescription="carousel" aria-label="Yours app screens">
         <div class="hero-viewport">
           <div class="hero-track" id="hero-track">
-            <div class="hero-slide" role="group" aria-roledescription="slide" aria-label="1 of 4">
-              <div class="pair">
-                <img class="pair-left" src="Assets/left.png" alt="AI companion profile in the Yours app" width="1024" height="1536" decoding="async">
-                <img class="pair-right" src="Assets/right.png" alt="Chatting with an AI companion in the Yours app" width="1024" height="1536" decoding="async">
-              </div>
+            <div class="hero-slide" role="group" aria-roledescription="slide" aria-label="1 of 5">
+              <img class="hero-screen" src="Assets/left.png" alt="AI companion profile in the Yours app" width="1024" height="1536" decoding="async">
             </div>
-            <div class="hero-slide" role="group" aria-roledescription="slide" aria-label="2 of 4">
+            <div class="hero-slide" role="group" aria-roledescription="slide" aria-label="2 of 5">
+              <img class="hero-screen" src="Assets/right.png" alt="Chatting with an AI companion in the Yours app" width="1024" height="1536" decoding="async">
+            </div>
+            <div class="hero-slide" role="group" aria-roledescription="slide" aria-label="3 of 5">
               <img class="hero-screen" src="Assets/screen001.png?v=2" alt="Discover AI companions in the Yours app" width="1086" height="1448" decoding="async">
             </div>
-            <div class="hero-slide" role="group" aria-roledescription="slide" aria-label="3 of 4">
+            <div class="hero-slide" role="group" aria-roledescription="slide" aria-label="4 of 5">
               <img class="hero-screen" src="Assets/screen002.png?v=2" alt="Chat with your AI companion in the Yours app" width="1086" height="1448" decoding="async">
             </div>
-            <div class="hero-slide" role="group" aria-roledescription="slide" aria-label="4 of 4">
+            <div class="hero-slide" role="group" aria-roledescription="slide" aria-label="5 of 5">
               <img class="hero-screen" src="Assets/screen003.png?v=2" alt="Voice call with your AI companion in the Yours app" width="1086" height="1448" decoding="async">
             </div>
           </div>
         </div>
         <div class="hero-dots" aria-label="Choose a slide">
-          <button class="hero-dot" type="button" data-hero-dot aria-label="Show slide 1: app preview" aria-current="true"></button>
-          <button class="hero-dot" type="button" data-hero-dot aria-label="Show slide 2: discover"></button>
-          <button class="hero-dot" type="button" data-hero-dot aria-label="Show slide 3: chat"></button>
-          <button class="hero-dot" type="button" data-hero-dot aria-label="Show slide 4: voice calls"></button>
+          <button class="hero-dot" type="button" data-hero-dot aria-label="Show slide 1: companion profile" aria-current="true"></button>
+          <button class="hero-dot" type="button" data-hero-dot aria-label="Show slide 2: companion chat"></button>
+          <button class="hero-dot" type="button" data-hero-dot aria-label="Show slide 3: discover"></button>
+          <button class="hero-dot" type="button" data-hero-dot aria-label="Show slide 4: chat"></button>
+          <button class="hero-dot" type="button" data-hero-dot aria-label="Show slide 5: voice calls"></button>
         </div>
       </div>
     </section>
