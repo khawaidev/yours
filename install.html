@@ -181,21 +181,23 @@
   }
   .hero-carousel {
     position: relative;
-    z-index: 1;
     width: 100%;
     max-width: 640px;
   }
   .hero-viewport {
     position: relative;
-    overflow: hidden;
+    overflow-x: auto;
+    overflow-y: hidden;
     width: 100%;
     height: clamp(380px, 38vw, 560px);
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
   }
+  .hero-viewport::-webkit-scrollbar { display: none; }
   .hero-track {
     display: flex;
     height: 100%;
-    transition: transform 0.7s cubic-bezier(0.65, 0, 0.35, 1);
-    will-change: transform;
   }
   .hero-slide {
     flex: 0 0 100%;
@@ -204,6 +206,7 @@
     align-items: center;
     justify-content: center;
     padding: 4px 12px;
+    scroll-snap-align: start;
   }
   .pair {
     position: relative;
@@ -248,8 +251,8 @@
     max-width: 100%;
     object-fit: contain;
     border-radius: 18px;
-    background: #fff;
-    box-shadow: 0 20px 55px rgba(19, 19, 22, 0.14);
+    mix-blend-mode: multiply;
+    filter: drop-shadow(0 18px 40px rgba(19, 19, 22, 0.16));
     -webkit-user-select: none;
     user-select: none;
     -webkit-user-drag: none;
@@ -906,6 +909,7 @@
 
   /* ---------- Hero auto carousel ---------- */
   var hero = document.getElementById('hero-carousel');
+  var heroViewport = hero ? hero.querySelector('.hero-viewport') : null;
   var track = document.getElementById('hero-track');
   var slides = track ? Array.prototype.slice.call(track.children) : [];
   var dots = Array.prototype.slice.call(document.querySelectorAll('[data-hero-dot]'));
@@ -914,8 +918,7 @@
   var reduceMotion = window.matchMedia &&
     window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  function renderHero() {
-    track.style.transform = 'translateX(-' + (heroIndex * 100) + '%)';
+  function updateHeroDots() {
     dots.forEach(function (dot, i) {
       if (i === heroIndex) {
         dot.setAttribute('aria-current', 'true');
@@ -925,10 +928,20 @@
     });
   }
 
-  function goTo(index) {
+  function renderHero(instant) {
+    var left = heroIndex * heroViewport.clientWidth;
+    if (instant) {
+      heroViewport.scrollLeft = left;
+    } else {
+      heroViewport.scrollTo({ left: left, behavior: 'smooth' });
+    }
+    updateHeroDots();
+  }
+
+  function goTo(index, instant) {
     if (!slides.length) return;
     heroIndex = (index + slides.length) % slides.length;
-    renderHero();
+    renderHero(instant);
   }
 
   function stopHero() {
@@ -946,7 +959,7 @@
     }, 4800);
   }
 
-  if (hero && track && slides.length) {
+  if (hero && track && heroViewport && slides.length) {
     dots.forEach(function (dot, i) {
       dot.addEventListener('click', function () {
         goTo(i);
@@ -960,28 +973,30 @@
     hero.addEventListener('focusout', function (e) {
       if (!hero.contains(e.relatedTarget)) playHero();
     });
+    hero.addEventListener('touchend', playHero, { passive: true });
     document.addEventListener('visibilitychange', function () {
       if (document.hidden) stopHero();
       else playHero();
     });
 
-    var touchStartX = 0;
-    var touchStartY = 0;
-    hero.addEventListener('touchstart', function (e) {
-      touchStartX = e.touches[0].clientX;
-      touchStartY = e.touches[0].clientY;
-      stopHero();
-    }, { passive: true });
-    hero.addEventListener('touchend', function (e) {
-      var dx = e.changedTouches[0].clientX - touchStartX;
-      var dy = e.changedTouches[0].clientY - touchStartY;
-      if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) {
-        goTo(heroIndex + (dx < 0 ? 1 : -1));
-      }
-      playHero();
+    // Keep the dots in sync when the user swipes or drags the carousel.
+    var heroScrollTimer = null;
+    heroViewport.addEventListener('scroll', function () {
+      clearTimeout(heroScrollTimer);
+      heroScrollTimer = setTimeout(function () {
+        var i = Math.round(heroViewport.scrollLeft / heroViewport.clientWidth);
+        if (i >= 0 && i < slides.length && i !== heroIndex) {
+          heroIndex = i;
+          updateHeroDots();
+        }
+      }, 90);
     }, { passive: true });
 
-    renderHero();
+    window.addEventListener('resize', function () {
+      renderHero(true);
+    });
+
+    renderHero(true);
     playHero();
   }
 
