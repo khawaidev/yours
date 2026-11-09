@@ -288,7 +288,11 @@
 
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/api-client.js"></script>
+<script src="js/vendor/dexie.min.js"></script>
+<script src="js/db.js"></script>
+<script src="js/opfs.js"></script>
+<script src="js/local-store.js"></script>
+<script src="js/storage.js"></script>
 <script src="js/api-client.js"></script>
 <script src="js/desktop-shell.js"></script>
 <script>
@@ -489,16 +493,83 @@
     });
   }
 
-  // Load only the characters this user has actually talked to (via the backend
-  // conversations API, which includes each conversation's last message).
+  // Local-first: the chat list is rebuilt from IndexedDB (the canonical store).
+  // Cloud conversations are only merged in for characters that have no local
+  // conversation yet (e.g. on a second device or before migration finishes).
+  function previewForMessage(m) {
+    if (!m) return '';
+    if (m.content) return m.content;
+    if (m.kind === 'image' || m.kind === 'video') return 'Media';
+    if (m.kind === 'voice') return 'Voice message';
+    return '';
+  }
+
+  async function loadLocalConversations(userId) {
+    if (!window.LocalStore || !window.YoursStorage) return [];
+    try {
+      var ready = await window.YoursStorage.initialize();
+      if (!ready || !ready.ok) return [];
+      var convs = await window.LocalStore.listConversations(userId);
+      if (!convs.length) return [];
+      var ids = convs.map(function (c) { return c.characterId; }).filter(Boolean);
+      var charsById = {};
+      if (ids.length) {
+        try {
+          var res = await supabase
+            .from('characters')
+            .select('id,name,age,about,gender,personality,art_style,voice_id,circular_profile_image_url,character_feeds(media_url,media_type)')
+            .in('id', ids);
+          (res.data || []).forEach(function (c) { charsById[c.id] = c; });
+        } catch (e) { /* offline: rows without a character are skipped */ }
+      }
+      var out = [];
+      for (var i = 0; i < convs.length; i++) {
+        var conv = convs[i];
+        // Prefer the fresh catalog row; fall back to the offline snapshot.
+        var ch = charsById[conv.characterId] || conv.characterSnapshot;
+        if (!ch) continue;
+        var last = await window.LocalStore.getLastMessage(conv.id);
+        out.push({
+          id: conv.id,
+          character_id: conv.characterId,
+          character: ch,
+          last_message: last ? [{
+            content: previewForMessage(last),
+            created_at: last.createdAt,
+            sender_type: last.role === 'user' ? 'user' : 'character',
+          }] : [],
+          last_message_at: conv.updatedAt,
+        });
+      }
+      return out;
+    } catch (e) {
+      console.warn('local chats load failed', e);
+      return [];
+    }
+  }
+
+  // Load only the characters this user has actually talked to.
   var sessionPromise = supabase.auth.getSession().then(function (res) { return res.data.session || null; }).catch(function () { return null; });
 
   void (async function () {
     var session = await sessionPromise;
     if (!session) { render(); return; }
     try {
-      var resp = await window.YoursAPI.request('/conversations?userId=' + encodeURIComponent(session.user.id));
-      allConversations = resp.conversations || [];
+      var localConvs = await loadLocalConversations(session.user.id);
+      var cloudConvs = [];
+      try {
+        var resp = await window.YoursAPI.request('/conversations?userId=' + encodeURIComponent(session.user.id));
+        cloudConvs = resp.conversations || [];
+      } catch (e) { console.warn('cloud chats load failed', e); }
+
+      var localCharIds = {};
+      localConvs.forEach(function (c) { if (c.character_id) localCharIds[c.character_id] = true; });
+      allConversations = localConvs.concat(cloudConvs.filter(function (c) {
+        return !c.character_id || !localCharIds[c.character_id];
+      }));
+      allConversations.sort(function (a, b) {
+        return new Date(b.last_message_at || 0) - new Date(a.last_message_at || 0);
+      });
 
       var balEl = document.getElementById('chat-coin-balance');
       try {

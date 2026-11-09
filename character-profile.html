@@ -216,9 +216,10 @@
 <!-- END: Media Content Area -->
 <!-- BEGIN: Private Media Content Area -->
 <section data-purpose="private-media-tab-content" id="media-private" style="display:none;">
-<div class="flex flex-col items-center justify-center text-center py-16 px-6 min-h-[300px]">
+<div class="grid grid-cols-2 gap-4" id="private-media-grid"></div>
+<div class="flex flex-col items-center justify-center text-center py-16 px-6 min-h-[300px]" id="private-media-empty">
 <span class="text-gray-600"><i class="fa-solid fa-lock text-4xl"></i></span>
-<p class="mt-6 text-gray-400 text-base leading-relaxed max-w-xs">Images generated in the chat with the character will appear here, only you can see it.</p>
+<p class="mt-6 text-gray-400 text-base leading-relaxed max-w-xs">Images and videos generated in the chat with the character will appear here. Only you can see them.</p>
 </div>
 </section>
 <!-- END: Private Media Content Area -->
@@ -478,6 +479,12 @@
   })();
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/vendor/dexie.min.js"></script>
+<script src="js/db.js"></script>
+<script src="js/opfs.js"></script>
+<script src="js/local-store.js"></script>
+<script src="js/storage.js"></script>
+<script src="js/media-viewer.js"></script>
 <script>
   (function () {
     // Same project config as auth.html / feed.html
@@ -665,4 +672,111 @@
 <script src="js/animations.js"></script>
 
 <script src="js/api-client.js"></script>
+<script>
+(function () {
+  // ---- Private media tab: locally generated images/videos ----
+  var grid = document.getElementById('private-media-grid');
+  var empty = document.getElementById('private-media-empty');
+  var privateBtn = document.getElementById('media-private-btn');
+  var publicBtn = document.getElementById('media-public-btn');
+  var urls = [];
+  var loaded = false;
+
+  function release() {
+    urls.forEach(function (u) { try { URL.revokeObjectURL(u); } catch (e) {} });
+    urls = [];
+  }
+
+  function itemFrom(media, url) {
+    return {
+      id: media.id,
+      url: url,
+      kind: media.kind,
+      alt: (media.kind === 'video' ? 'Private video' : 'Private photo'),
+      fileName: media.fileName || (media.id + (media.kind === 'video' ? '.mp4' : '.jpg')),
+    };
+  }
+
+  function render(items) {
+    if (!grid) return;
+    grid.innerHTML = '';
+    if (empty) empty.style.display = items.length ? 'none' : '';
+    if (!items.length) return;
+    items.forEach(function (it, index) {
+      var cell = document.createElement('div');
+      cell.className = 'rounded-2xl overflow-hidden aspect-[1/1.4] bg-gray-900/60 relative cursor-pointer';
+      var el;
+      if (it.kind === 'video') {
+        el = document.createElement('video');
+        el.src = it.url;
+        el.muted = true;
+        el.playsInline = true;
+        el.preload = 'metadata';
+        el.style.cssText = 'width:100%;height:100%;object-fit:cover;';
+        var badge = document.createElement('div');
+        badge.className = 'absolute inset-0 flex items-center justify-center text-white text-2xl';
+        badge.innerHTML = '<i class="fa-solid fa-circle-play drop-shadow-lg"></i>';
+        cell.appendChild(badge);
+      } else {
+        el = document.createElement('img');
+        el.src = it.url;
+        el.alt = it.alt;
+        el.loading = 'lazy';
+        el.style.cssText = 'width:100%;height:100%;object-fit:cover;';
+      }
+      cell.appendChild(el);
+      cell.addEventListener('click', function () {
+        window.MediaViewer.open({ items: items.map(function (x) { return itemFrom(x.media, x.url); }), index: index });
+      });
+      grid.appendChild(cell);
+    });
+  }
+
+  var privateRetries = 0;
+  function loadPrivateMedia() {
+    if (!window.LocalStore || !window.OpfsStorage) {
+      if (empty) empty.style.display = '';
+      return;
+    }
+    var characterId = window.__char_id__ || null;
+    var userId = window.__user_id__ || null;
+    if (!characterId) {
+      // Character id resolves after the supabase fetch; retry shortly.
+      if (privateRetries++ < 25) setTimeout(loadPrivateMedia, 400);
+      else if (empty) empty.style.display = '';
+      return;
+    }
+    privateRetries = 0;
+    window.LocalStore.listCharacterMedia(characterId, userId, ['image', 'video'])
+      .then(function (rows) {
+        release();
+        return Promise.all(rows.map(function (media) {
+          return window.OpfsStorage.objectUrl(media).then(function (url) {
+            if (!url) return null;
+            urls.push(url);
+            return { media: media, url: url };
+          });
+        }));
+      })
+      .then(function (items) {
+        items = items.filter(Boolean);
+        loaded = true;
+        render(items);
+      })
+      .catch(function (err) {
+        console.warn('[private-media] load failed', err);
+        if (empty) empty.style.display = '';
+      });
+  }
+
+  if (privateBtn) {
+    privateBtn.addEventListener('click', function () { loadPrivateMedia(); });
+  }
+  if (publicBtn) {
+    publicBtn.addEventListener('click', function () { release(); });
+  }
+  // If the page is opened with the private view already active (e.g. back nav).
+  if (privateBtn && privateBtn.className.indexOf('bg-white') !== -1) loadPrivateMedia();
+})();
+</script>
 </body></html>

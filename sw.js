@@ -8,7 +8,7 @@
    - Cross-origin requests (Supabase, CDNs, R2 images) are
      never touched — they go straight to the network.
 */
-var CACHE = 'yours-v6';
+var CACHE = 'yours-v8';
 
 var PRECACHE = [
   './',
@@ -29,6 +29,17 @@ var PRECACHE = [
   'js/api-client.js',
   'js/onboarding.js',
   'js/desktop-shell.js',
+  'js/vendor/dexie.min.js',
+  'js/db.js',
+  'js/opfs.js',
+  'js/local-store.js',
+  'js/storage.js',
+  'js/media-viewer.js',
+  'js/memory.js',
+  'js/chat-engine.js',
+  'js/migrate.js',
+  'js/incoming-call.js',
+  'js/rag-worker.js',
   'icons/icon-192.png',
   'icons/icon-512.png',
   'icons/favicon-32.png',

@@ -730,7 +730,17 @@
 <!-- END: Private album modal -->
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/vendor/dexie.min.js"></script>
+<script src="js/db.js"></script>
+<script src="js/opfs.js"></script>
+<script src="js/local-store.js"></script>
+<script src="js/storage.js"></script>
+<script src="js/media-viewer.js"></script>
+<script src="js/memory.js"></script>
 <script src="js/api-client.js"></script>
+<script src="js/chat-engine.js"></script>
+<script src="js/migrate.js"></script>
+<script src="js/incoming-call.js"></script>
 <script src="js/desktop-shell.js"></script>
 <script>
 (function () {
@@ -892,7 +902,7 @@
     var bubble = document.createElement('div');
     bubble.className = 'msg-bubble msg-bubble-ai typing-indicator';
     var firstName = (CHARACTER.name || '').trim().split(/\s+/)[0] || 'Character';
-    var label = mode === 'picture' ? (firstName + ' is taking picture')
+    var label = (mode === 'picture' || mode === 'image') ? (firstName + ' is taking picture')
       : (mode === 'video' ? (firstName + ' is recording a video')
       : (mode === 'voice' ? (firstName + ' is recording her voice') : (firstName + ' is typing')));
     bubble.innerHTML =
@@ -915,70 +925,15 @@
   var pendingImage = null;      // data URL of an image attached to the input bar
   var viewportKeyboard = false; // set by visualViewport shrink detection
 
-  // ---- AI portrait generation (DeAPI) ----
-  // Phrases that should trigger a portrait generation instead of a text reply.
-  var IMAGE_REQUEST_PATTERNS = [
-    /send me a pic(?:ture)?/i,
-    /send me a photo/i,
-    /take a pic(?:ture)?/i,
-    /take a photo/i,
-    /show me a pic(?:ture)?/i,
-    /show me a photo/i,
-    /pic of you/i,
-    /photo of you/i,
-    /picture of you/i,
-    /send (?:me )?your pic/i,
-    /snap(?: a)? (?:pic|picture|photo)/i,
-  ];
-
-  function isImageRequest(text) {
-    if (!text) return false;
-    for (var i = 0; i < IMAGE_REQUEST_PATTERNS.length; i++) {
-      if (IMAGE_REQUEST_PATTERNS[i].test(text)) return true;
-    }
-    return false;
-  }
-
-  // ---- AI video request trigger ----
-  var VIDEO_REQUEST_PATTERNS = [
-    /send (?:me )?a video/i,
-    /send (?:me )?your video/i,
-    /record a video/i,
-    /record (?:a |your )?video/i,
-    /video of you/i,
-    /your video/i,
-    /make (?:me )?a video/i,
-    /film (?:a |your )?video/i,
-  ];
-
-  function isVideoRequest(text) {
-    if (!text) return false;
-    for (var i = 0; i < VIDEO_REQUEST_PATTERNS.length; i++) {
-      if (VIDEO_REQUEST_PATTERNS[i].test(text)) return true;
-    }
-    return false;
-  }
-
-  // ---- AI voice-note generation (Fish TTS via OpenRouter) ----
-  var VOICE_REQUEST_PATTERNS = [
-    /voice message/i,
-    /voice note/i,
-    /voice memo/i,
-    /send (?:me )?a voice/i,
-    /send (?:me )?an? audio/i,
-    /record (?:a |your )?voice/i,
-    /leave (?:me )?a voice/i,
-    /hear (?:your|you) voice/i,
-    /say something/i,
-  ];
-
-  function isVoiceRequest(text) {
-    if (!text) return false;
-    for (var i = 0; i < VOICE_REQUEST_PATTERNS.length; i++) {
-      if (VOICE_REQUEST_PATTERNS[i].test(text)) return true;
-    }
-    return false;
-  }
+  // ---- Intent classification ----
+  // Intent detection is performed by the AI classifier in the backend
+  // (`intentService.js` via `POST /api/v1/ai/respond`). There are no keyword
+  // lists here: implied requests like "do a seductive pose and send me it"
+  // are understood from conversation context.
+  var activeConversation = null;
+  var chatEngine = null;
+  var currentRender = [];
+  var uploadDbPromise = null;
 
   // Only one voice note plays at a time across the whole chat.
   var activeVoiceAudio = null;
@@ -1039,6 +994,7 @@
     chatArea.appendChild(row);
 
     var audio = new Audio(audioUrl);
+    activeAudios.push(audio);
     audio.preload = 'metadata';
     audio.addEventListener('loadedmetadata', function () {
       time.textContent = formatVoiceTime(audio.duration);
@@ -1076,39 +1032,14 @@
     return row;
   }
 
-  function sendVoiceRequest(text) {
-    sending = true;
-    showTyping('voice');
-    ensureConversation()
-      .then(function () {
-        return YoursAPI.generateVoiceMessage(CHARACTER.id, text, USER_ID, CONVERSATION_ID);
-      })
-      .then(function (data) {
-        sending = false;
-        hideTyping();
-        if (!data || !data.audioUrl) {
-          addCharacterMessage("My voice recorder's being shy — try again in a moment. 💕", true);
-          return;
-        }
-        addVoiceMessage(data.audioUrl, data.transcript);
-        scheduleMediaFollowUp();
-      })
-      .catch(function (err) {
-        sending = false;
-        hideTyping();
-        console.error('voice generation failed:', err);
-        var rlMsg = isRateLimitedError(err) && err.message ? err.message : null;
-        var detail = err && err.message ? err.message : String(err);
-        if (rlMsg) addCharacterMessage(rlMsg, true);
-        else addCharacterMessage(
-          "Hmm, my mic just cut out — give me a second and try again. 💕" + (window._debugErrors ? (' (' + detail + ')') : ''),
-          true
-        );
-      });
+  function isRateLimitedError(err) {
+    var msg = String((err && err.message) || '').toLowerCase();
+    return msg.indexOf('rate limit') !== -1 || msg.indexOf('429') !== -1 || msg.indexOf('resource_exhausted') !== -1;
   }
 
-  // Generated image bubble: blurred until tapped, tap again to maximize.
-  function addGeneratedImage(imageDataUrl) {
+  // Generated image bubble: blurred until tapped, then tap again to open the
+  // full-screen viewer (zoom/pan/download/navigation).
+  function addGeneratedImage(imageUrl, mediaId) {
     var row = document.createElement('div');
     row.className = 'msg-row msg-row-ai';
     var body = document.createElement('div');
@@ -1123,7 +1054,7 @@
     wrap.style.maxWidth = '260px';
 
     var img = document.createElement('img');
-    img.src = imageDataUrl;
+    img.src = imageUrl;
     img.alt = CHARACTER.name + ' photo';
     img.className = 'w-full max-h-80 object-cover transition-all duration-300';
     img.style.filter = 'blur(14px)';
@@ -1145,9 +1076,6 @@
     scrollBottom();
 
     var revealed = false;
-    var maximized = false;
-    var fullscreen = null;
-
     overlay.addEventListener('click', function () {
       if (!revealed) {
         revealed = true;
@@ -1155,34 +1083,18 @@
         img.style.transform = 'scale(1)';
         overlay.style.background = 'transparent';
         overlay.classList.add('cursor-zoom-in');
-        hint.style.display = 'none';
+        hint.innerHTML = '<i class="fa-solid fa-up-right-and-down-left-from-center"></i> Tap to view';
+        hint.style.display = '';
+        setTimeout(function () { if (revealed) hint.style.display = 'none'; }, 1400);
         return;
       }
-      // Revealed → tap to maximize into a fullscreen viewer.
-      if (maximized) { closeViewer(); return; }
-      maximized = true;
-      fullscreen = document.createElement('div');
-      fullscreen.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.95);display:flex;align-items:center;justify-content:center;';
-      var fsImg = document.createElement('img');
-      fsImg.src = imageDataUrl;
-      fsImg.style.cssText = 'max-width:94%;max-height:94%;object-fit:contain;border-radius:0.75rem;';
-      fullscreen.appendChild(fsImg);
-      fullscreen.addEventListener('click', closeViewer);
-      document.body.appendChild(fullscreen);
+      openChatViewer(mediaId);
     });
-
-    function closeViewer() {
-      if (fullscreen && fullscreen.parentNode) fullscreen.parentNode.removeChild(fullscreen);
-      fullscreen = null;
-      maximized = false;
-    }
-
-    albumCacheAdd({ media_url: imageDataUrl, created_at: new Date().toISOString() });
     return row;
   }
 
-  // AI video bubble: an inline player for a character sent video.
-  function addVideoMessage(videoUrl) {
+  // AI video bubble: inline player + expand-to-viewer.
+  function addVideoMessage(videoUrl, mediaId) {
     var row = document.createElement('div');
     row.className = 'msg-row msg-row-ai';
     var body = document.createElement('div');
@@ -1191,13 +1103,26 @@
     bubble.className = 'msg-bubble msg-bubble-ai';
     bubble.style.padding = '0';
     bubble.style.overflow = 'hidden';
+    var wrap = document.createElement('div');
+    wrap.style.position = 'relative';
     var vid = document.createElement('video');
     vid.src = videoUrl;
     vid.controls = true;
     vid.playsInline = true;
     vid.className = 'w-full';
     vid.style.cssText = 'max-width:260px;max-height:320px;object-fit:cover;border-radius:0.9rem;display:block;background:#000;';
-    bubble.appendChild(vid);
+    wrap.appendChild(vid);
+    var expand = document.createElement('button');
+    expand.type = 'button';
+    expand.setAttribute('aria-label', 'Open video viewer');
+    expand.style.cssText = 'position:absolute;top:8px;right:8px;width:32px;height:32px;border-radius:9999px;border:0;background:rgba(0,0,0,.55);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;';
+    expand.innerHTML = '<i class="fa-solid fa-up-right-and-down-left-from-center text-xs"></i>';
+    expand.addEventListener('click', function (e) {
+      e.stopPropagation();
+      openChatViewer(mediaId);
+    });
+    wrap.appendChild(expand);
+    bubble.appendChild(wrap);
     body.appendChild(bubble);
     row.appendChild(body);
     chatArea.appendChild(row);
@@ -1205,92 +1130,173 @@
     return row;
   }
 
-  function sendVideoRequest(text) {
-    sending = true;
-    showTyping('video');
-
-    ensureConversation()
-      .then(function () {
-        return YoursAPI.generateVideoMessage(CHARACTER.id, text, USER_ID, CONVERSATION_ID);
-      })
-      .then(function (data) {
-        sending = false;
-        hideTyping();
-        if (!data || !data.videoUrl) {
-          addCharacterMessage("My camera's catching its breath — try again in a moment. 💕", true);
-          return;
-        }
-        addVideoMessage(data.videoUrl);
-        scheduleMediaFollowUp();
-      })
-      .catch(function (err) {
-        sending = false;
-        hideTyping();
-        console.error('video generation failed:', err);
-        var rlMsg = isRateLimitedError(err) && err.message ? err.message : null;
-        var detail = err && err.message ? err.message : String(err);
-        if (rlMsg) addCharacterMessage(rlMsg, true);
-        else addCharacterMessage("Hmm, the camera's being fussy — give me a moment and try again. 💕" + (window._debugErrors ? (' (' + detail + ')') : ''), true);
+  // ---- Chat rendering from the local canonical store ----
+  function viewerItemsFor(kinds) {
+    var items = [];
+    for (var i = 0; i < currentRender.length; i++) {
+      var m = currentRender[i];
+      if (!m.media || !m.mediaUrl) continue;
+      if (kinds.indexOf(m.kind) === -1) continue;
+      items.push({
+        id: m.media.id,
+        url: m.mediaUrl,
+        kind: m.kind,
+        alt: (CHARACTER.name || 'Character') + ' ' + m.kind,
+        fileName: m.media.fileName || (m.media.id + (m.kind === 'video' ? '.mp4' : '.jpg')),
       });
+    }
+    return items;
   }
 
-  function sendPortraitRequest(text) {
-    sending = true;
-    showTyping('picture');
-
-    ensureConversation()
-      .then(function () {
-        return YoursAPI.generateCharacterImage(CHARACTER.id, text, USER_ID, CONVERSATION_ID);
-      })
-      .then(function (data) {
-        sending = false;
-        hideTyping();
-        if (!data || (!data.imageDataUrl && !data.imageUrl)) {
-          addCharacterMessage("Sorry, I couldn't take that picture right now — try again in a moment. 💕", true);
-          return;
-        }
-        addGeneratedImage(data.imageUrl || data.imageDataUrl);
-        scheduleMediaFollowUp();
-      })
-      .catch(function (err) {
-        sending = false;
-        hideTyping();
-        console.error('portrait generation failed:', err);
-        var rlMsg = isRateLimitedError(err) && err.message ? err.message : null;
-        var detail = err && err.message ? err.message : String(err);
-        if (rlMsg) addCharacterMessage(rlMsg, true);
-        else addCharacterMessage("Hmm, the camera's being fussy — give me a moment and try again. 💕" + (window._debugErrors ? (' (' + detail + ')') : ''), true);
-      });
+  function openChatViewer(mediaId) {
+    var items = viewerItemsFor(['image', 'video']);
+    var index = 0;
+    for (var i = 0; i < items.length; i++) {
+      if (items[i].id === mediaId) { index = i; break; }
+    }
+    if (!items.length && mediaId) {
+      // Fallback: open just the selected item.
+      var media = null;
+      for (var j = 0; j < currentRender.length; j++) {
+        if (currentRender[j].media && currentRender[j].media.id === mediaId) media = currentRender[j];
+      }
+      if (media && media.mediaUrl) {
+        items = [{ id: mediaId, url: media.mediaUrl, kind: media.kind, alt: CHARACTER.name + ' media' }];
+      }
+    }
+    if (items.length) window.MediaViewer.open({ items: items, index: index });
   }
 
-  // Random follow-up sent right after the AI delivers media
-  // (voice note, video, or generated picture). Picked at random, 0.5s later.
-  var MEDIA_FOLLOWUPS = [
-    'Hope you liked it!',
-    'How is it?',
-    'Hope I didn\'t disappoint',
-    'Here, it\'s not the best tho.',
-    'Let me know what you think 😊',
-    'Was that okay? 🥰',
-    'Tell me honestly… 👀'
-  ];
-
-  function pickMediaFollowup() {
-    return MEDIA_FOLLOWUPS[Math.floor(Math.random() * MEDIA_FOLLOWUPS.length)];
+  function addPendingMediaBubble(kind) {
+    var row = document.createElement('div');
+    row.className = 'msg-row msg-row-ai';
+    var body = document.createElement('div');
+    body.className = 'flex items-start gap-2';
+    var bubble = document.createElement('div');
+    bubble.className = 'msg-bubble msg-bubble-ai';
+    bubble.style.cssText = 'padding:0;overflow:hidden;';
+    var firstName = (CHARACTER.name || '').trim().split(/\s+/)[0] || 'Character';
+    var label = kind === 'video' ? (firstName + ' is recording a video')
+      : (kind === 'voice' ? (firstName + ' is recording her voice') : (firstName + ' is taking picture'));
+    var wrap = document.createElement('div');
+    wrap.style.cssText = 'width:240px;height:180px;display:flex;align-items:center;justify-content:center;background:linear-gradient(120deg,#1b1b1b,#262626,#1b1b1b);background-size:200% 100%;animation:skeletonShimmer 1.4s ease-in-out infinite;';
+    wrap.innerHTML = '<div class="typing-shimmer" style="font-size:.82rem;">' + label + '…</div>';
+    bubble.appendChild(wrap);
+    body.appendChild(bubble);
+    row.appendChild(body);
+    chatArea.appendChild(row);
+    scrollBottom();
+    return row;
   }
 
-  // Show typing for a beat, then drop the random follow-up line.
-  function scheduleMediaFollowUp() {
-    showTyping();
-    setTimeout(function () {
-      hideTyping();
-      addCharacterMessage(pickMediaFollowup(), true);
-    }, 500);
+  window.addEventListener('yours:migration', function (e) {
+    var detail = e && e.detail;
+    if (!detail || !detail.done) return;
+    // Refresh the local view so migrated messages appear without a reload.
+    if (chatEngine) {
+      chatEngine.load().then(renderMessages).catch(function () {});
+    }
+  });
+
+  var activeAudios = [];
+
+  function renderMessages(messages) {
+    currentRender = messages || [];
+    if (!chatArea) return;
+    // Detached <audio> elements keep playing after the DOM is replaced, so
+    // stop any voice note that is currently playing before re-rendering.
+    for (var a = 0; a < activeAudios.length; a++) {
+      try { activeAudios[a].pause(); } catch (e) {}
+    }
+    activeAudios = [];
+    chatArea.innerHTML = '';
+    for (var i = 0; i < currentRender.length; i++) {
+      var m = currentRender[i];
+      var kind = m.kind || (m.media && m.media.kind) || 'text';
+      if (m.role === 'user') {
+        if (m.media && m.mediaUrl && kind === 'image') addUserMessage(m.content, m.mediaUrl);
+        else addUserMessage(m.content);
+        continue;
+      }
+      if (kind === 'image') {
+        if (m.status === 'generating') addPendingMediaBubble('image');
+        else if (m.mediaUrl) addGeneratedImage(m.mediaUrl, m.media && m.media.id);
+        else addCharacterMessage(m.content || 'This photo is no longer available on this device.', false);
+        continue;
+      }
+      if (kind === 'video') {
+        if (m.status === 'generating') addPendingMediaBubble('video');
+        else if (m.mediaUrl) addVideoMessage(m.mediaUrl, m.media && m.media.id);
+        else addCharacterMessage(m.content || 'This video is no longer available on this device.', false);
+        continue;
+      }
+      if (kind === 'voice') {
+        if (m.status === 'generating') addPendingMediaBubble('voice');
+        else if (m.mediaUrl) addVoiceMessage(m.mediaUrl, m.content || (m.media && m.media.transcript) || '');
+        else addCharacterMessage(m.content || 'This voice message is no longer available on this device.', false);
+        continue;
+      }
+      if (m.content) addCharacterMessage(m.content, false);
+    }
+    scrollBottom();
+    markReady('msgs');
   }
 
-  function isRateLimitedError(err) {
-    var msg = String((err && err.message) || '').toLowerCase();
-    return msg.indexOf('rate limit') !== -1 || msg.indexOf('429') !== -1 || msg.indexOf('resource_exhausted') !== -1;
+  function showTypingMode(mode) {
+    if (!mode) { hideTyping(); return; }
+    hideTyping();
+    // Media generation already renders its own "taking picture" skeleton
+    // bubble, so don't stack a typing bubble on top of it.
+    if (mode === 'image' || mode === 'video' || mode === 'voice') return;
+    showTyping(mode);
+  }
+
+  // ---- Incoming call (character-initiated) ----
+  function promptIncomingCall(info) {
+    if (!window.IncomingCallOverlay) return;
+    try { sessionStorage.removeItem('yours_last_call'); } catch (e) {}
+    window.IncomingCallOverlay.show({
+      character: CHARACTER,
+      onAccept: function () {
+        try {
+          sessionStorage.setItem('yours_current_character', JSON.stringify(CHARACTER));
+          // The local conversation id is not a Supabase UUID; calls API stores
+          // conversation_id as NULL so no FK is violated.
+          sessionStorage.removeItem('yours_conversation_id');
+          sessionStorage.setItem('yours_call_autostart', '1');
+        } catch (e) {}
+        window.location.href = 'call.html';
+      },
+      onDecline: function () {
+        showToast((CHARACTER.name || 'They') + ' will call another time.');
+      },
+    });
+  }
+
+  function setupChatEngine() {
+    chatEngine = new ChatEngine({
+      userId: USER_ID,
+      character: CHARACTER,
+      conversation: activeConversation,
+      onEvent: handleChatEvent,
+    });
+  }
+
+  function handleChatEvent(type, payload) {
+    if (type === 'render') {
+      renderMessages(payload || []);
+    } else if (type === 'typing') {
+      sending = !!payload;
+      showTypingMode(payload && payload.mode);
+      updateSendIcon();
+    } else if (type === 'incoming-call') {
+      sending = false;
+      updateSendIcon();
+      promptIncomingCall(payload || {});
+    } else if (type === 'error') {
+      var msg = payload && payload.message;
+      if (msg && window.YoursStorage && /storage space/i.test(msg)) showToast(msg);
+    }
   }
 
   function ensureConversation() {
@@ -1307,173 +1313,72 @@
         });
       })
       .then(function () {
-        return YoursAPI.getOrCreateConversation(USER_ID, characterId);
+        if (!characterId) throw new Error('No character selected.');
+        return window.YoursStorage.initialize();
       })
-      .then(function (data) {
-        CONVERSATION_ID = data.conversation.id;
+      .then(function (ready) {
+        if (!ready || !ready.ok) throw (ready && ready.error) || new Error('Local storage unavailable');
+        return LocalStore.ensureConversation(USER_ID, characterId, CHARACTER.name);
+      })
+      .then(function (conv) {
+        activeConversation = conv;
+        CONVERSATION_ID = conv.id;
+        // Snapshot the character so the chat list can render offline.
+        if (CHARACTER && CHARACTER.id && (!conv.characterSnapshot || conv.characterSnapshot.name !== CHARACTER.name)) {
+          conv.characterSnapshot = CHARACTER;
+          LocalStore.updateConversation(conv.id, { characterSnapshot: CHARACTER }).catch(function () {});
+        }
+        if (!chatEngine) setupChatEngine();
+        // One-time legacy import + purge (after verification). Never blocks chat.
+        if (window.YoursMigrate) {
+          window.YoursMigrate.run(USER_ID).catch(function () {});
+        }
+        return conv;
       });
   }
 
   function loadExistingMessages() {
     return Promise.resolve()
       .then(function () {
-        if (!CONVERSATION_ID) return null;
-        return YoursAPI.getMessages(CONVERSATION_ID, USER_ID);
+        if (!chatEngine) return null;
+        return chatEngine.load();
       })
-      .then(function (data) {
-        if (!data || !data.messages) return;
-        chatArea.innerHTML = '';
-        var messages = data.messages;
-        for (var i = 0; i < messages.length; i++) {
-          var m = messages[i];
-          if (m.sender_type === 'user') {
-            addUserMessage(m.content);
-          } else if (m.message_type === 'voice' && (m.media_url || m.content)) {
-            addVoiceMessage(m.media_url, m.content);
-          } else if (m.message_type === 'image' && (m.media_url || m.content)) {
-            addGeneratedImage(m.media_url || m.content);
-          } else if (m.message_type === 'video' && (m.media_url || m.content)) {
-            addVideoMessage(m.media_url || m.content);
-          } else {
-            addCharacterMessage(m.content, false);
-          }
-        }
-        scrollBottom();
+      .then(function (messages) {
+        renderMessages(messages || []);
       });
-  }
-
-  // ---- Persist user-uploaded images in IndexedDB, tagged with the user id ----
-  var UPLOAD_DB = 'yours_uploads';
-  var UPLOAD_STORE = 'user_images';
-  var MAX_STORED_UPLOADS = 30; // per user, oldest pruned first
-
-  function openUploadDb() {
-    return new Promise(function (resolve, reject) {
-      if (!window.indexedDB) { reject(new Error('IndexedDB unavailable')); return; }
-      var req = indexedDB.open(UPLOAD_DB, 1);
-      req.onupgradeneeded = function () {
-        var db = req.result;
-        if (!db.objectStoreNames.contains(UPLOAD_STORE)) {
-          var store = db.createObjectStore(UPLOAD_STORE, { keyPath: 'id', autoIncrement: true });
-          store.createIndex('userId', 'userId');
-        }
-      };
-      req.onsuccess = function () { resolve(req.result); };
-      req.onerror = function () { reject(req.error); };
-    });
-  }
-
-  function saveUserUpload(dataUrl) {
-    if (!dataUrl || !USER_ID) return Promise.resolve();
-    return openUploadDb().then(function (db) {
-      return new Promise(function (resolve, reject) {
-        var tx = db.transaction(UPLOAD_STORE, 'readwrite');
-        var store = tx.objectStore(UPLOAD_STORE);
-        store.add({
-          userId: USER_ID,
-          characterId: CHARACTER.id || null,
-          dataUrl: dataUrl,
-          ts: Date.now(),
-        });
-        // Prune this user's oldest uploads beyond the cap (same transaction).
-        var items = [];
-        var cursorReq = store.index('userId').openCursor(IDBKeyRange.only(USER_ID));
-        cursorReq.onsuccess = function (e) {
-          var cursor = e.target.result;
-          if (cursor) {
-            items.push({ pk: cursor.primaryKey, ts: cursor.value.ts });
-            cursor.continue();
-          } else {
-            items.sort(function (a, b) { return b.ts - a.ts; });
-            items.slice(MAX_STORED_UPLOADS).forEach(function (it) { store.delete(it.pk); });
-          }
-        };
-        tx.oncomplete = function () { resolve(); };
-        tx.onerror = function () { reject(tx.error); };
-      });
-    }).catch(function (err) {
-      console.warn('saveUserUpload failed:', err && err.message);
-    });
   }
 
   function sendMessage() {
+    if (sending) return;
     var text = input.value.trim();
     var image = pendingImage;
-    // AI voice-note request (text only, no attached image).
-    if (text && !image && isVoiceRequest(text)) {
-      input.value = '';
-      updateSendIcon();
-      addUserMessage(text);
-      sendVoiceRequest(text);
-      return;
-    }
+    if (!text && !image) return;
 
-    // AI video-clip request (text only, no attached image).
-    if (text && !image && isVideoRequest(text)) {
-      input.value = '';
-      updateSendIcon();
-      addUserMessage(text);
-      sendVideoRequest(text);
-      return;
-    }
-
-    // AI portrait generation request (text only, no attached image).
-    if (text && !image && isImageRequest(text)) {
-      input.value = '';
-      updateSendIcon();
-      addUserMessage(text);
-      sendPortraitRequest(text);
-      return;
-    }
-
-    if ((!text && !image) || sending) return;
-    var videoRequest = !image && isVideoRequest(text);
     input.value = '';
-    clearPendingImage();
     updateSendIcon();
-    addUserMessage(text, image);
+    if (image) clearPendingImage();
     sending = true;
-    showTyping(videoRequest ? 'video' : undefined);
 
     ensureConversation()
       .then(function () {
-        return YoursAPI.sendMessage(CONVERSATION_ID, USER_ID, CHARACTER.id || undefined, text, image);
+        return chatEngine.send({ text: text, imageDataUrl: image || null });
       })
-      .then(function (data) {
+      .then(function () {
         sending = false;
-        hideTyping();
-        // Persist the uploaded image to browser storage under the user id.
-        if (image) saveUserUpload(image);
-        var am = data && data.aiMessage;
-        if (am && am.message_type === 'video' && (am.media_url || am.content)) {
-          addVideoMessage(am.media_url || am.content);
-          scheduleMediaFollowUp();
-          return;
-        }
-        if (am && am.message_type === 'voice' && (am.media_url || am.content)) {
-          addVoiceMessage(am.media_url, am.content);
-          scheduleMediaFollowUp();
-          return;
-        }
-        if (am && am.message_type === 'image' && (am.media_url || am.content)) {
-          addGeneratedImage(am.media_url || am.content);
-          scheduleMediaFollowUp();
-          return;
-        }
-        var reply = (am && am.content) || "I'm right here with you.";
-        addCharacterMessage(reply, true);
+        updateSendIcon();
       })
       .catch(function (err) {
         sending = false;
+        updateSendIcon();
         hideTyping();
         console.error('send message failed:', err);
-        if (isRateLimitedError(err)) {
-          var rlMsg = (err && err.message) ? err.message : "I'm feeling a bit distant right now, but I'm here for you! Tell me more.";
-          addCharacterMessage(rlMsg, true);
-        } else {
-          var detail = err && err.message ? err.message : String(err);
-          addCharacterMessage("Something went wrong on my end — give me a moment and try again. 💕" + (window._debugErrors ? (' (' + detail + ')') : ''), true);
-        }
+        var detail = err && err.message ? err.message : String(err);
+        addCharacterMessage(
+          (isRateLimitedError(err)
+            ? ((err && err.message) || "I'm feeling a bit distant right now, but I'm here for you! Tell me more.")
+            : "Something went wrong on my end — give me a moment and try again. 💕" + (window._debugErrors ? (' (' + detail + ')') : '')),
+          true
+        );
       });
   }
 
@@ -1613,34 +1518,7 @@
   var albumTitle = document.getElementById('album-title');
   var albumSubtitle = document.getElementById('album-subtitle');
 
-  var ALBUM_CACHE_KEY = function () {
-    return 'yours_album_' + USER_ID + '_' + CHARACTER.id;
-  };
-  var ALBUM_TTL = 60 * 60 * 1000;
-
-  function albumCacheRead() {
-    try {
-      var raw = sessionStorage.getItem(ALBUM_CACHE_KEY());
-      if (!raw) return null;
-      var cached = JSON.parse(raw);
-      if (!cached || !cached.ts || (Date.now() - cached.ts) > ALBUM_TTL) return null;
-      return cached.items || null;
-    } catch (e) { return null; }
-  }
-
-  function albumCacheWrite(items) {
-    try {
-      sessionStorage.setItem(ALBUM_CACHE_KEY(), JSON.stringify({ ts: Date.now(), items: items }));
-    } catch (e) {}
-  }
-
-  function albumCacheAdd(item) {
-    try {
-      var list = albumCacheRead() || [];
-      var exists = list.some(function (m) { return m.media_url === item.media_url; });
-      if (!exists) { list.unshift(item); albumCacheWrite(list); }
-    } catch (e) {}
-  }
+  var albumObjectUrls = [];
 
   function openAlbumModal() {
     if (!albumModal || !albumPanel) return;
@@ -1657,6 +1535,8 @@
     albumPanel.style.transform = 'scale(.95)';
     setTimeout(function () {
       if (albumModal) albumModal.style.display = 'none';
+      albumObjectUrls.forEach(function (u) { try { URL.revokeObjectURL(u); } catch (e) {} });
+      albumObjectUrls = [];
     }, 250);
   }
 
@@ -1666,49 +1546,82 @@
     var hasItems = items && items.length > 0;
     if (albumEmpty) albumEmpty.classList.toggle('hidden', hasItems);
     if (!hasItems) return;
-    for (var i = 0; i < items.length; i++) {
-      var url = items[i].media_url;
-      if (!url) continue;
+    items.forEach(function (item, index) {
+      if (!item.url) return;
       var wrap = document.createElement('div');
       wrap.style.cssText = 'position:relative;aspect-ratio:1/1;border-radius:1rem;overflow:hidden;background:#0e0e0e;cursor:pointer;';
-      var img = document.createElement('img');
-      img.src = url;
-      img.alt = 'Private photo';
-      img.loading = 'lazy';
-      img.style.cssText = 'width:100%;height:100%;object-fit:cover;';
-      wrap.appendChild(img);
+      var el;
+      if (item.kind === 'video') {
+        el = document.createElement('video');
+        el.src = item.url;
+        el.muted = true;
+        el.playsInline = true;
+        el.preload = 'metadata';
+        el.style.cssText = 'width:100%;height:100%;object-fit:cover;';
+        var badge = document.createElement('div');
+        badge.style.cssText = 'position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:22px;text-shadow:0 2px 8px rgba(0,0,0,.6);';
+        badge.innerHTML = '<i class="fa-solid fa-circle-play"></i>';
+        wrap.appendChild(badge);
+      } else {
+        el = document.createElement('img');
+        el.src = item.url;
+        el.alt = 'Private photo';
+        el.loading = 'lazy';
+        el.style.cssText = 'width:100%;height:100%;object-fit:cover;';
+      }
+      wrap.appendChild(el);
       wrap.addEventListener('click', function () {
-        var f = document.createElement('div');
-        f.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.95);display:flex;align-items:center;justify-content:center;';
-        var big = document.createElement('img');
-        big.src = this.querySelector('img').src;
-        big.style.cssText = 'max-width:94%;max-height:94%;object-fit:contain;border-radius:.75rem;';
-        f.appendChild(big);
-        f.addEventListener('click', function () { document.body.removeChild(f); });
-        document.body.appendChild(f);
+        window.MediaViewer.open({
+          items: items.map(function (it) {
+            return {
+              id: it.id,
+              url: it.url,
+              kind: it.kind,
+              alt: 'Private ' + it.kind,
+              fileName: it.fileName,
+            };
+          }),
+          index: index,
+        });
       });
       albumGrid.appendChild(wrap);
-    }
+    });
   }
 
   function openAlbum() {
     var uid = USER_ID;
-    if (!uid) { showToast('Please sign in to view your photos.'); return; }
     if (albumTitle) albumTitle.textContent = characterFirstName() + '\u2019s Photos';
     if (albumSubtitle) albumSubtitle.textContent = 'Private — only you can see these';
     openAlbumModal();
     renderAlbum([]);
-    var cached = albumCacheRead();
-    if (cached) { renderAlbum(cached); return; }
-    YoursAPI.getCharacterChatMedia(CHARACTER.id, uid)
-      .then(function (data) {
-        var items = (data && data.media) || [];
-        albumCacheWrite(items);
+    if (albumEmpty) albumEmpty.textContent = 'Loading…';
+    if (!uid) {
+      if (albumEmpty) albumEmpty.textContent = 'Please sign in to view your photos.';
+      return;
+    }
+    var characterId = CHARACTER.id;
+    window.LocalStore.listCharacterMedia(characterId, uid, ['image', 'video'])
+      .then(function (rows) {
+        return Promise.all(rows.map(function (media) {
+          return window.OpfsStorage.objectUrl(media).then(function (url) {
+            if (url) albumObjectUrls.push(url);
+            return {
+              id: media.id,
+              url: url,
+              kind: media.kind,
+              fileName: media.fileName || (media.id + (media.kind === 'video' ? '.mp4' : '.jpg')),
+            };
+          });
+        }));
+      })
+      .then(function (items) {
+        items = items.filter(function (it) { return !!it.url; });
+        if (albumEmpty) albumEmpty.textContent = 'No photos yet. Ask ' + characterFirstName() + ' for a picture in the chat and it will appear here.';
         renderAlbum(items);
       })
       .catch(function (err) {
         console.error('album fetch failed:', err);
-        if (albumEmpty) albumEmpty.textContent = 'Could not load photos. Try again.';
+        if (albumEmpty) albumEmpty.textContent = 'Could not load photos from this device.';
       });
   }
 
@@ -1749,20 +1662,14 @@
   if (callBtn) {
     callBtn.addEventListener('click', function () {
       if (menuBtn && dropdown) dropdown.classList.add('hidden');
-      try { sessionStorage.setItem('yours_current_character', JSON.stringify(CHARACTER)); } catch (e) {}
-      // Navigate immediately when the conversation is already known; only
-      // wait on the API when it isn't, so the call page opens fast.
-      if (CONVERSATION_ID) {
-        try { sessionStorage.setItem('yours_conversation_id', CONVERSATION_ID); } catch (e) {}
-        window.location.href = 'call.html';
-        return;
-      }
-      ensureConversation().then(function () {
-        try { sessionStorage.setItem('yours_conversation_id', CONVERSATION_ID); } catch (e) {}
-        window.location.href = 'call.html';
-      }).catch(function (err) {
-        showToast((err && err.message) || 'Please sign in first.');
-      });
+      try {
+        sessionStorage.setItem('yours_current_character', JSON.stringify(CHARACTER));
+        // Calls are recorded in Supabase without a conversation FK; local
+        // conversation ids are not server UUIDs.
+        sessionStorage.removeItem('yours_conversation_id');
+        sessionStorage.removeItem('yours_call_autostart');
+      } catch (e) {}
+      window.location.href = 'call.html';
     });
   }
 
@@ -1790,20 +1697,15 @@
     if (resetCancel) resetCancel.addEventListener('click', closeResetModal);
     if (resetBackdrop) resetBackdrop.addEventListener('click', closeResetModal);
     if (resetConfirm) resetConfirm.addEventListener('click', function () {
-      var convId = CONVERSATION_ID;
       var finish = function () {
-        chatArea.innerHTML = '';
-        addCharacterMessage('Fresh start... what shall we talk about? \u2728', true);
         closeResetModal();
       };
-      if (convId && USER_ID && window.YoursAPI && YoursAPI.resetConversation) {
-        resetConfirm.disabled = true;
-        YoursAPI.resetConversation(convId, USER_ID).then(finish).catch(finish).then(function () {
-          resetConfirm.disabled = false;
-        });
-      } else {
-        finish();
-      }
+      resetConfirm.disabled = true;
+      ensureConversation()
+        .then(function () { return chatEngine.reset(); })
+        .then(finish)
+        .catch(function () { finish(); })
+        .then(function () { resetConfirm.disabled = false; });
     });
   }
 
@@ -2045,15 +1947,16 @@
     if (seeded) return;
     seeded = true;
     ensureConversation()
+      .then(function () { return chatEngine.seedIfEmpty(); })
       .then(function () { return loadExistingMessages(); })
       .then(function () {
+        showLastCallBubble();
+      })
+      .catch(function (err) {
+        console.error('chat load failed:', err);
         if (!chatArea.childNodes.length) {
           addCharacterMessage('Hey, I\'m ' + CHARACTER.name + '. I\'m so happy you found me — tell me about your day! 💕', true);
         }
-        showLastCallBubble();
-      })
-      .catch(function () {
-        addCharacterMessage('Hey, I\'m ' + CHARACTER.name + '. I\'m so happy you found me — tell me about your day! 💕', true);
         showLastCallBubble();
       })
       .then(function () { markReady('msgs'); });

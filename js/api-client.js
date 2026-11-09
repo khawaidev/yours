@@ -432,6 +432,68 @@ class YoursAPI {
     return this.request(`/characters/${characterId}/chat-media?userId=${encodeURIComponent(userId)}`);
   }
 
+  // --- STATELESS AI (local-first) ---
+  // The backend only performs inference/generation; the browser persists all
+  // user content in IndexedDB + OPFS.
+
+  /** Classify a turn and generate the text/acknowledgement. Writes nothing. */
+  static async aiRespond(payload) {
+    return this.request('/ai/respond', {
+      method: 'POST',
+      body: JSON.stringify(payload || {}),
+    });
+  }
+
+  /** Generate an image; returns { dataUrl, mimeType }. */
+  static async aiGenerateImage(payload) {
+    return this.request('/ai/generate-image', {
+      method: 'POST',
+      body: JSON.stringify(payload || {}),
+    });
+  }
+
+  /** Generate a short video; returns { dataUrl, mimeType }. */
+  static async aiGenerateVideo(payload) {
+    return this.request('/ai/generate-video', {
+      method: 'POST',
+      body: JSON.stringify(payload || {}),
+    });
+  }
+
+  /** Generate a voice note; returns { audioBase64, mimeType, transcript }. */
+  static async aiGenerateVoice(payload) {
+    return this.request('/ai/generate-voice', {
+      method: 'POST',
+      body: JSON.stringify(payload || {}),
+    });
+  }
+
+  /** One-time legacy export from Supabase/R2 (chat + media references). */
+  static async exportLegacyData(userId) {
+    return this.request(`/ai/migrate/export?userId=${encodeURIComponent(userId)}`);
+  }
+
+  /** Download legacy media bytes through the backend (CORS-safe). */
+  static async fetchLegacyMedia(url) {
+    const base = (window.LOCATION_API_BASE_URL || API_BASE_URL).replace(/\/api\/v1\/?$/, '');
+    const full = base + '/api/v1/ai/migrate/fetch-media?url=' + encodeURIComponent(url);
+    const headers = {};
+    const token = YoursAPI.getAccessToken();
+    if (token) headers.Authorization = 'Bearer ' + token;
+    const res = await fetch(full, { headers });
+    if (!res.ok) throw new Error('Legacy media download failed (' + res.status + ')');
+    return res.blob();
+  }
+
+  /** Purge the user's cloud chat/media/memories after a verified local import. */
+  static async purgeLegacyData(userId) {
+    return this.request('/ai/migrate/purge', {
+      method: 'POST',
+      body: JSON.stringify({ userId }),
+    });
+  }
+
+
   // --- CONVERSATIONS & MESSAGES ---
   static async getOrCreateConversation(userId, characterId) {
     return this.request('/conversations', {

@@ -222,6 +222,11 @@ Continue
   try { character = JSON.parse(sessionStorage.getItem('yours_current_character') || 'null'); } catch (e) { character = null; }
   var conversationId = null;
   try { conversationId = sessionStorage.getItem('yours_conversation_id') || null; } catch (e) {}
+  // Chat conversations are stored locally now and are not Supabase UUIDs.
+  // Only forward a real server UUID so the calls FK stays valid.
+  if (conversationId && !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(conversationId)) {
+    conversationId = null;
+  }
   if (!character || !character.id) {
     window.location.href = 'user-profile.html';
     return;
@@ -838,6 +843,65 @@ Continue
     finishCall();
   });
 
+  // ================= CALL NAVIGATION GUARD =================
+  // While a call is live, keep the user on this page. First back warns, second
+  // back actually hangs up. The sentinel also stops accidental history exits.
+  var backWarned = false;
+  try { history.pushState({ yoursCall: true }, '', window.location.href); } catch (e) {}
+  window.addEventListener('popstate', function () {
+    if (ended) return;
+    if (!backWarned) {
+      backWarned = true;
+      showCallToast('Press back again to end the call');
+      try { history.pushState({ yoursCall: true }, '', window.location.href); } catch (e) {}
+      setTimeout(function () { backWarned = false; }, 2500);
+      return;
+    }
+    callEndedByUser = true;
+    finishCall();
+  });
+
+  function showCallToast(text) {
+    var el = document.getElementById('call-toast');
+    if (!el) {
+      el = document.createElement('div');
+      el.id = 'call-toast';
+      el.style.cssText = 'position:fixed;left:50%;bottom:9rem;transform:translateX(-50%);z-index:9998;background:rgba(20,20,20,.92);color:#fff;padding:.7rem 1.1rem;border-radius:9999px;font:600 13px/1.2 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;box-shadow:0 8px 24px rgba(0,0,0,.45);border:1px solid rgba(255,255,255,.12);white-space:nowrap;';
+      document.body.appendChild(el);
+    }
+    el.textContent = text;
+    el.style.opacity = '1';
+    clearTimeout(showCallToast._t);
+    showCallToast._t = setTimeout(function () { el.style.opacity = '0'; }, 2200);
+  }
+
+  // End the call when the app/page goes away. `keepalive` lets the request
+  // outlive the document (sendBeacon cannot attach the auth header).
+  var apiBase = (window.LOCATION_API_BASE_URL ||
+    (/^(localhost|127\.0\.0\.1|10\.|192\.168\.)/.test(window.location.hostname || '')
+      ? 'http://' + (window.location.hostname || 'localhost') + ':5000/api/v1'
+      : 'https://yours-backend-e38m.onrender.com/api/v1'));
+  var exitEndSent = false;
+  function endCallOnExit() {
+    if (ended || exitEndSent || !callId || !userId) return;
+    exitEndSent = true;
+    try {
+      var token = YoursAPI.getAccessToken();
+      var duration = liveStartedAt ? Math.max(0, Math.round((Date.now() - liveStartedAt) / 1000)) : 0;
+      fetch(apiBase + '/calls/' + encodeURIComponent(callId) + '/end', {
+        method: 'POST',
+        keepalive: true,
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: 'Bearer ' + token } : {}),
+        },
+        body: JSON.stringify({ userId: userId, metrics: { durationSeconds: duration } }),
+      }).catch(function () {});
+    } catch (e) {}
+  }
+  window.addEventListener('pagehide', endCallOnExit);
+  window.addEventListener('beforeunload', endCallOnExit);
+
   // ================= RATING / FEEDBACK FLOW =================
   var FEEDBACK_COOLDOWN_MS = 24 * 60 * 60 * 1000;
   function feedbackCooldownKey() { return 'yours_call_feedback_at_' + (userId || 'anon'); }
@@ -999,6 +1063,13 @@ Continue
       return;
     }
     userId = session.user.id;
+    // Character-initiated calls set this flag from the incoming-call overlay.
+    try {
+      if (sessionStorage.getItem('yours_call_autostart') === '1') {
+        sessionStorage.removeItem('yours_call_autostart');
+        setStatus('Connected');
+      }
+    } catch (e) {}
     // Open the live stream first; persist the call record in parallel so
     // the connection isn't blocked by an API round trip.
     liveStartedAt = Date.now();
