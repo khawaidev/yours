@@ -146,9 +146,27 @@
 <!-- END: Skeleton Loading Screen -->
 <!-- BEGIN: Background -->
 <div id="auth-bg" class="absolute inset-0 z-0 h-full">
-<img alt="Background" class="w-full h-full object-cover opacity-80 mix-blend-overlay bg-zoom" src="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/IMG_20260807_032009.png">
+<img alt="Background" class="w-full h-full object-cover opacity-80 mix-blend-overlay bg-zoom" id="auth-bg-img" src="Assets/sweet%20girl.png">
 <div class="absolute inset-0 bg-image-overlay"></div>
 </div>
+<script>
+  // Match the sign-up background to the archetype picked on the
+  // eye-interest page, using the same local images as the analysis screen.
+  (function applyChoiceBackground() {
+    var ARCHETYPE_BG = {
+      boss_lady: 'Assets/boss%20lady.png',
+      milf: 'Assets/milf.jpg',
+      adult_collage_girl: 'Assets/collage%20girl.png',
+      sweet_girl: 'Assets/sweet%20girl.png',
+      // Answers saved before the "Empress lady" -> "Boss lady" rename.
+      empress_lady: 'Assets/boss%20lady.png',
+    };
+    var choice = window.YSOnboarding ? YSOnboarding.get('archetype') : null;
+    var bg = ARCHETYPE_BG[choice] || ARCHETYPE_BG.sweet_girl;
+    var img = document.getElementById('auth-bg-img');
+    if (img) img.src = bg;
+  })();
+</script>
 <!-- END: Background -->
 <!-- BEGIN: Main Content -->
 <main id="auth-content" class="relative z-10 flex flex-col h-full w-full max-w-md px-6 py-12 flex-grow justify-end">
