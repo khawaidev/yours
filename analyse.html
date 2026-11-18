@@ -14,7 +14,6 @@
     }
   </style>
 <style data-purpose="background-blur">.bg-image {
-    background-image: url(https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/ChatGPT%20Image%20Aug%208%2C%202026%2C%2001_40_45%20AM.png);
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -43,7 +42,7 @@
     }
   </style>
 <link data-snapdom="injected-import" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&amp;display=swap" rel="stylesheet"></head>
-<body class="bg-gray-900 text-white min-h-screen flex flex-col justify-between overflow-hidden app-page"><div class="absolute inset-0 z-0" style="background-image: url('https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev/images/yours/ChatGPT%20Image%20Aug%208%2C%202026%2C%2001_40_45%20AM.png'); background-size: cover; background-position: center center; filter: blur(28px); transform: scale(1.2);"></div>
+<body class="bg-gray-900 text-white min-h-screen flex flex-col justify-between overflow-hidden app-page"><div class="absolute inset-0 z-0" id="analyse-bg" style="background-size: cover; background-position: center center; filter: blur(28px); transform: scale(1.2);"></div>
 <!-- Main Content Wrapper to ensure z-index over the blur overlay -->
 <div class="relative z-10 flex flex-col min-h-screen p-6 pt-24 pb-12">
 <!-- BEGIN: Top Section - Statistic -->
@@ -87,6 +86,23 @@
 
 <script src="js/onboarding.js"></script>
 <script>
+  // Use the archetype picked on the eye-interest page as the blurred
+  // background, so the analysis screen matches the user's choice.
+  var ARCHETYPE_BG = {
+    boss_lady: 'Assets/boss%20lady.png',
+    milf: 'Assets/milf.jpg',
+    adult_collage_girl: 'Assets/collage%20girl.png',
+    sweet_girl: 'Assets/sweet%20girl.png',
+    // Answers saved before the "Empress lady" -> "Boss lady" rename.
+    empress_lady: 'Assets/boss%20lady.png',
+  };
+  (function applyChoiceBackground() {
+    var choice = YSOnboarding.get('archetype');
+    var bg = ARCHETYPE_BG[choice] || ARCHETYPE_BG.sweet_girl;
+    var el = document.getElementById('analyse-bg');
+    if (el) el.style.backgroundImage = "url('" + bg + "')";
+  })();
+
   // The onboarding answers are already saved in sessionStorage. Once the
   // "analysis" finishes, the visitor signs up — auth.html creates the account
   // with these answers (or, for an existing account, discards them and logs in).
