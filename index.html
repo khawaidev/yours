@@ -771,10 +771,14 @@
     var swapping = false;
     var popup = document.getElementById('guest-signup-popup');
 
+    // Twitter-style verified seal (blue burst + white tick).
+    var VERIFIED_BADGE = '<svg viewBox="0 0 24 24" width="17" height="17" style="display:inline-block;vertical-align:-3px;margin-left:4px" role="img" aria-label="Verified"><path fill="#1d9bf0" d="M12 1.6l2.9 2 3.5-.5 1.3 3.3 3.3 1.3-.5 3.5 2 2.9-2 2.9.5 3.5-3.3 1.3-1.3 3.3-3.5-.5-2.9 2-2.9-2-3.5.5-1.3-3.3L1.1 19l.5-3.5-2-2.9 2-2.9-.5-3.5L4.4 4.9l1.3-3.3 3.5.5z"/><path fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="M8 12.2l2.6 2.6 5.2-5.4"/></svg>';
+
     function toShape(c, feed) {
       return {
         id: c.id,
         name: c.name + (c.age != null ? ', ' + c.age : ''),
+        verified: c.verified === true,
         age: c.age != null ? c.age : null,
         about: c.about || '',
         bg: (feed && feed.media_url) || c.circular_profile_image_url || '',
@@ -858,7 +862,7 @@
       setTimeout(function () {
         var prevBg = bg ? bg.getAttribute('src') || '' : '';
         if (bg) { bg.src = c.bg; bg.alt = c.name + ' photo'; }
-        if (name) name.textContent = c.name;
+        if (name) { name.textContent = c.name; if (c.verified === true) name.insertAdjacentHTML('beforeend', VERIFIED_BADGE); }
         if (about) about.textContent = c.about;
         if (avatar) { avatar.src = c.avatar; avatar.alt = c.name + ' avatar'; }
         // Track the currently-shown character in a shape the messaging /
@@ -1256,7 +1260,7 @@
         if (!bgUrl && feedMedia) bgUrl = feedMedia.media_url;
         bgEl.src = bgUrl;
       }
-      if (nameEl) nameEl.textContent = c.name + ', ' + c.age;
+      if (nameEl) { nameEl.textContent = c.name + ', ' + c.age; if (c.verified === true) nameEl.insertAdjacentHTML('beforeend', VERIFIED_BADGE); }
       if (aboutEl) aboutEl.textContent = c.about || '';
       if (avatarEl) avatarEl.src = c.circular_profile_image_url || '';
       avatarEl.alt = c.name + ' avatar';
@@ -1355,7 +1359,7 @@
       if (window.feedSkeleton) window.feedSkeleton.show();
       var { data: chars, error } = await supabase
         .from('characters')
-        .select('id,name,age,about,gender,personality,message_style,art_style,voice_id,circular_profile_image_url,character_feeds(media_url,media_type)')
+        .select('id,name,age,about,gender,personality,message_style,art_style,voice_id,circular_profile_image_url,verified,character_feeds(media_url,media_type)')
         .eq('is_active', true);
       if (error) {
         console.warn('feed load failed', error.message);
