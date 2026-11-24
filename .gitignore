@@ -1,2 +1,2 @@
-# admin.html is tracked: it no longer embeds the service_role key (it is
-# pasted once per browser and kept in localStorage).
+# admin.html is tracked (no embedded keys). Its local key file is not.
+admin.config.js

@@ -159,7 +159,7 @@ select.field-input option { background: #fff; color: #000; }
         <input class="field-input" id="service-key" placeholder="eyJhbGci..." type="password">
       </div>
     </div>
-    <p class="text-xs text-gray-500 leading-relaxed">Project URL and anon key are prefilled. Paste the service role key once from your backend <code class="text-gray-400">.env</code> — it is never stored in this page's source, only in this browser (localStorage). The service role key bypasses RLS, so never paste it on a shared machine.</p>
+    <p class="text-xs text-gray-500 leading-relaxed">Prefilled from this browser's saved keys, otherwise from the local <code class="text-gray-400">admin.config.js</code> (gitignored, generated from your backend <code class="text-gray-400">.env</code>). If the service key box is empty, paste it once from that <code class="text-gray-400">.env</code> — it is never stored in this page's source, only in localStorage. The service role key bypasses RLS, so never paste it on a shared machine.</p>
   </div>
 </section>
 
@@ -285,6 +285,9 @@ select.field-input option { background: #fff; color: #000; }
 <div class="toast" id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- Local-only keys (gitignored). If admin.config.js is missing the page still
+     works: prefill comes from localStorage and the fields can be typed in. -->
+<script src="admin.config.js"></script>
 <script>
 (function () {
   var KEYS = 'yours_admin_keys';
@@ -292,10 +295,10 @@ select.field-input option { background: #fff; color: #000; }
   // Twitter-style verified seal: blue burst + white tick.
   var VERIFIED_BADGE = '<svg viewBox="0 0 24 24" width="17" height="17" style="display:inline-block;vertical-align:-3px;margin-left:4px" role="img" aria-label="Verified"><path fill="#1d9bf0" d="M12 1.6l2.9 2 3.5-.5 1.3 3.3 3.3 1.3-.5 3.5 2 2.9-2 2.9.5 3.5-3.3 1.3-1.3 3.3-3.5-.5-2.9 2-2.9-2-3.5.5-1.3-3.3L1.1 19l.5-3.5-2-2.9 2-2.9-.5-3.5L4.4 4.9l1.3-3.3 3.5.5z"/><path fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="M8 12.2l2.6 2.6 5.2-5.4"/></svg>';
 
-  // Project URL + anon key are public and prefilled. The service role key
-  // bypasses RLS, so it is never embedded here — paste it once and it is kept
-  // in this browser's localStorage only. This page is safe to publish.
-  var ENV_KEYS = {
+  // Prefill order: this browser's saved keys, then admin.config.js (local,
+  // gitignored, generated from yours-backend/.env). The service role key
+  // bypasses RLS and is never embedded in this page, so publishing it is safe.
+  var ENV_KEYS = window.ADMIN_KEYS || {
     url: 'https://dgbxcakkqrgrapwsvrol.supabase.co',
     anon: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRnYnhjYWtrcXJncmFwd3N2cm9sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYxOTM0NDksImV4cCI6MjEwMTc2OTQ0OX0.v2gOgC28bfXXVjRVki1lL0ulgCHVloUAv1eF5HVSzuk',
     service: ''
