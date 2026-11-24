@@ -1,2 +1,2 @@
-# Contains the live Supabase service_role key — do not publish.
-admin.html
+# admin.html is tracked: it no longer embeds the service_role key (it is
+# pasted once per browser and kept in localStorage).

@@ -1,0 +1,709 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport">
+    <meta name="description" content="Admin console for adding and managing AI characters on Yours.">
+    <meta name="robots" content="noindex, nofollow">
+<title>Admin - Add AI Characters</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link rel="stylesheet" href="css/app.css">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body {
+  background-color: #121212;
+  color: #fff;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+.field-label { display: block; font-size: 0.8rem; font-weight: 600; color: #a0a0a0; margin-bottom: 0.4rem; letter-spacing: 0.02em; }
+.field-input {
+  width: 100%;
+  background: #fff;
+  border: 1px solid #2e2e2e;
+  border-radius: 0.9rem;
+  padding: 0.75rem 1rem;
+  font-size: 0.925rem;
+  color: #000;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.field-input:focus { border-color: #ff5c35; box-shadow: 0 0 0 3px rgba(255,92,53,0.15); }
+select.field-input option { background: #fff; color: #000; }
+.btn-primary {
+  width: 100%;
+  background: linear-gradient(to right bottom, #c3244c, #f02853, #ff3e86);
+  color: #fff;
+  font-weight: 700;
+  padding: 0.95rem;
+  border-radius: 9999px;
+  transition: transform 0.15s ease, opacity 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+}
+.btn-primary:active { transform: scale(0.98); }
+.btn-primary:disabled { opacity: 0.55; }
+.status-msg { display: none; margin-top: 1rem; padding: 0.8rem 1rem; border-radius: 0.9rem; font-size: 0.875rem; }
+.inline-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.9rem; }
+
+/* ---- Loading animations ---- */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.section-card { animation: fadeInUp 0.45s cubic-bezier(0.22,1,0.36,1) both; }
+.section-card:nth-child(1) { animation-delay: 0.05s; }
+.section-card:nth-child(2) { animation-delay: 0.12s; }
+.section-card:nth-child(3) { animation-delay: 0.19s; }
+
+/* Button spinner */
+.spinner {
+  width: 1.05rem;
+  height: 1.05rem;
+  border: 2.5px solid rgba(255,255,255,0.35);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  display: inline-block;
+  flex-shrink: 0;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Full-screen upload overlay */
+#loading-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: rgba(10,10,10,0.72);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+.loader-ring {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  border: 4px solid rgba(255,255,255,0.15);
+  border-top-color: #ff5c35;
+  border-right-color: #ff3e86;
+  animation: spin 0.9s linear infinite;
+}
+.loader-pulse { animation: pulseSoft 1.4s ease-in-out infinite; }
+@keyframes pulseSoft { 0%,100% { opacity: 1; } 50% { opacity: 0.45; } }
+
+/* Skeleton shimmer */
+.skeleton-row {
+  border-radius: 0.9rem;
+  background: linear-gradient(90deg, #1e1e1e 25%, #262626 50%, #1e1e1e 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.3s linear infinite;
+}
+@keyframes shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+
+/* Success pop-in */
+.pop-in { animation: pop 0.35s cubic-bezier(0.34,1.56,0.64,1) both; }
+@keyframes pop { from { opacity: 0; transform: scale(0.85); } to { opacity: 1; transform: scale(1); } }
+
+.toast {
+  position: fixed;
+  bottom: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(120%);
+  z-index: 10000;
+  background: #1e1e1e;
+  border: 1px solid rgba(255,255,255,0.12);
+  color: #fff;
+  padding: 0.8rem 1.4rem;
+  border-radius: 9999px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+  transition: transform 0.35s cubic-bezier(0.22,1,0.36,1);
+  pointer-events: none;
+}
+.toast.show { transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body class="min-h-screen antialiased app-page" style="padding-top: max(16px, env(safe-area-inset-top));">
+<div class="max-w-2xl mx-auto px-5 pb-16">
+
+<header class="flex items-center justify-between mb-6">
+  <div class="flex items-center gap-3">
+    <button onclick="window.history.back();" aria-label="Go back" class="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center active:scale-95 transition-transform cursor-pointer" type="button">
+      <i class="fa-solid fa-chevron-left"></i>
+    </button>
+    <div>
+      <h1 class="text-2xl font-extrabold tracking-tight">Admin</h1>
+      <p class="text-sm text-gray-400">Add AI characters to Supabase</p>
+    </div>
+  </div>
+  <button class="text-xs font-semibold bg-white/10 rounded-full px-4 py-2 active:scale-95 transition-transform cursor-pointer" id="test-conn-btn" type="button">Test connection</button>
+</header>
+
+<!-- Connection Settings -->
+<section class="bg-[#1a1a1a] border border-white/10 rounded-2xl p-5 mb-5 section-card">
+  <h2 class="text-base font-bold mb-4 flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-green-400 inline-block"></span> Connection keys</h2>
+  <div class="space-y-4">
+    <div>
+      <label class="field-label" for="supabase-url">Project URL</label>
+      <input class="field-input" id="supabase-url" placeholder="https://xxxx.supabase.co" type="text">
+    </div>
+    <div class="inline-row">
+      <div>
+        <label class="field-label" for="anon-key">Anon key</label>
+        <input class="field-input" id="anon-key" placeholder="eyJhbGci..." type="password">
+      </div>
+      <div>
+        <label class="field-label" for="service-key">Service role key</label>
+        <input class="field-input" id="service-key" placeholder="eyJhbGci..." type="password">
+      </div>
+    </div>
+    <p class="text-xs text-gray-500 leading-relaxed">Project URL and anon key are prefilled. Paste the service role key once from your backend <code class="text-gray-400">.env</code> — it is never stored in this page's source, only in this browser (localStorage). The service role key bypasses RLS, so never paste it on a shared machine.</p>
+  </div>
+</section>
+
+<!-- Stage 1: Upload character images -->
+<section class="bg-[#1a1a1a] border border-white/10 rounded-2xl p-5 mb-5 section-card">
+  <h2 class="text-base font-bold mb-4 flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-white/30 inline-block"></span> Step 1 · Character images</h2>
+  <div class="space-y-4">
+    <div class="inline-row">
+      <div>
+        <label class="field-label" for="char-name">Name</label>
+        <input class="field-input" id="char-name" placeholder="Elsa" type="text">
+      </div>
+      <div>
+        <label class="field-label" for="char-age">Age</label>
+        <input class="field-input" id="char-age" min="18" max="99" placeholder="24" type="number">
+      </div>
+    </div>
+
+    <label class="flex items-center gap-3 cursor-pointer select-none" for="char-verified">
+      <input class="sr-only peer" id="char-verified" type="checkbox">
+      <span class="relative w-11 h-6 rounded-full bg-white/15 transition-colors peer-checked:bg-[#1d9bf0] after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:w-5 after:h-5 after:rounded-full after:bg-white after:transition-transform peer-checked:after:translate-x-5"></span>
+      <span class="text-sm text-gray-300">Verified <span class="text-gray-500">— shows a blue badge with a white tick next to the age</span></span>
+    </label>
+
+    <div>
+      <label class="field-label" for="char-feed-file">Feed media <span class="text-gray-500">(image or MP4 video, max 5 MB)</span></label>
+      <input class="field-input" id="char-feed-file" accept="image/*,video/mp4" type="file">
+      <div class="mt-2 rounded-xl overflow-hidden bg-black/40 flex items-center justify-center" id="feed-preview" style="height:8rem;display:none;"></div>
+    </div>
+    <div>
+      <label class="field-label" for="char-profile-file">Profile image <span class="text-gray-500">(image only)</span></label>
+      <input class="field-input" id="char-profile-file" accept="image/*" type="file">
+      <div class="mt-2 rounded-full overflow-hidden bg-black/40 mx-auto flex items-center justify-center" id="profile-preview" style="width:5rem;height:5rem;display:none;"></div>
+    </div>
+    <button class="btn-primary" id="upload-imgs-btn" type="button">Upload media</button>
+    <p class="text-xs text-gray-500 leading-relaxed">Needs name, age, a feed media file and a profile image. The feed can be an image or an <b>MP4 video up to 5 MB</b>; the profile is always an image. Files are renamed to <code class="text-gray-400">name-age-feed.png|mp4</code> and <code class="text-gray-400">name-age-profile.png</code>, uploaded to Cloudflare R2, and their public URLs are saved below.</p>
+    <div class="status-msg" id="upload-status"></div>
+    <div class="rounded-xl bg-green-500/10 border border-green-500/30 p-3 text-sm hidden" id="upload-result">
+      <div class="font-semibold text-green-300 mb-1">Media uploaded</div>
+      <div class="space-y-1 text-xs text-gray-300">
+        <div>Feed: <a class="text-green-300 underline break-all" id="feed-url-out" target="_blank" rel="noopener"></a></div>
+        <div>Profile: <a class="text-green-300 underline break-all" id="profile-url-out" target="_blank" rel="noopener"></a></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Stage 2: Character details -->
+<section class="bg-[#1a1a1a] border border-white/10 rounded-2xl p-5 mb-5 section-card">
+  <h2 class="text-base font-bold mb-4 flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-white/30 inline-block"></span> Step 2 · Character details</h2>
+  <div class="space-y-4">
+    <div class="inline-row">
+      <div>
+        <label class="field-label" for="char-gender">Gender</label>
+        <select class="field-input" id="char-gender">
+          <option value="women">Women</option>
+          <option value="men">Men</option>
+          <option value="non_binary">Non-binary</option>
+        </select>
+      </div>
+      <div>
+        <label class="field-label" for="char-art">Art style</label>
+        <select class="field-input" id="char-art">
+          <option value="realistic">Realistic</option>
+          <option value="anime">Anime</option>
+        </select>
+      </div>
+    </div>
+    <div>
+      <label class="field-label" for="char-about">About</label>
+      <textarea class="field-input" id="char-about" placeholder="Marketing exec who believes the best things in life come with experience 😉" rows="3"></textarea>
+    </div>
+    <div>
+      <label class="field-label" for="char-voice">ElevenLabs voice ID</label>
+      <input class="field-input" id="char-voice" placeholder="e.g. 21m00Tcm4TlvDq8ikWAM" type="text">
+      <p class="text-xs text-gray-500 mt-1">Paste the ElevenLabs voice id here. Not auto-assigned — used later by the TTS API.</p>
+    </div>
+    <div class="inline-row">
+      <div>
+        <label class="field-label" for="char-msgstyle">Message style</label>
+        <select class="field-input" id="char-msgstyle">
+          <option value="normal">Normal</option>
+          <option value="rude">Rude</option>
+          <option value="flirty">Flirty</option>
+          <option value="shy">Shy</option>
+          <option value="dirty_talk">Dirty talk</option>
+          <option value="swearing">Swearing</option>
+        </select>
+      </div>
+      <div>
+        <label class="field-label" for="char-personality">Personality</label>
+        <select class="field-input" id="char-personality">
+          <option value="the_sweetheart">Sweetheart</option>
+          <option value="the_tease">Tease</option>
+          <option value="the_dominant">Dominant</option>
+          <option value="the_submissive">Submissive</option>
+          <option value="the_mysterious">Mysterious</option>
+        </select>
+      </div>
+    </div>
+    <button class="btn-primary" id="submit-btn" type="button">Add character</button>
+    <div class="status-msg" id="status-msg"></div>
+  </div>
+</section>
+
+<!-- Character list -->
+<section class="bg-[#1a1a1a] border border-white/10 rounded-2xl p-5 mb-5 section-card">
+  <h2 class="text-base font-bold mb-4 flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-blue-400 inline-block"></span> Existing characters</h2>
+  <div id="char-list" class="space-y-2 text-sm"></div>
+</section>
+
+</div>
+
+<!-- Full-screen upload overlay -->
+<div id="loading-overlay">
+  <div class="flex flex-col items-center text-center px-8">
+    <div class="loader-ring mb-6"></div>
+    <p class="text-white font-bold text-lg loader-pulse">Adding character</p>
+    <p class="text-gray-400 text-sm mt-1 loader-pulse" id="loading-sub">Saving to Supabase…</p>
+  </div>
+</div>
+<!-- Toast notification -->
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+(function () {
+  var KEYS = 'yours_admin_keys';
+
+  // Twitter-style verified seal: blue burst + white tick.
+  var VERIFIED_BADGE = '<svg viewBox="0 0 24 24" width="17" height="17" style="display:inline-block;vertical-align:-3px;margin-left:4px" role="img" aria-label="Verified"><path fill="#1d9bf0" d="M12 1.6l2.9 2 3.5-.5 1.3 3.3 3.3 1.3-.5 3.5 2 2.9-2 2.9.5 3.5-3.3 1.3-1.3 3.3-3.5-.5-2.9 2-2.9-2-3.5.5-1.3-3.3L1.1 19l.5-3.5-2-2.9 2-2.9-.5-3.5L4.4 4.9l1.3-3.3 3.5.5z"/><path fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="M8 12.2l2.6 2.6 5.2-5.4"/></svg>';
+
+  // Project URL + anon key are public and prefilled. The service role key
+  // bypasses RLS, so it is never embedded here — paste it once and it is kept
+  // in this browser's localStorage only. This page is safe to publish.
+  var ENV_KEYS = {
+    url: 'https://dgbxcakkqrgrapwsvrol.supabase.co',
+    anon: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRnYnhjYWtrcXJncmFwd3N2cm9sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYxOTM0NDksImV4cCI6MjEwMTc2OTQ0OX0.v2gOgC28bfXXVjRVki1lL0ulgCHVloUAv1eF5HVSzuk',
+    service: ''
+  };
+
+  var urlEl = document.getElementById('supabase-url');
+  var anonEl = document.getElementById('anon-key');
+  var svcEl = document.getElementById('service-key');
+  var statusMsg = document.getElementById('status-msg');
+  var overlay = document.getElementById('loading-overlay');
+  var loadingSub = document.getElementById('loading-sub');
+  var toastEl = document.getElementById('toast');
+  var toastTimer = null;
+
+  function showToast(text) {
+    toastEl.textContent = text;
+    toastEl.classList.add('show');
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { toastEl.classList.remove('show'); }, 2600);
+  }
+
+  function loadKeys() {
+    try {
+      var k = JSON.parse(localStorage.getItem(KEYS) || '{}');
+      urlEl.value = k.url || ENV_KEYS.url;
+      anonEl.value = k.anon || ENV_KEYS.anon;
+      svcEl.value = k.service || ENV_KEYS.service;
+    } catch (e) {
+      urlEl.value = ENV_KEYS.url;
+      anonEl.value = ENV_KEYS.anon;
+      svcEl.value = ENV_KEYS.service;
+    }
+  }
+  function saveKeys() {
+    localStorage.setItem(KEYS, JSON.stringify({
+      url: urlEl.value.trim(),
+      anon: anonEl.value.trim(),
+      service: svcEl.value.trim()
+    }));
+  }
+  function getClient() {
+    var url = urlEl.value.trim();
+    var svc = svcEl.value.trim();
+    if (!url || !svc) throw new Error('Project URL and service key are required.');
+    return window.supabase.createClient(url, svc, { auth: { persistSession: false } });
+  }
+  function showStatus(text, ok) {
+    statusMsg.style.display = 'block';
+    statusMsg.textContent = text;
+    statusMsg.className = 'status-msg ' + (ok ? 'bg-green-500/15 text-green-300 border border-green-500/30' : 'bg-red-500/15 text-red-300 border border-red-500/30');
+  }
+
+  document.getElementById('test-conn-btn').addEventListener('click', async function () {
+    var btn = this;
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner" style="width:.8rem;height:.8rem;border-width:2px;"></span>';
+    showToast('Testing connection…');
+    try {
+      saveKeys();
+      var client = getClient();
+      var { error } = await client.from('characters').select('id').limit(1);
+      if (error) throw error;
+      showToast('Connected to Supabase OK.');
+    } catch (err) {
+      showToast('Connection failed: ' + err.message);
+      showStatus('Connection failed: ' + err.message, false);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Test connection';
+    }
+  });
+
+  var API_BASE = /^(localhost|127\.0\.0\.1|10\.|192\.168\.)/.test(window.location.hostname || '')
+    ? 'http://' + (window.location.hostname || 'localhost') + ':5000/api/v1'
+    : 'https://yours-backend-e38m.onrender.com/api/v1';
+
+  // ---- Feed / profile image file previews ----
+  var feedFileInput = document.getElementById('char-feed-file');
+  var feedPreview = document.getElementById('feed-preview');
+  var profileFileInput = document.getElementById('char-profile-file');
+  var profilePreview = document.getElementById('profile-preview');
+  var feedDataUrl = null;
+  var profileDataUrl = null;
+  var uploadedFeedUrl = null;
+  var uploadedFeedType = 'image';
+  var feedObjectUrl = null;
+  var uploadedProfileUrl = null;
+
+  function readFileAsDataUrl(file, cb) {
+    var reader = new FileReader();
+    reader.onload = function () { cb(reader.result); };
+    reader.onerror = function () { cb(null); };
+    reader.readAsDataURL(file);
+  }
+
+  feedFileInput.addEventListener('change', function () {
+    var file = this.files && this.files[0];
+    if (feedObjectUrl) { URL.revokeObjectURL(feedObjectUrl); feedObjectUrl = null; }
+    if (!file) { feedPreview.style.display = 'none'; feedPreview.innerHTML = ''; return; }
+    var err = feedFileError(file);
+    if (err) {
+      this.value = '';
+      feedPreview.style.display = 'none';
+      feedPreview.innerHTML = '';
+      showUploadStatus(err, false);
+      return;
+    }
+    if (feedKindOf(file) === 'video') {
+      // Videos must not be read as data URLs (memory + no playback); use a blob URL.
+      feedDataUrl = null;
+      feedObjectUrl = URL.createObjectURL(file);
+      feedPreview.style.display = 'flex';
+      feedPreview.innerHTML = '<video src="' + feedObjectUrl + '" class="h-full w-full object-cover" muted loop playsinline controls></video>';
+      showUploadStatus('MP4 selected (' + (file.size / 1048576).toFixed(1) + ' MB of 5 MB max).', true);
+      return;
+    }
+    readFileAsDataUrl(file, function (result) {
+      if (!result) return;
+      feedDataUrl = result;
+      feedPreview.style.display = 'flex';
+      feedPreview.innerHTML = '<img src="' + result + '" class="h-full w-full object-cover" alt="Feed preview">';
+    });
+  });
+
+  profileFileInput.addEventListener('change', function () {
+    var file = this.files && this.files[0];
+    if (!file) { profilePreview.style.display = 'none'; profilePreview.innerHTML = ''; return; }
+    readFileAsDataUrl(file, function (result) {
+      if (!result) return;
+      profileDataUrl = result;
+      profilePreview.style.display = 'flex';
+      profilePreview.innerHTML = '<img src="' + result + '" class="w-full h-full object-cover" alt="Profile preview">';
+    });
+  });
+
+  // ---- Stage 1: Upload the two images to Cloudflare R2 ----
+  var uploadStatus = document.getElementById('upload-status');
+  var uploadResultBox = document.getElementById('upload-result');
+  var feedUrlOut = document.getElementById('feed-url-out');
+  var profileUrlOut = document.getElementById('profile-url-out');
+
+  function showUploadStatus(text, ok) {
+    uploadStatus.style.display = 'block';
+    uploadStatus.textContent = text;
+    uploadStatus.className = 'status-msg ' + (ok ? 'bg-green-500/15 text-green-300 border border-green-500/30' : 'bg-red-500/15 text-red-300 border border-red-500/30');
+  }
+
+  // Character feed media may be a still image or an MP4 video. The video cap
+  // is enforced again server-side (signed Content-Length), this copy is just
+  // for instant feedback before spending a round trip.
+  var MAX_VIDEO_BYTES = 5 * 1024 * 1024;
+
+  function feedKindOf(file) {
+    if (!file) return null;
+    var type = (file.type || '').toLowerCase();
+    if (type === 'video/mp4') return 'video';
+    if (type.indexOf('video/') === 0) return 'video-unsupported';
+    if (/\.mp4$/i.test(file.name || '')) return 'video';
+    if (type.indexOf('image/') === 0 || /\.(png|jpe?g|webp|gif)$/i.test(file.name || '')) return 'image';
+    return 'unsupported';
+  }
+
+  function feedFileError(file) {
+    if (!file) return 'Feed media is required.';
+    var kind = feedKindOf(file);
+    if (kind === 'video-unsupported') return 'Only MP4 videos are supported.';
+    if (kind === 'unsupported') return 'Feed media must be an image or an MP4 video.';
+    if (kind === 'video' && file.size > MAX_VIDEO_BYTES) {
+      return 'Video is ' + (file.size / 1048576).toFixed(1) + ' MB; the limit is 5 MB.';
+    }
+    return null;
+  }
+
+  function extFromFile(file) {
+    var name = (file.name || '').toLowerCase();
+    var m = name.match(/\.([a-z0-9]+)$/);
+    if (m) return m[1];
+    if ((file.type || '').indexOf('png') !== -1) return 'png';
+    if ((file.type || '').indexOf('webp') !== -1) return 'webp';
+    return 'jpg';
+  }
+
+  document.getElementById('upload-imgs-btn').addEventListener('click', async function () {
+    var btn = this;
+    saveKeys();
+
+    var name = document.getElementById('char-name').value.trim();
+    var age = parseInt(document.getElementById('char-age').value.trim(), 10);
+    var feedFile = feedFileInput.files && feedFileInput.files[0];
+    var profileFile = profileFileInput.files && profileFileInput.files[0];
+
+    if (!name) { showUploadStatus('Name is required.', false); return; }
+    if (isNaN(age) || age < 18 || age > 99) { showUploadStatus('Age must be 18–99.', false); return; }
+    if (!feedFile) { showUploadStatus('Feed media is required.', false); return; }
+    if (!profileFile) { showUploadStatus('Profile image is required.', false); return; }
+    var feedErr = feedFileError(feedFile);
+    if (feedErr) { showUploadStatus(feedErr, false); return; }
+
+    var feedIsVideo = feedKindOf(feedFile) === 'video';
+    var safeName = name.replace(/\s+/g, '-').replace(/[^a-zA-Z0-9-]/g, '');
+    var feedName = safeName + '-' + age + '-feed.' + (feedIsVideo ? 'mp4' : extFromFile(feedFile));
+    var profileName = safeName + '-' + age + '-profile.' + extFromFile(profileFile);
+    var feedMime = feedIsVideo ? 'video/mp4' : (feedFile.type || 'image/jpeg');
+    var profileMime = profileFile.type || 'image/jpeg';
+
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> Uploading media…';
+    uploadResultBox.classList.add('hidden');
+
+    try {
+      // Get presigned PUT URLs from the backend (bucket image-video-file-hosting / images/yours/characters/)
+      var [feedPresign, profilePresign] = await Promise.all([
+        fetch(API_BASE + '/media/character-image-upload-url', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ filename: feedName, mimeType: feedMime, size: feedFile.size })
+        }).then(function (r) { return r.json(); }),
+        fetch(API_BASE + '/media/character-image-upload-url', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ filename: profileName, mimeType: profileMime })
+        }).then(function (r) { return r.json(); })
+      ]);
+
+      if (!feedPresign.success) throw new Error(feedPresign.error || 'Failed to get feed upload URL');
+      if (!profilePresign.success) throw new Error(profilePresign.error || 'Failed to get profile upload URL');
+
+      // PUT the file bytes directly to Cloudflare R2
+      var [feedUp, profileUp] = await Promise.all([
+        fetch(feedPresign.uploadUrl, { method: 'PUT', body: feedFile, headers: { 'Content-Type': feedMime } }),
+        fetch(profilePresign.uploadUrl, { method: 'PUT', body: profileFile, headers: { 'Content-Type': profileMime } })
+      ]);
+      if (!feedUp.ok) throw new Error('Feed upload failed (HTTP ' + feedUp.status + ')' + (feedIsVideo && feedUp.status === 403 ? ' — is the video over the 5 MB limit?' : ''));
+      if (!profileUp.ok) throw new Error('Profile upload failed (HTTP ' + profileUp.status + ')');
+
+      uploadedFeedUrl = feedPresign.publicUrl;
+      uploadedFeedType = feedPresign.mediaType || (feedIsVideo ? 'video' : 'image');
+      uploadedProfileUrl = profilePresign.publicUrl;
+
+      feedUrlOut.textContent = uploadedFeedUrl;
+      feedUrlOut.href = uploadedFeedUrl;
+      profileUrlOut.textContent = uploadedProfileUrl;
+      profileUrlOut.href = uploadedProfileUrl;
+      uploadResultBox.classList.remove('hidden');
+
+      showUploadStatus('Feed media and profile image uploaded. Now fill in Step 2 and press "Add character".', true);
+      showToast('Media uploaded to R2! ✨');
+    } catch (err) {
+      showUploadStatus('Image upload failed: ' + err.message, false);
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = 'Upload media';
+    }
+  });
+
+  // ---- Submit new character ----
+  document.getElementById('submit-btn').addEventListener('click', async function () {
+    saveKeys();
+    var client;
+    try { client = getClient(); } catch (e) { showStatus(e.message, false); return; }
+
+    var name = document.getElementById('char-name').value.trim();
+    var gender = document.getElementById('char-gender').value;
+    var age = parseInt(document.getElementById('char-age').value, 10);
+    var about = document.getElementById('char-about').value.trim();
+    var voiceId = document.getElementById('char-voice').value.trim();
+    var art = document.getElementById('char-art').value;
+    var msgStyle = document.getElementById('char-msgstyle').value;
+    var personality = document.getElementById('char-personality').value;
+
+    if (!name) { showStatus('Name is required.', false); return; }
+    if (!uploadedFeedUrl) { showStatus('Upload the images in Step 1 first.', false); return; }
+    if (!uploadedProfileUrl) { showStatus('Upload the images in Step 1 first.', false); return; }
+    if (!voiceId) { showStatus('ElevenLabs voice id is required.', false); return; }
+    if (isNaN(age) || age < 18 || age > 99) { showStatus('Age must be 18–99.', false); return; }
+
+    var btn = document.getElementById('submit-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> Adding…';
+    loadingSub.textContent = 'Saving character…';
+
+    // Full-screen processing animation
+    overlay.style.display = 'flex';
+
+    try {
+      var { data: char, error: charErr } = await client.from('characters').insert({
+        name: name,
+        gender: gender,
+        age: age,
+        about: about,
+        circular_profile_image_url: uploadedProfileUrl,
+        art_style: art,
+        message_style: msgStyle,
+        personality: personality,
+        voice_id: voiceId,
+        is_active: true,
+        verified: document.getElementById('char-verified').checked
+      }).select('id').single();
+      if (charErr) throw charErr;
+
+      loadingSub.textContent = 'Saving feed media…';
+      var { error: feedErr } = await client.from('character_feeds').insert({
+        character_id: char.id,
+        media_url: uploadedFeedUrl,
+        media_type: uploadedFeedType,
+        sort_order: 0
+      });
+      if (feedErr) throw feedErr;
+
+      overlay.style.display = 'none';
+      btn.innerHTML = 'Add character';
+      btn.disabled = false;
+      clearForm();
+      showToast('Character "' + name + '" added! ✨');
+      statusMsg.style.display = 'none';
+      loadCharacters(client);
+    } catch (err) {
+      overlay.style.display = 'none';
+      btn.innerHTML = 'Add character';
+      btn.disabled = false;
+      showStatus('Failed: ' + err.message, false);
+    }
+  });
+
+  function clearForm() {
+    ['char-name','char-age','char-about','char-voice'].forEach(function (id) {
+      document.getElementById(id).value = '';
+    });
+    document.getElementById('char-verified').checked = false;
+    feedFileInput.value = '';
+    profileFileInput.value = '';
+    feedDataUrl = null;
+    profileDataUrl = null;
+    uploadedFeedUrl = null;
+    uploadedFeedType = 'image';
+    uploadedProfileUrl = null;
+    if (feedObjectUrl) { URL.revokeObjectURL(feedObjectUrl); feedObjectUrl = null; }
+    feedPreview.style.display = 'none';
+    profilePreview.style.display = 'none';
+    uploadResultBox.classList.add('hidden');
+  }
+
+  // ---- List existing characters ----
+  async function loadCharacters(client) {
+    var list = document.getElementById('char-list');
+    // Skeleton shimmer rows
+    var skel = '';
+    for (var s = 0; s < 3; s++) {
+      skel += '<div class="skeleton-row h-14"></div>';
+    }
+    list.innerHTML = skel;
+    var { data, error } = await client.from('characters').select('id,name,age,gender,personality,message_style,created_at,verified').order('created_at', { ascending: false }).limit(50);
+    if (error) { list.innerHTML = '<p class="text-red-400">Failed to load: ' + error.message + '</p>'; return; }
+    if (!data || !data.length) { list.innerHTML = '<p class="text-gray-500">No characters yet.</p>'; return; }
+    list.innerHTML = '';
+    data.forEach(function (c) {
+      var row = document.createElement('div');
+      row.className = 'pop-in flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/10';
+      // Three states: true = verified, false = explicitly unverified,
+      // null = never set (existing characters; rendered as unverified).
+      var isVerified = c.verified === true;
+      var state = isVerified ? 'true' : (c.verified === false ? 'false' : 'null');
+      var stateLabel = isVerified ? 'verified' : (c.verified === false ? 'unverified' : 'unset');
+      row.innerHTML =
+        '<div><div class="font-semibold flex items-center">' + c.name + (isVerified ? VERIFIED_BADGE : '') + '</div>' +
+        '<div class="text-gray-500 text-xs capitalize">' + c.gender + ' · ' + c.age + ' · ' + c.personality + ' · ' + c.message_style + ' · ' + stateLabel + '</div></div>' +
+        '<div class="flex items-center gap-2">' +
+        '<select class="text-xs font-semibold px-2 py-1.5 rounded-full bg-white/10 border border-white/20 text-gray-200 active:scale-95 transition-transform" data-verify-id="' + c.id + '" aria-label="Verification state for ' + c.name + '">' +
+        '<option value="true"' + (state === 'true' ? ' selected' : '') + '>Verified</option>' +
+        '<option value="false"' + (state === 'false' ? ' selected' : '') + '>Unverified</option>' +
+        '<option value="null"' + (state === 'null' ? ' selected' : '') + '>Unset</option>' +
+        '</select>' +
+        '<button class="text-red-400 text-xs font-semibold px-3 py-1.5 rounded-full border border-red-400/30 active:scale-95 transition-transform" data-id="' + c.id + '" data-name="' + c.name + '" type="button">Delete</button></div>';
+      list.appendChild(row);
+    });
+    list.querySelectorAll('[data-verify-id]').forEach(function (el) {
+      el.addEventListener('change', async function () {
+        var raw = el.value;
+        var next = raw === 'null' ? null : raw === 'true';
+        el.disabled = true;
+        var { error } = await client.from('characters').update({ verified: next }).eq('id', el.getAttribute('data-verify-id'));
+        if (error) {
+          el.disabled = false;
+          showToast('Update failed: ' + error.message);
+          return;
+        }
+        showToast(next === null ? 'Verification cleared' : (next ? 'Character marked verified' : 'Character marked unverified'));
+        loadCharacters(client);
+      });
+    });
+    list.querySelectorAll('[data-id]').forEach(function (btn) {
+      btn.addEventListener('click', async function () {
+        if (!confirm('Delete "' + btn.getAttribute('data-name') + '"?')) return;
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner" style="width:.8rem;height:.8rem;border-width:2px;"></span>';
+        var { error } = await client.from('characters').delete().eq('id', btn.getAttribute('data-id'));
+        showToast(error ? 'Delete failed: ' + error.message : 'Character deleted.');
+        loadCharacters(client);
+      });
+    });
+  }
+
+  loadKeys();
+  var client;
+  try { client = getClient(); loadCharacters(client); } catch (e) {} // wait until keys entered
+  urlEl.addEventListener('change', function () { try { loadCharacters(getClient()); } catch (e) {} });
+  anonEl.addEventListener('change', function () { try { loadCharacters(getClient()); } catch (e) {} });
+  svcEl.addEventListener('change', function () { try { loadCharacters(getClient()); } catch (e) {} });
+})();
+</script>
+</body></html>
