@@ -13,25 +13,24 @@
      every upload a new filename, so URLs are effectively immutable).
    - Supabase API traffic is never cached.
 */
-var CACHE = 'yours-v10';
-var RUNTIME = 'yours-runtime-v10';
+var CACHE = 'yours-v11';
+var RUNTIME = 'yours-runtime-v11';
 
 var PRECACHE = [
   './',
-  'install.html',
-  'index.html',
-  'feed.html',
-  'Discover.html',
-  'chat.html',
-  'messaging.html',
-  'character-profile.html',
-  'user-profile.html',
-  'settings.html',
-  'notifications.html',
-  'recharge.html',
-  'auth.html',
-  'confirm-email.html',
-  'call.html',
+  'install',
+  'feed',
+  'Discover',
+  'chat',
+  'messaging',
+  'character-profile',
+  'user-profile',
+  'settings',
+  'notifications',
+  'recharge',
+  'auth',
+  'confirm-email',
+  'call',
   'css/app.css',
   'css/onboarding.css',
   'js/api-client.js',
@@ -81,12 +80,25 @@ var MEDIA_HOSTS = [
   'ik.imagekit.io'
 ];
 
+// Strip the `redirected` flag so a cached response can safely satisfy
+// `redirect: 'manual'` navigation requests without triggering ERR_FAILED.
+function cleanResponse(res) {
+  if (!res || !res.redirected) return res;
+  return new Response(res.body, {
+    status: res.status,
+    statusText: res.statusText,
+    headers: res.headers,
+  });
+}
+
 self.addEventListener('install', function (event) {
   event.waitUntil(
     caches.open(CACHE).then(function (cache) {
       // Individual puts so one bad asset can't fail the install.
       return Promise.all(PRECACHE.map(function (url) {
-        return cache.add(new Request(url, { cache: 'reload' })).catch(function () {});
+        return fetch(new Request(url, { cache: 'reload' })).then(function (res) {
+          if (res && res.ok) return cache.put(url, cleanResponse(res));
+        }).catch(function () {});
       }));
     }).then(function () {
       return self.skipWaiting();
@@ -115,14 +127,17 @@ function staleWhileRevalidate(event, cacheName) {
     return cache.match(req).then(function (hit) {
       var network = fetch(req).then(function (res) {
         var cacheable = res && (res.ok || res.type === 'opaque');
-        if (cacheable) cache.put(req, res.clone());
+        if (cacheable) {
+          var toStore = res.redirected ? cleanResponse(res.clone()) : res.clone();
+          cache.put(req, toStore);
+        }
         return res;
       }).catch(function () {
-        return hit;
+        return hit ? cleanResponse(hit) : hit;
       });
       if (hit) {
         event.waitUntil(network);
-        return hit;
+        return cleanResponse(hit);
       }
       return network;
     });
@@ -133,9 +148,12 @@ function staleWhileRevalidate(event, cacheName) {
 function cacheFirst(req, cacheName) {
   return caches.open(cacheName).then(function (cache) {
     return cache.match(req).then(function (hit) {
-      if (hit) return hit;
+      if (hit) return cleanResponse(hit);
       return fetch(req).then(function (res) {
-        if (res && (res.ok || res.type === 'opaque')) cache.put(req, res.clone());
+        if (res && (res.ok || res.type === 'opaque')) {
+          var toStore = res.redirected ? cleanResponse(res.clone()) : res.clone();
+          cache.put(req, toStore);
+        }
         return res;
       });
     });
@@ -171,11 +189,11 @@ self.addEventListener('fetch', function (event) {
     event.respondWith(
       staleWhileRevalidate(event, CACHE).then(function (res) {
         return res || caches.match(req).then(function (hit) {
-          return hit || caches.match('index.html');
+          return cleanResponse(hit) || caches.match('./').then(cleanResponse);
         });
       }).catch(function () {
         return caches.match(req).then(function (hit) {
-          return hit || caches.match('index.html');
+          return cleanResponse(hit) || caches.match('./').then(cleanResponse);
         });
       })
     );
