@@ -1,4 +1,13 @@
 <!DOCTYPE html><html lang="en" class="fontawesome-i2svg-active fontawesome-i2svg-complete" style=""><head>
+<!-- Perf: warm up the render-blocking CDNs and API origins -->
+<link rel="preconnect" href="https://cdn.tailwindcss.com">
+<link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://dgbxcakkqrgrapwsvrol.supabase.co" crossorigin>
+<link rel="dns-prefetch" href="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev">
+<link rel="dns-prefetch" href="https://yours-backend-e38m.onrender.com">
+
 <meta charset="utf-8">
 <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport">
     <meta name="description" content="View this AI character profile on Yours — personality, voice, interests and how to start a conversation.">
@@ -555,7 +564,8 @@
       if (badgeEl) badgeEl.innerHTML = verifiedBadge(c.verified);
       document.title = (c.name || 'Character') + "'s Profile";
       if (bioEl) bioEl.textContent = c.about || 'No bio yet.';
-      if (ageEl) ageEl.textContent = c.age != null ? (c.age < 35 ? 'Young' : 'Mature') : '';
+      // Age classifier: under 30 is young, 30 and above is mature.
+      if (ageEl) ageEl.textContent = c.age != null ? (c.age < 30 ? 'Young' : 'Mature') : '';
       if (genderEl) genderEl.textContent = humanize(c.gender);
       // Prefer the voice the user applied from the Voices settings page.
       var savedChar = null;
@@ -786,4 +796,5 @@
   if (privateBtn && privateBtn.className.indexOf('bg-white') !== -1) loadPrivateMedia();
 })();
 </script>
+<script src="js/pwa.js"></script>
 </body></html>

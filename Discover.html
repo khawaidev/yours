@@ -1,6 +1,15 @@
 <!DOCTYPE html>
 <html class="dark" lang="en">
 <head>
+<!-- Perf: warm up the render-blocking CDNs and API origins -->
+<link rel="preconnect" href="https://cdn.tailwindcss.com">
+<link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://dgbxcakkqrgrapwsvrol.supabase.co" crossorigin>
+<link rel="dns-prefetch" href="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev">
+<link rel="dns-prefetch" href="https://yours-backend-e38m.onrender.com">
+
 <meta charset="utf-8">
 <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport">
 <meta name="description" content="Discover AI companions on Yours — browse characters by personality, interests and vibe, and find the one made for you.">
@@ -485,10 +494,11 @@
       if (age !== 'any') {
         filtered = filtered.filter(function (c) {
           var charAge = parseInt(c.age) || 0;
+          // Age classifier: under 30 is young, 30 and above is mature.
           if (age === 'teen') return charAge >= 13 && charAge <= 17;
           if (age === 'young-adult') return charAge >= 18 && charAge <= 25;
-          if (age === 'adult') return charAge >= 26 && charAge <= 50;
-          if (age === 'mature') return charAge >= 51;
+          if (age === 'adult') return charAge >= 26 && charAge < 30;
+          if (age === 'mature') return charAge >= 30;
           return true;
         });
       }
@@ -663,5 +673,6 @@
 })();
 </script>
 <script src="js/animations.js"></script>
+<script src="js/pwa.js"></script>
 </body>
 </html>

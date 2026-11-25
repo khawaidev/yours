@@ -1,4 +1,13 @@
 <!DOCTYPE html><html lang="en"><head>
+<!-- Perf: warm up the render-blocking CDNs and API origins -->
+<link rel="preconnect" href="https://cdn.tailwindcss.com">
+<link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://dgbxcakkqrgrapwsvrol.supabase.co" crossorigin>
+<link rel="dns-prefetch" href="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev">
+<link rel="dns-prefetch" href="https://yours-backend-e38m.onrender.com">
+
 <meta charset="utf-8">
 <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport">
     <meta name="description" content="Manage your Yours account settings — profile, privacy, voice and more.">
@@ -461,4 +470,5 @@ Delete account
 </script>
 <script src="js/animations.js"></script>
 
+<script src="js/pwa.js"></script>
 </body></html>

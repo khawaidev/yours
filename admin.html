@@ -1,4 +1,13 @@
 <!DOCTYPE html><html lang="en"><head>
+<!-- Perf: warm up the render-blocking CDNs and API origins -->
+<link rel="preconnect" href="https://cdn.tailwindcss.com">
+<link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://dgbxcakkqrgrapwsvrol.supabase.co" crossorigin>
+<link rel="dns-prefetch" href="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev">
+<link rel="dns-prefetch" href="https://yours-backend-e38m.onrender.com">
+
 <meta charset="utf-8">
 <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport">
     <meta name="description" content="Admin console for adding and managing AI characters on Yours.">
@@ -267,8 +276,16 @@ select.field-input option { background: #fff; color: #000; }
 
 <!-- Character list -->
 <section class="bg-[#1a1a1a] border border-white/10 rounded-2xl p-5 mb-5 section-card">
-  <h2 class="text-base font-bold mb-4 flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-blue-400 inline-block"></span> Existing characters</h2>
-  <div id="char-list" class="space-y-2 text-sm"></div>
+  <h2 class="text-base font-bold mb-3 flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-blue-400 inline-block"></span> Existing characters</h2>
+  <div class="relative mb-3">
+    <svg class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
+    <input class="field-input" id="char-search" style="padding-left:2.4rem" placeholder="Search name, age, personality, art style, gender, verified…" type="search" autocomplete="off">
+  </div>
+  <div class="flex items-center justify-between mb-2">
+    <p class="text-xs text-gray-500" id="char-list-meta">Loading…</p>
+    <button class="text-xs font-semibold underline text-gray-400 active:scale-95 transition-transform cursor-pointer" id="char-export-btn" type="button">Download JSON</button>
+  </div>
+  <div id="char-list" class="space-y-2 text-sm" style="max-height:26rem;overflow-y:auto;overscroll-behavior:contain;"></div>
 </section>
 
 </div>
@@ -611,10 +628,20 @@ select.field-input option { background: #fff; color: #000; }
       overlay.style.display = 'none';
       btn.innerHTML = 'Add character';
       btn.disabled = false;
+      var newVerified = document.getElementById('char-verified').checked;
       clearForm();
       showToast('Character "' + name + '" added! ✨');
       statusMsg.style.display = 'none';
-      loadCharacters(client);
+      // Mirror the new character into the local JSON index the admin list reads.
+      await upsertCharacterIndex({
+        id: char.id,
+        full_name: name,
+        age: age,
+        art_style: art,
+        gender: gender,
+        personality: personality,
+        verified: newVerified
+      });
     } catch (err) {
       overlay.style.display = 'none';
       btn.innerHTML = 'Add character';
@@ -641,72 +668,356 @@ select.field-input option { background: #fff; color: #000; }
     uploadResultBox.classList.add('hidden');
   }
 
-  // ---- List existing characters ----
-  async function loadCharacters(client) {
-    var list = document.getElementById('char-list');
-    // Skeleton shimmer rows
-    var skel = '';
-    for (var s = 0; s < 3; s++) {
-      skel += '<div class="skeleton-row h-14"></div>';
-    }
-    list.innerHTML = skel;
-    var { data, error } = await client.from('characters').select('id,name,age,gender,personality,message_style,created_at,verified').order('created_at', { ascending: false }).limit(50);
-    if (error) { list.innerHTML = '<p class="text-red-400">Failed to load: ' + error.message + '</p>'; return; }
-    if (!data || !data.length) { list.innerHTML = '<p class="text-gray-500">No characters yet.</p>'; return; }
-    list.innerHTML = '';
-    data.forEach(function (c) {
-      var row = document.createElement('div');
-      row.className = 'pop-in flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/10';
-      // Three states: true = verified, false = explicitly unverified,
-      // null = never set (existing characters; rendered as unverified).
-      var isVerified = c.verified === true;
-      var state = isVerified ? 'true' : (c.verified === false ? 'false' : 'null');
-      var stateLabel = isVerified ? 'verified' : (c.verified === false ? 'unverified' : 'unset');
-      row.innerHTML =
-        '<div><div class="font-semibold flex items-center">' + c.name + (isVerified ? VERIFIED_BADGE : '') + '</div>' +
-        '<div class="text-gray-500 text-xs capitalize">' + c.gender + ' · ' + c.age + ' · ' + c.personality + ' · ' + c.message_style + ' · ' + stateLabel + '</div></div>' +
-        '<div class="flex items-center gap-2">' +
-        '<select class="text-xs font-semibold px-2 py-1.5 rounded-full bg-white/10 border border-white/20 text-gray-200 active:scale-95 transition-transform" data-verify-id="' + c.id + '" aria-label="Verification state for ' + c.name + '">' +
-        '<option value="true"' + (state === 'true' ? ' selected' : '') + '>Verified</option>' +
-        '<option value="false"' + (state === 'false' ? ' selected' : '') + '>Unverified</option>' +
-        '<option value="null"' + (state === 'null' ? ' selected' : '') + '>Unset</option>' +
-        '</select>' +
-        '<button class="text-red-400 text-xs font-semibold px-3 py-1.5 rounded-full border border-red-400/30 active:scale-95 transition-transform" data-id="' + c.id + '" data-name="' + c.name + '" type="button">Delete</button></div>';
-      list.appendChild(row);
+  // ---- Local character index (source of the admin character list) ----
+  // Every successfully added/updated character is mirrored into
+  // data/characters-index.json on the backend. The list below reads from that
+  // JSON instead of querying Supabase, with a localStorage mirror so it still
+  // renders while the backend is waking up.
+  var INDEX_MIRROR_KEY = 'yours_character_index_v1';
+  var indexEntries = [];
+  var searchQuery = '';
+
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (ch) {
+      return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[ch];
     });
-    list.querySelectorAll('[data-verify-id]').forEach(function (el) {
-      el.addEventListener('change', async function () {
-        var raw = el.value;
-        var next = raw === 'null' ? null : raw === 'true';
-        el.disabled = true;
-        var { error } = await client.from('characters').update({ verified: next }).eq('id', el.getAttribute('data-verify-id'));
-        if (error) {
-          el.disabled = false;
-          showToast('Update failed: ' + error.message);
-          return;
-        }
-        showToast(next === null ? 'Verification cleared' : (next ? 'Character marked verified' : 'Character marked unverified'));
-        loadCharacters(client);
+  }
+
+  function readIndexMirror() {
+    try {
+      var v = JSON.parse(localStorage.getItem(INDEX_MIRROR_KEY) || '[]');
+      return Array.isArray(v) ? v : [];
+    } catch (e) { return []; }
+  }
+  function writeIndexMirror(list) {
+    try { localStorage.setItem(INDEX_MIRROR_KEY, JSON.stringify(list)); } catch (e) {}
+  }
+  function sortIndex(list) {
+    return list.slice().sort(function (a, b) {
+      return String(b.updated_at || '').localeCompare(String(a.updated_at || ''));
+    });
+  }
+
+  async function fetchCharacterIndex() {
+    var listEl = document.getElementById('char-list');
+    if (listEl && !indexEntries.length) {
+      var skel = '';
+      for (var s = 0; s < 3; s++) skel += '<div class="skeleton-row h-14"></div>';
+      listEl.innerHTML = skel;
+    }
+    try {
+      var res = await fetch(API_BASE + '/characters/local-index', { cache: 'no-store' });
+      var json = await res.json();
+      if (!res.ok || !json.success) throw new Error(json.error || ('HTTP ' + res.status));
+      indexEntries = sortIndex(json.characters || []);
+      writeIndexMirror(indexEntries);
+    } catch (err) {
+      var mirror = readIndexMirror();
+      if (mirror.length) indexEntries = sortIndex(mirror);
+      else showToast('Character index unavailable: ' + err.message);
+    }
+    renderCharacterList();
+  }
+
+  async function upsertCharacterIndex(entry) {
+    indexEntries = sortIndex(indexEntries.filter(function (e) { return e.id !== entry.id; }).concat([entry]));
+    writeIndexMirror(indexEntries);
+    renderCharacterList();
+    try {
+      var res = await fetch(API_BASE + '/characters/local-index', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(entry)
+      });
+      var json = await res.json();
+      if (!res.ok || !json.success) throw new Error(json.error || ('HTTP ' + res.status));
+      indexEntries = sortIndex(json.characters || indexEntries);
+      writeIndexMirror(indexEntries);
+      renderCharacterList();
+    } catch (err) {
+      showToast('Saved here, JSON index sync failed: ' + err.message);
+    }
+  }
+
+  async function removeCharacterIndex(id) {
+    indexEntries = indexEntries.filter(function (e) { return e.id !== id; });
+    writeIndexMirror(indexEntries);
+    renderCharacterList();
+    try {
+      var res = await fetch(API_BASE + '/characters/local-index/' + encodeURIComponent(id), { method: 'DELETE' });
+      var json = await res.json();
+      if (!res.ok || !json.success) throw new Error(json.error || ('HTTP ' + res.status));
+      indexEntries = sortIndex(json.characters || indexEntries);
+      writeIndexMirror(indexEntries);
+      renderCharacterList();
+    } catch (err) {
+      showToast('Removed here, JSON index sync failed: ' + err.message);
+    }
+  }
+
+  // Free-text search across every field stored in the local index.
+  function indexMatches(e, q) {
+    var hay = [e.full_name, e.age, e.art_style, e.gender, e.personality, e.verified ? 'verified' : 'unverified']
+      .join(' ').toLowerCase();
+    return q.split(/\s+/).filter(Boolean).every(function (token) { return hay.indexOf(token) !== -1; });
+  }
+
+  function selectOptions(sourceSelectId, selected) {
+    var source = document.getElementById(sourceSelectId);
+    var html = '';
+    if (!source) return html;
+    Array.prototype.forEach.call(source.options, function (o) {
+      html += '<option value="' + o.value + '"' + (o.value === selected ? ' selected' : '') + '>' + o.textContent + '</option>';
+    });
+    return html;
+  }
+
+  function characterRow(e) {
+    var verified = e.verified === true;
+    var id = esc(e.id);
+    return '<div class="pop-in rounded-xl bg-white/5 border border-white/10 overflow-hidden">' +
+      '<div class="flex items-center justify-between gap-2 p-3">' +
+        '<div class="min-w-0">' +
+          '<div class="font-semibold flex items-center truncate">' + esc(e.full_name) + (verified ? VERIFIED_BADGE : '') + '</div>' +
+          '<div class="text-gray-500 text-xs truncate capitalize">' + esc(e.gender || '—') + ' · ' + (e.age == null ? '—' : esc(e.age)) + ' · ' + esc(e.personality || '—') + ' · ' + esc(e.art_style || '—') + ' · ' + (verified ? 'verified' : 'unverified') + '</div>' +
+        '</div>' +
+        '<div class="flex items-center gap-2 shrink-0">' +
+          '<button class="text-xs font-semibold px-3 py-1.5 rounded-full bg-white/10 border border-white/20 active:scale-95 transition-transform" data-edit="' + id + '" type="button">Edit</button>' +
+          '<button class="text-red-400 text-xs font-semibold px-3 py-1.5 rounded-full border border-red-400/30 active:scale-95 transition-transform" data-del="' + id + '" type="button">Delete</button>' +
+        '</div>' +
+      '</div>' +
+      '<div class="hidden px-3 pb-3 space-y-3 border-t border-white/5 pt-3" data-edit-panel="' + id + '">' +
+        '<div class="inline-row">' +
+          '<div><label class="field-label">Name</label><input class="field-input" data-field="full_name" type="text" value="' + esc(e.full_name) + '"></div>' +
+          '<div><label class="field-label">Age</label><input class="field-input" data-field="age" type="number" min="18" max="99" value="' + (e.age == null ? '' : esc(e.age)) + '"></div>' +
+        '</div>' +
+        '<div class="inline-row">' +
+          '<div><label class="field-label">Gender</label><select class="field-input" data-field="gender">' + selectOptions('char-gender', e.gender) + '</select></div>' +
+          '<div><label class="field-label">Art style</label><select class="field-input" data-field="art_style">' + selectOptions('char-art', e.art_style) + '</select></div>' +
+        '</div>' +
+        '<div class="inline-row">' +
+          '<div><label class="field-label">Personality</label><select class="field-input" data-field="personality">' + selectOptions('char-personality', e.personality) + '</select></div>' +
+          '<div><label class="field-label">Verified</label><select class="field-input" data-field="verified"><option value="true"' + (verified ? ' selected' : '') + '>Verified</option><option value="false"' + (verified ? '' : ' selected') + '>Unverified</option></select></div>' +
+        '</div>' +
+        '<div><label class="field-label">About <span class="text-gray-500">— not in the local JSON; blank keeps the current one</span></label><textarea class="field-input" data-field="about" rows="2" placeholder="Leave blank to keep the current about"></textarea></div>' +
+        '<div class="inline-row">' +
+          '<div><label class="field-label">Feed media <span class="text-gray-500">— blank keeps current</span></label><input class="field-input" data-field="feed_file" type="file" accept="image/*,video/mp4"></div>' +
+          '<div><label class="field-label">Profile image <span class="text-gray-500">— blank keeps current</span></label><input class="field-input" data-field="profile_file" type="file" accept="image/*"></div>' +
+        '</div>' +
+        '<div class="flex items-center gap-2">' +
+          '<button class="btn-primary" style="padding:.65rem" data-save="' + id + '" type="button">Update</button>' +
+          '<button class="text-xs font-semibold px-4 py-2 rounded-full bg-white/10 shrink-0" data-cancel="' + id + '" type="button">Cancel</button>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  }
+
+  function renderCharacterList() {
+    var list = document.getElementById('char-list');
+    var meta = document.getElementById('char-list-meta');
+    if (!list) return;
+    var q = searchQuery.trim().toLowerCase();
+    var all = sortIndex(indexEntries);
+    // No search: only the 5 most recent. Search: every match (the list
+    // scrolls once there are more than 5).
+    var shown = q ? all.filter(function (e) { return indexMatches(e, q); }) : all.slice(0, 5);
+
+    if (q) {
+      meta.textContent = shown.length + (shown.length === 1 ? ' match' : ' matches') + (shown.length > 5 ? ' · scroll to see all' : '');
+    } else {
+      meta.textContent = all.length ? 'Latest ' + shown.length + ' of ' + all.length : 'No characters yet';
+    }
+
+    if (!shown.length) {
+      list.innerHTML = '<p class="text-gray-500 py-3">' +
+        (q ? 'No characters match "' + esc(searchQuery.trim()) + '".' : 'No characters in the local index yet. Add one above.') +
+        '</p>';
+      return;
+    }
+
+    list.innerHTML = shown.map(characterRow).join('');
+
+    list.querySelectorAll('[data-edit]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var panel = list.querySelector('[data-edit-panel="' + btn.getAttribute('data-edit') + '"]');
+        if (!panel) return;
+        var willOpen = panel.classList.contains('hidden');
+        panel.classList.toggle('hidden', !willOpen);
+        btn.textContent = willOpen ? 'Close' : 'Edit';
+        if (willOpen) panel.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
       });
     });
-    list.querySelectorAll('[data-id]').forEach(function (btn) {
+    list.querySelectorAll('[data-cancel]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var panel = list.querySelector('[data-edit-panel="' + btn.getAttribute('data-cancel') + '"]');
+        if (panel) panel.classList.add('hidden');
+        var editBtn = list.querySelector('[data-edit="' + btn.getAttribute('data-cancel') + '"]');
+        if (editBtn) editBtn.textContent = 'Edit';
+      });
+    });
+    list.querySelectorAll('[data-save]').forEach(function (btn) {
+      btn.addEventListener('click', function () { saveCharacterFromPanel(btn.getAttribute('data-save')); });
+    });
+    list.querySelectorAll('[data-del]').forEach(function (btn) {
       btn.addEventListener('click', async function () {
-        if (!confirm('Delete "' + btn.getAttribute('data-name') + '"?')) return;
+        var id = btn.getAttribute('data-del');
+        var entry = indexEntries.filter(function (e) { return e.id === id; })[0];
+        if (!confirm('Delete "' + (entry ? entry.full_name : id) + '"?')) return;
+        var client;
+        try { client = getClient(); } catch (e) { showToast(e.message); return; }
         btn.disabled = true;
         btn.innerHTML = '<span class="spinner" style="width:.8rem;height:.8rem;border-width:2px;"></span>';
-        var { error } = await client.from('characters').delete().eq('id', btn.getAttribute('data-id'));
-        showToast(error ? 'Delete failed: ' + error.message : 'Character deleted.');
-        loadCharacters(client);
+        var { error } = await client.from('characters').delete().eq('id', id);
+        if (error) {
+          btn.disabled = false;
+          btn.textContent = 'Delete';
+          showToast('Delete failed: ' + error.message);
+          return;
+        }
+        await removeCharacterIndex(id);
+        showToast('Character deleted.');
       });
     });
   }
 
+  // Uploads one file to Cloudflare R2 through the backend's presign endpoint.
+  async function presignAndUpload(file, filename, mimeType) {
+    var res = await fetch(API_BASE + '/media/character-image-upload-url', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ filename: filename, mimeType: mimeType, size: file.size })
+    });
+    var presign = await res.json();
+    if (!presign.success) throw new Error(presign.error || 'Failed to get upload URL');
+    var put = await fetch(presign.uploadUrl, { method: 'PUT', body: file, headers: { 'Content-Type': mimeType } });
+    if (!put.ok) throw new Error('Upload failed (HTTP ' + put.status + ')');
+    return {
+      url: presign.publicUrl,
+      mediaType: presign.mediaType || (mimeType.indexOf('video') === 0 ? 'video' : 'image')
+    };
+  }
+
+  async function saveCharacterFromPanel(id) {
+    var panel = document.querySelector('[data-edit-panel="' + id + '"]');
+    if (!panel) return;
+    function field(name) {
+      var el = panel.querySelector('[data-field="' + name + '"]');
+      return el ? el.value : '';
+    }
+
+    var name = field('full_name').trim();
+    var age = parseInt(field('age'), 10);
+    var gender = field('gender');
+    var artStyle = field('art_style');
+    var personality = field('personality');
+    var verified = field('verified') === 'true';
+    var about = field('about').trim();
+    var feedFile = panel.querySelector('[data-field="feed_file"]').files[0] || null;
+    var profileFile = panel.querySelector('[data-field="profile_file"]').files[0] || null;
+
+    if (!name) { showToast('Name is required.'); return; }
+    if (isNaN(age) || age < 18 || age > 99) { showToast('Age must be 18–99.'); return; }
+    if (feedFile) {
+      var feedErr = feedFileError(feedFile);
+      if (feedErr) { showToast(feedErr); return; }
+    }
+
+    var client;
+    try { client = getClient(); } catch (e) { showToast(e.message); return; }
+
+    var btn = panel.querySelector('[data-save]');
+    var original = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> Updating…';
+
+    var safeName = name.replace(/\s+/g, '-').replace(/[^a-zA-Z0-9-]/g, '');
+
+    try {
+      var updates = {
+        name: name,
+        age: age,
+        gender: gender,
+        art_style: artStyle,
+        personality: personality,
+        verified: verified
+      };
+      // About is not stored in the local index, so an empty box means "keep
+      // whatever Supabase already has".
+      if (about) updates.about = about;
+
+      if (profileFile) {
+        var profileMime = profileFile.type || 'image/jpeg';
+        var profileName = safeName + '-' + age + '-profile.' + extFromFile(profileFile);
+        var profileUp = await presignAndUpload(profileFile, profileName, profileMime);
+        updates.circular_profile_image_url = profileUp.url;
+      }
+
+      var { error: updateErr } = await client.from('characters').update(updates).eq('id', id);
+      if (updateErr) throw updateErr;
+
+      if (feedFile) {
+        var feedIsVideo = feedKindOf(feedFile) === 'video';
+        var feedMime = feedIsVideo ? 'video/mp4' : (feedFile.type || 'image/jpeg');
+        var feedName = safeName + '-' + age + '-feed.' + (feedIsVideo ? 'mp4' : extFromFile(feedFile));
+        var feedUp = await presignAndUpload(feedFile, feedName, feedMime);
+        var { data: feedRows, error: feedLookupErr } = await client
+          .from('character_feeds').select('id').eq('character_id', id).limit(1);
+        if (feedLookupErr) throw feedLookupErr;
+        if (feedRows && feedRows.length) {
+          var { error: feedUpdateErr } = await client
+            .from('character_feeds')
+            .update({ media_url: feedUp.url, media_type: feedUp.mediaType })
+            .eq('id', feedRows[0].id);
+          if (feedUpdateErr) throw feedUpdateErr;
+        } else {
+          var { error: feedInsertErr } = await client.from('character_feeds').insert({
+            character_id: id,
+            media_url: feedUp.url,
+            media_type: feedUp.mediaType,
+            sort_order: 0
+          });
+          if (feedInsertErr) throw feedInsertErr;
+        }
+      }
+
+      await upsertCharacterIndex({
+        id: id,
+        full_name: name,
+        age: age,
+        art_style: artStyle,
+        gender: gender,
+        personality: personality,
+        verified: verified
+      });
+
+      panel.classList.add('hidden');
+      showToast('Character updated ✨');
+    } catch (err) {
+      showToast('Update failed: ' + err.message);
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = original;
+    }
+  }
+
   loadKeys();
-  var client;
-  try { client = getClient(); loadCharacters(client); } catch (e) {} // wait until keys entered
-  urlEl.addEventListener('change', function () { try { loadCharacters(getClient()); } catch (e) {} });
-  anonEl.addEventListener('change', function () { try { loadCharacters(getClient()); } catch (e) {} });
-  svcEl.addEventListener('change', function () { try { loadCharacters(getClient()); } catch (e) {} });
+  // Search + export wiring for the local character index.
+  document.getElementById('char-search').addEventListener('input', function () {
+    searchQuery = this.value;
+    renderCharacterList();
+  });
+  document.getElementById('char-export-btn').addEventListener('click', function () {
+    var blob = new Blob([JSON.stringify(sortIndex(indexEntries), null, 2)], { type: 'application/json' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'characters-index.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+  });
+  fetchCharacterIndex();
 })();
 </script>
+<script src="js/pwa.js"></script>
 </body></html>

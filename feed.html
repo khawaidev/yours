@@ -1,4 +1,13 @@
 <!DOCTYPE html><html lang="en" style=""><head>
+<!-- Perf: warm up the render-blocking CDNs and API origins -->
+<link rel="preconnect" href="https://cdn.tailwindcss.com">
+<link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://dgbxcakkqrgrapwsvrol.supabase.co" crossorigin>
+<link rel="dns-prefetch" href="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev">
+<link rel="dns-prefetch" href="https://yours-backend-e38m.onrender.com">
+
 <meta charset="utf-8">
 <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport">
     <meta name="description" content="See the latest posts from your AI characters on Yours.">
@@ -69,6 +78,32 @@
         .nav-item-active {
             background-color: rgba(255, 255, 255, 0.15);
             border-radius: 9999px;
+        }
+
+        /* ---- Feed loading skeleton (covers the previous card while the
+           next character's media downloads, so image, name, about and
+           profile always change together) ---- */
+        .feed-skeleton {
+            position: absolute;
+            inset: 0;
+            z-index: 2;
+            overflow: hidden;
+            background: rgba(26, 26, 26, 0.96);
+        }
+        .feed-skeleton::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            transform: translateX(-100%);
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.10), transparent);
+            animation: feed-shimmer 1.2s infinite;
+        }
+        @keyframes feed-shimmer { 100% { transform: translateX(100%); } }
+        .feed-text-skeleton {
+            background: rgba(255, 255, 255, 0.10);
+            border-radius: 0.75rem;
+            overflow: hidden;
+            position: relative;
         }
 
         /* ---- Swipe Guide Overlay ---- */
@@ -214,6 +249,8 @@
 <video class="bg-image" id="bg-video" loop="" muted="" playsinline="" style="display:none;"></video>
 <!-- Gradient Overlay for text readability -->
 <div class="gradient-overlay"></div>
+<!-- Loading skeleton for the next character (sits under the content layer) -->
+<div class="feed-skeleton" id="feed-bg-skeleton" style="display:none;" aria-hidden="true"></div>
 <!-- Content Layer -->
 <div class="content-layer">
 <!-- BEGIN: TopHeader -->
@@ -238,19 +275,9 @@
 <!-- END: TopHeader -->
 <!-- Spacer to push content to bottom -->
 <div class="flex-grow"></div>
-<!-- Prev / Next nav (swipe alternative) -->
-<div class="absolute left-2 top-1/2 -translate-y-1/2 z-20">
-<button aria-label="Previous character" class="w-9 h-9 rounded-full bg-black/40 backdrop-blur-md flex items-center justify-center text-white active:scale-95 transition-transform cursor-pointer" id="feed-prev" type="button"><i class="fa-solid fa-chevron-left"></i></button>
-</div>
-<div class="absolute right-2 top-1/2 -translate-y-1/2 z-20">
-<button aria-label="Next character" class="w-9 h-9 rounded-full bg-black/40 backdrop-blur-md flex items-center justify-center text-white active:scale-95 transition-transform cursor-pointer" id="feed-next" type="button"><i class="fa-solid fa-chevron-right"></i></button>
-</div>
 <!-- BEGIN: ProfileInfo -->
 <main class="pb-14" id="feed-profile"></main>
 <!-- END: ProfileInfo -->
-<div class="absolute bottom-24 left-0 right-0 z-20 flex justify-center">
-<p class="text-xs text-white/60 bg-black/40 backdrop-blur-md rounded-full px-3 py-1.5" id="feed-friends"></p>
-</div>
 </div>
 <!-- BEGIN: Bottom Navigation (icon-only pill) -->
 <nav class="absolute bottom-4 left-4 right-4 z-20 flex items-center justify-between bg-[#252525]/95 backdrop-blur-lg rounded-[32px] px-2 py-2 shadow-[0_-5px_20px_rgba(0,0,0,0.5)]">
@@ -398,37 +425,59 @@
     var bgImg = document.getElementById('bg-image');
     var bgVideo = document.getElementById('bg-video');
     var profileEl = document.getElementById('feed-profile');
-    var friendsEl = document.getElementById('feed-friends');
+    var skeletonEl = document.getElementById('feed-bg-skeleton');
     var characters = [];
     var current = 0;
+    // Only the newest swipe may paint, so a slow image can never reveal an
+    // older character's name/about/profile over the new feed media.
+    var renderSeq = 0;
 
-    function render() {
-      if (!characters.length) {
-        profileEl.innerHTML =
-          '<div class="text-center py-10"><p class="text-white/80">No characters match your interests yet.</p>' +
-          '<p class="text-white/50 text-sm mt-1">Check back soon — new characters are added every day.</p></div>';
-        bgImg.style.display = 'none';
-        bgVideo.style.display = 'none';
-        friendsEl.textContent = '';
-        return;
-      }
-      var c = characters[current];
+    function showSkeleton() {
+      if (skeletonEl) skeletonEl.style.display = 'block';
+      bgImg.style.visibility = 'hidden';
+      bgVideo.style.visibility = 'hidden';
+      profileEl.innerHTML =
+        '<div class="mb-4">' +
+        '<div class="feed-text-skeleton" style="height:2rem;width:62%"></div>' +
+        '<div class="feed-text-skeleton mt-3" style="height:.9rem;width:95%"></div>' +
+        '<div class="feed-text-skeleton mt-2" style="height:.9rem;width:78%"></div></div>' +
+        '<div class="flex items-center space-x-4">' +
+        '<div class="feed-text-skeleton w-16 h-16" style="border-radius:9999px;flex-shrink:0"></div>' +
+        '<div class="feed-text-skeleton flex-grow h-14" style="border-radius:9999px"></div></div>';
+    }
+
+    function hideSkeleton() {
+      if (skeletonEl) skeletonEl.style.display = 'none';
+      bgImg.style.visibility = '';
+      bgVideo.style.visibility = '';
+    }
+
+    function preloadImage(url) {
+      return new Promise(function (resolve) {
+        if (!url) { resolve(); return; }
+        var img = new Image();
+        img.onload = resolve;
+        img.onerror = resolve;
+        img.src = url;
+      });
+    }
+
+    // Paints every part of the card in one synchronous pass so the feed
+    // media, name, age, about and profile picture always describe the same
+    // character.
+    function paint(c) {
       var feedMedia = c.character_feeds && c.character_feeds.length ? c.character_feeds[0] : null;
+      var isVideo = !!(feedMedia && feedMedia.media_type === 'video');
+      var bgUrl = feedMedia ? feedMedia.media_url : (c.circular_profile_image_url || '');
 
-      // Background: video if feed media is a video, else image
-      bgImg.style.display = feedMedia && feedMedia.media_type === 'video' ? 'none' : 'block';
-      bgVideo.style.display = feedMedia && feedMedia.media_type === 'video' ? 'block' : 'none';
-      if (feedMedia) {
-        var url = feedMedia.media_url;
-        if (feedMedia.media_type === 'video') {
-          bgVideo.src = url;
-          bgVideo.play().catch(function () {});
-        } else {
-          bgImg.src = url;
-        }
+      bgImg.style.display = isVideo ? 'none' : 'block';
+      bgVideo.style.display = isVideo ? 'block' : 'none';
+      if (isVideo) {
+        bgVideo.src = bgUrl;
+        bgVideo.play().catch(function () {});
       } else {
-        bgImg.src = c.circular_profile_image_url;
-        bgImg.style.display = 'block';
+        bgVideo.pause();
+        bgImg.src = bgUrl;
       }
 
       profileEl.innerHTML =
@@ -443,9 +492,51 @@
         '<button aria-label="Love this character" class="w-12 h-12 flex items-center justify-center rounded-full text-white" id="feed-love-btn" style="background: linear-gradient(to right bottom, rgb(195, 36, 76), rgb(240, 42, 83), rgb(255, 62, 134));">' +
         '<i class="fa-solid fa-heart text-xl"></i></button></div></div>';
 
-      friendsEl.textContent = (current + 1) + ' of ' + characters.length + ' matches';
-
       wire();
+    }
+
+    // Skeleton first, then one atomic swap once the new media has downloaded
+    // (capped at 2.5s so a slow asset never blocks the swipe).
+    function showCharacter(c) {
+      var seq = ++renderSeq;
+      var feedMedia = c.character_feeds && c.character_feeds.length ? c.character_feeds[0] : null;
+      var isVideo = !!(feedMedia && feedMedia.media_type === 'video');
+      var bgUrl = feedMedia ? feedMedia.media_url : (c.circular_profile_image_url || '');
+      var committed = false;
+
+      function commit() {
+        if (committed) return;
+        committed = true;
+        if (seq !== renderSeq) return;
+        paint(c);
+        hideSkeleton();
+      }
+
+      showSkeleton();
+      if (isVideo) {
+        var probe = document.createElement('video');
+        probe.preload = 'auto';
+        probe.onloadeddata = commit;
+        probe.onerror = commit;
+        probe.src = bgUrl;
+      } else {
+        Promise.all([preloadImage(bgUrl), preloadImage(c.circular_profile_image_url)]).then(commit);
+      }
+      setTimeout(commit, 2500);
+    }
+
+    function render() {
+      if (!characters.length) {
+        renderSeq++;
+        if (skeletonEl) skeletonEl.style.display = 'none';
+        profileEl.innerHTML =
+          '<div class="text-center py-10"><p class="text-white/80">No characters match your interests yet.</p>' +
+          '<p class="text-white/50 text-sm mt-1">Check back soon — new characters are added every day.</p></div>';
+        bgImg.style.display = 'none';
+        bgVideo.style.display = 'none';
+        return;
+      }
+      showCharacter(characters[current]);
     }
 
     function wire() {
@@ -471,8 +562,6 @@
       render();
     }
 
-    document.getElementById('feed-prev').addEventListener('click', function () { go(-1); });
-    document.getElementById('feed-next').addEventListener('click', function () { go(1); });
     document.addEventListener('keydown', function (e) {
       if (e.key === 'ArrowLeft') go(-1);
       if (e.key === 'ArrowRight') go(1);
@@ -519,7 +608,8 @@
         if (preferredPersonality && c.personality === preferredPersonality) s += 0.5;
         if (profile && profile.art_style && c.art_style === profile.art_style) s += 0.2;
         if (profile && profile.age_interest) {
-          var isYoung = c.age < 35;
+          // Age classifier: under 30 is young, 30 and above is mature.
+          var isYoung = c.age < 30;
           if ((profile.age_interest === 'young' && isYoung) || (profile.age_interest === 'mature' && !isYoung)) s += 0.2;
         }
         return s;
@@ -544,4 +634,5 @@
 <script src="js/animations.js"></script>
 
 <script src="js/api-client.js"></script>
+<script src="js/pwa.js"></script>
 </body></html>

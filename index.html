@@ -1,4 +1,13 @@
 <!DOCTYPE html><html lang="en" style=""><head>
+<!-- Perf: warm up the render-blocking CDNs and API origins -->
+<link rel="preconnect" href="https://cdn.tailwindcss.com">
+<link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://dgbxcakkqrgrapwsvrol.supabase.co" crossorigin>
+<link rel="dns-prefetch" href="https://pub-475cca0b7414418d866128a4b30dfd97.r2.dev">
+<link rel="dns-prefetch" href="https://yours-backend-e38m.onrender.com">
+
 <meta charset="utf-8">
 <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport">
     <meta name="description" content="Yours is where AI companions come alive — chat, voice call and build a real connection with your own AI companion.">
@@ -858,9 +867,17 @@
       var about = document.getElementById('feed-about');
       var avatar = document.getElementById('feed-avatar');
       if (window.feedSkeleton) window.feedSkeleton.show();
-      [bg, info].forEach(function (el) { if (el) el.classList.add('feed-swap-out'); });
-      setTimeout(function () {
-        var prevBg = bg ? bg.getAttribute('src') || '' : '';
+      var prevBg = bg ? bg.getAttribute('src') || '' : '';
+      var revealed = false;
+      function reveal() {
+        if (revealed) return;
+        revealed = true;
+        if (window.feedSkeleton) window.feedSkeleton.hide();
+        if (done) done();
+      }
+      // Preload the new feed image, then swap image, name, about and avatar
+      // together so nothing from the previous character lingers.
+      function commit() {
         if (bg) { bg.src = c.bg; bg.alt = c.name + ' photo'; }
         if (name) { name.textContent = c.name; if (c.verified === true) name.insertAdjacentHTML('beforeend', VERIFIED_BADGE); }
         if (about) about.textContent = c.about;
@@ -868,24 +885,17 @@
         // Track the currently-shown character in a shape the messaging /
         // profile pages understand, and persist it across navigation.
         setCurrentChar(id);
-        [bg, info].forEach(function (el) {
-          if (el) el.classList.remove('feed-swap-out');
-        });
-        var revealed = false;
-        function reveal() {
-          if (revealed) return;
-          revealed = true;
-          if (window.feedSkeleton) window.feedSkeleton.hide();
-          if (done) done();
-        }
-        if (bg && c.bg && c.bg !== prevBg) {
-          bg.addEventListener('load', reveal, { once: true });
-          bg.addEventListener('error', reveal, { once: true });
-          setTimeout(reveal, 3000);
-        } else {
-          reveal();
-        }
-      }, 250);
+        reveal();
+      }
+      if (bg && c.bg && c.bg !== prevBg) {
+        var probe = new Image();
+        probe.onload = commit;
+        probe.onerror = commit;
+        probe.src = c.bg;
+        setTimeout(commit, 2500);
+      } else {
+        commit();
+      }
     }
 
     function handleSwipe(dir) {
@@ -1240,20 +1250,27 @@
     function matches(c, f) {
       if (f.pref && f.pref !== 'everyone' && c.gender && c.gender !== f.pref) return false;
       if (f.style && c.art_style && c.art_style !== f.style) return false;
-      if (f.age === 'young' && c.age >= 35) return false;
-      if (f.age === 'mature' && c.age < 35) return false;
+      // Age classifier: under 30 is young, 30 and above is mature.
+      if (f.age === 'young' && c.age >= 30) return false;
+      if (f.age === 'mature' && c.age < 30) return false;
       return true;
     }
 
-    function render() {
-      if (!deck.length) {
-        if (nameEl) nameEl.textContent = 'No matches yet';
-        if (aboutEl) aboutEl.textContent = 'Try adjusting your filters — new characters are added every day.';
-        if (avatarEl) avatarEl.src = '';
-        if (bgEl) bgEl.src = '';
-        return;
-      }
-      var c = deck[index];
+    var renderSeq = 0;
+
+    function preloadImage(url) {
+      return new Promise(function (resolve) {
+        if (!url) { resolve(); return; }
+        var img = new Image();
+        img.onload = resolve;
+        img.onerror = resolve;
+        img.src = url;
+      });
+    }
+
+    // Paints the whole card in one synchronous pass. Every field (feed media,
+    // name, age, about, profile picture) always belongs to the same character.
+    function paint(c) {
       var feedMedia = c.character_feeds && c.character_feeds.length ? c.character_feeds[0] : null;
       if (bgEl) {
         var bgUrl = (feedMedia && feedMedia.media_type === 'image') ? feedMedia.media_url : (c.circular_profile_image_url || '');
@@ -1279,6 +1296,18 @@
       try { sessionStorage.setItem('yours_current_character', JSON.stringify(c)); } catch (e) {}
     }
 
+    function render() {
+      if (!deck.length) {
+        renderSeq++;
+        if (nameEl) nameEl.textContent = 'No matches yet';
+        if (aboutEl) aboutEl.textContent = 'Try adjusting your filters — new characters are added every day.';
+        if (avatarEl) avatarEl.src = '';
+        if (bgEl) bgEl.src = '';
+        return;
+      }
+      paint(deck[index]);
+    }
+
     function applyFilters() {
       var f = currentFilters();
       deck = allChars.filter(function (c) { return matches(c, f); });
@@ -1291,6 +1320,7 @@
       if (!deck.length) return;
       index = (index + step + deck.length) % deck.length;
       var c = deck[index];
+      var seq = ++renderSeq;
 
       window.feedSkeleton.show();
 
@@ -1299,36 +1329,20 @@
       if (!bgUrl && feedMedia) bgUrl = feedMedia.media_url;
       var avatarUrl = c.circular_profile_image_url || '';
 
-      var prevBg = bgEl.getAttribute('data-feed-src') || '';
-      var prevAv = avatarEl.getAttribute('data-feed-avatar') || '';
-      bgEl.setAttribute('data-feed-src', bgUrl || '');
-      avatarEl.setAttribute('data-feed-avatar', avatarUrl || '');
-
-      render();
-
-      // Reveal once the new feed image (and avatar) finish loading, so the
-      // skeleton stays up while assets download.
-      var pending = 0;
-      function onLoaded() {
-        pending--;
-        if (pending <= 0) requestAnimationFrame(function () { window.feedSkeleton.hide(); });
-      }
-      if (bgUrl && bgUrl !== prevBg) {
-        pending++;
-        bgEl.addEventListener('load', onLoaded, { once: true });
-        bgEl.addEventListener('error', onLoaded, { once: true });
-      }
-      if (avatarUrl && avatarUrl !== prevAv) {
-        pending++;
-        avatarEl.addEventListener('load', onLoaded, { once: true });
-        avatarEl.addEventListener('error', onLoaded, { once: true });
-      }
-      if (pending === 0) {
+      var committed = false;
+      function commit() {
+        if (committed) return;
+        committed = true;
+        // A newer swipe has already started: never paint this stale card.
+        if (seq !== renderSeq) return;
+        paint(c);
         requestAnimationFrame(function () { window.feedSkeleton.hide(); });
-      } else {
-        // Safety net: never leave the skeleton stuck if a load event is missed.
-        setTimeout(function () { requestAnimationFrame(function () { window.feedSkeleton.hide(); }); }, 3000);
       }
+
+      // Download the next feed image and avatar first, then swap the whole
+      // card at once. The 2.5s cap keeps a slow asset from blocking the swipe.
+      Promise.all([preloadImage(bgUrl), preloadImage(avatarUrl)]).then(commit);
+      setTimeout(commit, 2500);
     }
 
     function revealAfterRender() {
