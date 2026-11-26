@@ -266,9 +266,9 @@
 <i class="fa-solid fa-plus text-white text-xs"></i>
 </a>
 <!-- Settings/Filter Icon -->
-<button class="bg-black/40 backdrop-blur-md rounded-full w-10 h-10 flex items-center justify-center text-white relative">
+<button id="feed-filter-btn" aria-label="Filters" class="bg-black/40 backdrop-blur-md rounded-full w-10 h-10 flex items-center justify-center text-white relative cursor-pointer">
 <i class="fa-solid fa-sliders text-lg"></i>
-<span class="absolute top-2 right-2 w-2.5 h-2.5 bg-orange-500 rounded-full border-2 border-transparent"></span>
+<span id="feed-filter-dot" class="hidden absolute top-2 right-2 w-2.5 h-2.5 bg-orange-500 rounded-full border-2 border-transparent"></span>
 </button>
 </div>
 </header>
@@ -294,6 +294,45 @@
 <img src="Assets/user-1.png" alt="Profile" class="w-6 h-6 object-contain">
 </a>
 </nav>
+<!-- BEGIN: Feed Filter Modal -->
+<div id="feed-filter-modal" class="fixed inset-0 z-[55] hidden items-end sm:items-center justify-center" role="dialog" aria-label="Feed filters">
+  <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" id="feed-filter-backdrop"></div>
+  <div class="relative z-10 w-full max-w-md rounded-t-3xl sm:rounded-3xl border border-white/10 bg-[#1e1e1e]/95 p-6 text-white shadow-2xl">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-lg font-bold">Filters</h2>
+      <button id="feed-filter-close" aria-label="Close filters" class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white/80 hover:text-white cursor-pointer">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+    <div class="space-y-4 text-sm">
+      <div>
+        <div class="text-xs text-white/60 font-medium mb-2">Age</div>
+        <div class="flex flex-wrap gap-2">
+          <button class="feed-filter-opt px-3 py-1.5 rounded-full bg-white/10 text-white font-medium cursor-pointer" data-filter="age" data-value="any">Any age</button>
+          <button class="feed-filter-opt px-3 py-1.5 rounded-full bg-white/10 text-white/70 font-medium cursor-pointer" data-filter="age" data-value="young">Young (&lt; 30)</button>
+          <button class="feed-filter-opt px-3 py-1.5 rounded-full bg-white/10 text-white/70 font-medium cursor-pointer" data-filter="age" data-value="mature">Mature (30+)</button>
+        </div>
+      </div>
+      <div>
+        <div class="text-xs text-white/60 font-medium mb-2">Style</div>
+        <div class="flex flex-wrap gap-2">
+          <button class="feed-filter-opt px-3 py-1.5 rounded-full bg-white/10 text-white font-medium cursor-pointer" data-filter="style" data-value="any">Any style</button>
+          <button class="feed-filter-opt px-3 py-1.5 rounded-full bg-white/10 text-white/70 font-medium cursor-pointer" data-filter="style" data-value="realistic">Realistic</button>
+          <button class="feed-filter-opt px-3 py-1.5 rounded-full bg-white/10 text-white/70 font-medium cursor-pointer" data-filter="style" data-value="anime">Anime</button>
+        </div>
+      </div>
+      <div>
+        <div class="text-xs text-white/60 font-medium mb-2">Status</div>
+        <div class="flex flex-wrap gap-2">
+          <button class="feed-filter-opt px-3 py-1.5 rounded-full bg-white/10 text-white font-medium cursor-pointer" data-filter="status" data-value="any">Any status</button>
+          <button class="feed-filter-opt px-3 py-1.5 rounded-full bg-white/10 text-white/70 font-medium cursor-pointer" data-filter="status" data-value="verified">Verified</button>
+          <button class="feed-filter-opt px-3 py-1.5 rounded-full bg-white/10 text-white/70 font-medium cursor-pointer" data-filter="status" data-value="none">None</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- END: Feed Filter Modal -->
 <!-- BEGIN: Swipe Guide Overlay -->
 <div aria-label="Swipe guide" id="swipe-guide" class="fixed inset-0 z-[60] flex items-center justify-center" role="dialog">
 <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" data-guide-dismiss=""></div>
@@ -629,11 +668,74 @@
       // Every active character is shown, ranked by the preference scores.
       // Preferences only reorder the feed: they never hide characters whose
       // art style or age does not match (Discover shows those too).
-      characters = chars
+      var allChars = chars
         .map(function (c) { return Object.assign({}, c, { score: score(c) }); })
         .sort(function (a, b) { return b.score - a.score; });
 
-      render();
+      var activeFilters = { age: 'any', style: 'any', status: 'any' };
+      var filterModal = document.getElementById('feed-filter-modal');
+      var filterBtn = document.getElementById('feed-filter-btn');
+      var filterClose = document.getElementById('feed-filter-close');
+      var filterBackdrop = document.getElementById('feed-filter-backdrop');
+      var filterDot = document.getElementById('feed-filter-dot');
+
+      function openFilterModal() {
+        if (!filterModal) return;
+        filterModal.classList.remove('hidden');
+        filterModal.classList.add('flex');
+      }
+      function closeFilterModal() {
+        if (!filterModal) return;
+        filterModal.classList.add('hidden');
+        filterModal.classList.remove('flex');
+      }
+      if (filterBtn) filterBtn.addEventListener('click', openFilterModal);
+      if (filterClose) filterClose.addEventListener('click', closeFilterModal);
+      if (filterBackdrop) filterBackdrop.addEventListener('click', closeFilterModal);
+
+      function applyFilters() {
+        characters = allChars.filter(function (c) {
+          if (activeFilters.age !== 'any') {
+            var charAge = parseInt(c.age, 10) || 0;
+            if (activeFilters.age === 'young' && !(charAge < 30)) return false;
+            if (activeFilters.age === 'mature' && !(charAge >= 30)) return false;
+          }
+          if (activeFilters.style !== 'any') {
+            var charStyle = (c.art_style || '').toLowerCase();
+            if (charStyle !== activeFilters.style) return false;
+          }
+          if (activeFilters.status !== 'any') {
+            var isVerified = c.verified === true;
+            if (activeFilters.status === 'verified' && !isVerified) return false;
+            if (activeFilters.status === 'none' && isVerified) return false;
+          }
+          return true;
+        });
+        if (filterDot) {
+          var hasFilter = activeFilters.age !== 'any' || activeFilters.style !== 'any' || activeFilters.status !== 'any';
+          filterDot.classList.toggle('hidden', !hasFilter);
+        }
+        current = 0;
+        render();
+      }
+
+      document.querySelectorAll('.feed-filter-opt').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var key = btn.getAttribute('data-filter');
+          var val = btn.getAttribute('data-value');
+          activeFilters[key] = val;
+          document.querySelectorAll('.feed-filter-opt[data-filter="' + key + '"]').forEach(function (b) {
+            var isSel = b.getAttribute('data-value') === val;
+            b.classList.toggle('bg-[#e11d48]', isSel);
+            b.classList.toggle('bg-white/10', !isSel);
+            b.classList.toggle('text-white', isSel);
+            b.classList.toggle('text-white/70', !isSel);
+          });
+          applyFilters();
+        });
+      });
+
+      applyFilters();
     }
 
     init();
