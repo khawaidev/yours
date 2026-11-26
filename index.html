@@ -508,12 +508,14 @@
 <div class="flex-1 overflow-y-auto px-6 pb-6 no-scrollbar">
 <h3 class="filter-category-label">Age Range</h3>
 <div class="flex flex-wrap gap-2">
-<button class="filter-chip active" data-filter-group="age" data-filter-value="young" type="button">Young (18+)</button>
-<button class="filter-chip" data-filter-group="age" data-filter-value="mature" type="button">Mature</button>
+<button class="filter-chip active" data-filter-group="age" data-filter-value="any" type="button">Any age</button>
+<button class="filter-chip" data-filter-group="age" data-filter-value="young" type="button">Young (18–29)</button>
+<button class="filter-chip" data-filter-group="age" data-filter-value="mature" type="button">Mature (30+)</button>
 </div>
 <h3 class="filter-category-label">Art Style</h3>
 <div class="flex flex-wrap gap-2">
-<button class="filter-chip active" data-filter-group="style" data-filter-value="realistic" type="button">Realistic</button>
+<button class="filter-chip active" data-filter-group="style" data-filter-value="any" type="button">Any style</button>
+<button class="filter-chip" data-filter-group="style" data-filter-value="realistic" type="button">Realistic</button>
 <button class="filter-chip" data-filter-group="style" data-filter-value="anime" type="button">Anime</button>
 </div>
 </div>
@@ -1247,12 +1249,24 @@
       return f;
     }
 
+    // "any" means the group is not filtering, so only explicitly chosen
+    // filters can remove a character from the deck. Style/age comparisons
+    // mirror Discover.html so both pages return the same characters.
     function matches(c, f) {
-      if (f.pref && f.pref !== 'everyone' && c.gender && c.gender !== f.pref) return false;
-      if (f.style && c.art_style && c.art_style !== f.style) return false;
+      if (f.pref && f.pref !== 'everyone' && f.pref !== 'any' && c.gender) {
+        var g = String(c.gender).toLowerCase();
+        var want = f.pref === 'female' ? ['female', 'woman', 'women', 'girl']
+                 : f.pref === 'male' ? ['male', 'man', 'men', 'boy']
+                 : [f.pref];
+        if (want.indexOf(g) === -1) return false;
+      }
+      if (f.style && f.style !== 'any' && c.art_style) {
+        if (String(c.art_style).toLowerCase() !== f.style) return false;
+      }
+      var age = parseInt(c.age, 10);
       // Age classifier: under 30 is young, 30 and above is mature.
-      if (f.age === 'young' && c.age >= 30) return false;
-      if (f.age === 'mature' && c.age < 30) return false;
+      if (f.age === 'young' && !isNaN(age) && age >= 30) return false;
+      if (f.age === 'mature' && !isNaN(age) && age < 30) return false;
       return true;
     }
 

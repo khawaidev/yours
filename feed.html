@@ -615,14 +615,11 @@
         return s;
       }
 
+      // Every active character is shown, ranked by the preference scores.
+      // Preferences only reorder the feed: they never hide characters whose
+      // art style or age does not match (Discover shows those too).
       characters = chars
         .map(function (c) { return Object.assign({}, c, { score: score(c) }); })
-        .filter(function (c) {
-          // No gender filtering: every active character is shown, ranked by
-          // the remaining preference scores.
-          if (profile && profile.art_style && c.art_style && c.art_style !== profile.art_style) return false;
-          return true;
-        })
         .sort(function (a, b) { return b.score - a.score; });
 
       render();
