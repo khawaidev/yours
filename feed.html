@@ -387,6 +387,7 @@
   })();
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/api-client.js"></script>
 <script>
   (function () {
     // Same project config as auth.html
@@ -590,11 +591,21 @@
         .maybeSingle();
       if (profileErr) console.warn('profile fetch failed', profileErr);
 
-      // 2) Pull all active characters + their feed media
-      var { data: chars } = await supabase
-        .from('characters')
-        .select('id,name,age,about,gender,personality,message_style,art_style,voice_id,circular_profile_image_url,verified,character_feeds(media_url,media_type)')
-        .eq('is_active', true);
+      // 2) Pull all public characters (same source as Discover)
+      var chars = null;
+      if (window.YoursAPI && YoursAPI.getPublicCharacters) {
+        try {
+          var res = await YoursAPI.getPublicCharacters();
+          chars = (res && res.characters) || null;
+        } catch (e) { console.warn('API.getPublicCharacters failed', e); }
+      }
+      if (!chars) {
+        var { data: sbChars } = await supabase
+          .from('characters')
+          .select('id,name,age,about,gender,personality,message_style,art_style,voice_id,circular_profile_image_url,verified,character_feeds(media_url,media_type)')
+          .eq('is_active', true);
+        chars = sbChars;
+      }
 
       if (!chars || !chars.length) { render(); return; }
 
@@ -630,6 +641,5 @@
 </script>
 <script src="js/animations.js"></script>
 
-<script src="js/api-client.js"></script>
 <script src="js/pwa.js"></script>
 </body></html>
