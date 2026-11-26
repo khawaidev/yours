@@ -543,6 +543,7 @@
         var ch = charsById[conv.characterId] || conv.characterSnapshot;
         if (!ch) continue;
         var last = await window.LocalStore.getLastMessage(conv.id);
+        if (!last) continue;
         out.push({
           id: conv.id,
           character_id: conv.characterId,
@@ -580,7 +581,9 @@
       localConvs.forEach(function (c) { if (c.character_id) localCharIds[c.character_id] = true; });
       allConversations = localConvs.concat(cloudConvs.filter(function (c) {
         return !c.character_id || !localCharIds[c.character_id];
-      }));
+      })).filter(function (c) {
+        return c.last_message && c.last_message.length > 0;
+      });
       allConversations.sort(function (a, b) {
         return new Date(b.last_message_at || 0) - new Date(a.last_message_at || 0);
       });

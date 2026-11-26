@@ -444,7 +444,7 @@
 <!-- Message Input -->
 <div class="flex items-center gap-3">
 <div class="glass-effect flex-1 rounded-3xl flex items-center px-4 py-3 relative">
-<input readonly="" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" class="bg-transparent border-none outline-none w-full min-w-0 text-white placeholder-white/70 focus:ring-0 p-0 pr-12 text-base" id="chat-input" placeholder="Message" type="text" data-1p-ignore="true" data-lpignore="true" data-form-type="other" name="chat_message" aria-autocomplete="none">
+<input readonly="" maxlength="2000" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" class="bg-transparent border-none outline-none w-full min-w-0 text-white placeholder-white/70 focus:ring-0 p-0 pr-12 text-base" id="chat-input" placeholder="Message" type="text" data-1p-ignore="true" data-lpignore="true" data-form-type="other" name="chat_message" aria-autocomplete="none">
 <div class="flex items-center gap-3 absolute right-4">
 <!-- Image uploads are disabled in the chat composer for now. Keep the markup
      commented out (instead of deleted) so it can be restored later.
@@ -1366,6 +1366,7 @@
   function sendMessage() {
     if (sending) return;
     var text = input.value.trim();
+    if (text.length > 2000) text = text.slice(0, 2000);
     var image = pendingImage;
     if (!text && !image) return;
 
