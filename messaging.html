@@ -446,8 +446,11 @@
 <div class="glass-effect flex-1 rounded-3xl flex items-center px-4 py-3 relative">
 <input readonly="" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" class="bg-transparent border-none outline-none w-full min-w-0 text-white placeholder-white/70 focus:ring-0 p-0 pr-12 text-base" id="chat-input" placeholder="Message" type="text" data-1p-ignore="true" data-lpignore="true" data-form-type="other" name="chat_message" aria-autocomplete="none">
 <div class="flex items-center gap-3 absolute right-4">
+<!-- Image uploads are disabled in the chat composer for now. Keep the markup
+     commented out (instead of deleted) so it can be restored later.
 <input accept="image/*" class="hidden" id="chat-image-input" type="file">
-<button aria-label="Attach" class="text-white/80 hover:text-white" id="chat-send-btn" type="button"><i class="fa-solid fa-plus text-lg" id="chat-send-icon"></i></button>
+-->
+<button aria-label="Send" class="text-white/80 hover:text-white" id="chat-send-btn" type="button"><i class="fa-solid fa-paper-plane text-lg" id="chat-send-icon"></i></button>
 </div>
 </div>
 <button class="w-12 h-12 rounded-full glass-effect flex items-center justify-center flex-shrink-0" id="chat-gift-btn" type="button" aria-label="Send gift">
@@ -757,6 +760,9 @@
   var input = document.getElementById('chat-input');
   var sendBtn = document.getElementById('chat-send-btn');
   var sendIcon = document.getElementById('chat-send-icon');
+  // Image uploads are disabled in the chat composer: the file input above is
+  // commented out, so this lookup returns null and the upload handlers below
+  // are inert. The in-field action button now sends the typed message.
   var imageInput = document.getElementById('chat-image-input');
   var backBtn = document.getElementById('chat-back-btn');
   var avatarBtn = document.getElementById('chat-avatar-btn');
@@ -1436,13 +1442,13 @@
   }
 
   // ---- Send button state ----
-  // The img icon always stays a media icon (opens the gallery). The gift icon
-  // swaps to a send button while the keyboard is open, so the user can send a
-  // message (with or without an attached image).
+  // Image uploads are disabled, so the in-field action button is always a
+  // paper-plane that sends the typed message. The gift button still swaps to a
+  // send button while the keyboard is open so mobile users can send from there
+  // too.
   function updateSendIcon() {
     var sendMode = viewportKeyboard || pendingImage;
-    // Icon: always a plus/attach icon, never a send icon.
-    sendIcon.className = 'fa-solid fa-plus';
+    sendIcon.className = 'fa-solid fa-paper-plane';
     sendIcon.style.fontSize = '1.05rem';
     if (sendMode) {
       giftIcon.className = 'fa-solid fa-paper-plane text-white text-xl';
@@ -1745,10 +1751,12 @@
   setupKeyboardDetection();
   if (sendBtn) {
     sendBtn.addEventListener('click', function () {
-      // Always the media icon → open the device gallery.
-      if (imageInput) imageInput.click();
+      // Image uploads are disabled, so the composer's action button sends.
+      sendMessage();
     });
   }
+  // Image upload handler is intentionally disabled while uploads are off. The
+  // file input is commented out above, so this block never runs.
   if (imageInput) {
     imageInput.addEventListener('change', function () {
       var file = imageInput.files && imageInput.files[0];
