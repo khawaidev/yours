@@ -537,7 +537,27 @@
 
     // Skeleton first, then one atomic swap once the new media has downloaded
     // (capped at 2.5s so a slow asset never blocks the swipe).
+    var VIEWED_CACHE_KEY = 'yours_feed_viewed_cache';
+    var MAX_VIEWED_CACHE = 30;
+    var viewedCache = [];
+    try {
+      var savedCache = JSON.parse(sessionStorage.getItem(VIEWED_CACHE_KEY) || '[]');
+      if (Array.isArray(savedCache)) viewedCache = savedCache.slice(-MAX_VIEWED_CACHE);
+    } catch (e) { viewedCache = []; }
+
+    function cacheViewedCharacter(c) {
+      if (!c || !c.id) return;
+      var idx = viewedCache.findIndex(function (x) { return x && x.id === c.id; });
+      if (idx !== -1) viewedCache.splice(idx, 1);
+      viewedCache.push(c);
+      if (viewedCache.length > MAX_VIEWED_CACHE) {
+        viewedCache = viewedCache.slice(viewedCache.length - MAX_VIEWED_CACHE);
+      }
+      try { sessionStorage.setItem(VIEWED_CACHE_KEY, JSON.stringify(viewedCache)); } catch (e) {}
+    }
+
     function showCharacter(c) {
+      cacheViewedCharacter(c);
       var seq = ++renderSeq;
       var feedMedia = c.character_feeds && c.character_feeds.length ? c.character_feeds[0] : null;
       var isVideo = !!(feedMedia && feedMedia.media_type === 'video');
@@ -596,9 +616,37 @@
       });
     }
 
+    var allCharsRef = [];
+    var appendedOthers = false;
+
     function go(step) {
       if (!characters.length) return;
-      current = (current + step + characters.length) % characters.length;
+      if (step < 0) {
+        if (current <= 0) return;
+        current -= 1;
+        render();
+        return;
+      }
+      if (current + 1 < characters.length) {
+        current += 1;
+        render();
+        return;
+      }
+      // Reached the right end: if filtered, append remaining categories from allCharsRef
+      if (!appendedOthers && allCharsRef.length > characters.length) {
+        var seen = {};
+        characters.forEach(function (c) { if (c && c.id) seen[c.id] = true; });
+        var others = allCharsRef.filter(function (c) { return c && !seen[c.id]; });
+        if (others.length) {
+          appendedOthers = true;
+          characters = characters.concat(others);
+          current += 1;
+          render();
+          return;
+        }
+      }
+      // All characters ended: wrap back to the start
+      current = 0;
       render();
     }
 
@@ -608,12 +656,13 @@
     });
 
     // ---- Swipe on the page to move between characters ----
+    // Swipe right (dx > 0) -> next/new character; swipe left (dx < 0) -> previous viewed character.
     var touchX = null;
     document.addEventListener('touchstart', function (e) { touchX = e.changedTouches[0].clientX; }, { passive: true });
     document.addEventListener('touchend', function (e) {
       if (touchX === null) return;
       var dx = e.changedTouches[0].clientX - touchX;
-      if (Math.abs(dx) > 50) go(dx < 0 ? 1 : -1);
+      if (Math.abs(dx) > 50) go(dx > 0 ? 1 : -1);
       touchX = null;
     }, { passive: true });
 
@@ -671,6 +720,14 @@
       var allChars = chars
         .map(function (c) { return Object.assign({}, c, { score: score(c) }); })
         .sort(function (a, b) { return b.score - a.score; });
+      allCharsRef = allChars;
+      // Refresh viewedCache entries with latest backend character data
+      if (viewedCache.length) {
+        var freshById = {};
+        allChars.forEach(function (c) { if (c && c.id) freshById[c.id] = c; });
+        viewedCache = viewedCache.map(function (c) { return (c && c.id && freshById[c.id]) ? freshById[c.id] : c; });
+        try { sessionStorage.setItem(VIEWED_CACHE_KEY, JSON.stringify(viewedCache)); } catch (e) {}
+      }
 
       var activeFilters = { age: 'any', style: 'any', status: 'any' };
       var filterModal = document.getElementById('feed-filter-modal');
@@ -694,6 +751,7 @@
       if (filterBackdrop) filterBackdrop.addEventListener('click', closeFilterModal);
 
       function applyFilters() {
+        appendedOthers = false;
         characters = allChars.filter(function (c) {
           if (activeFilters.age !== 'any') {
             var charAge = parseInt(c.age, 10) || 0;
