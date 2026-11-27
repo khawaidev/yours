@@ -321,14 +321,6 @@
           <button class="feed-filter-opt px-3 py-1.5 rounded-full bg-white/10 text-white/70 font-medium cursor-pointer" data-filter="style" data-value="anime">Anime</button>
         </div>
       </div>
-      <div>
-        <div class="text-xs text-white/60 font-medium mb-2">Status</div>
-        <div class="flex flex-wrap gap-2">
-          <button class="feed-filter-opt px-3 py-1.5 rounded-full bg-white/10 text-white font-medium cursor-pointer" data-filter="status" data-value="any">Any status</button>
-          <button class="feed-filter-opt px-3 py-1.5 rounded-full bg-white/10 text-white/70 font-medium cursor-pointer" data-filter="status" data-value="verified">Verified</button>
-          <button class="feed-filter-opt px-3 py-1.5 rounded-full bg-white/10 text-white/70 font-medium cursor-pointer" data-filter="status" data-value="none">None</button>
-        </div>
-      </div>
     </div>
   </div>
 </div>
@@ -572,9 +564,6 @@
       });
     }
 
-    var allCharsRef = [];
-    var appendedOthers = false;
-
     function go(step) {
       if (!characters.length) return;
       if (step < 0) {
@@ -583,26 +572,7 @@
         render();
         return;
       }
-      if (current + 1 < characters.length) {
-        current += 1;
-        render();
-        return;
-      }
-      // Reached the right end: if filtered, append remaining categories from allCharsRef
-      if (!appendedOthers && allCharsRef.length > characters.length) {
-        var seen = {};
-        characters.forEach(function (c) { if (c && c.id) seen[c.id] = true; });
-        var others = allCharsRef.filter(function (c) { return c && !seen[c.id]; });
-        if (others.length) {
-          appendedOthers = true;
-          characters = characters.concat(others);
-          current += 1;
-          render();
-          return;
-        }
-      }
-      // All characters ended: wrap back to the start
-      current = 0;
+      current = (current + 1 < characters.length) ? current + 1 : 0;
       render();
     }
 
@@ -627,15 +597,7 @@
       var session = (await supabase.auth.getSession()).data.session;
       if (!session) { window.location.href = 'auth.html'; return; }
 
-      // 1) User's profile / onboarding preferences (may not exist yet)
-      var { data: profile, error: profileErr } = await supabase
-        .from('user_profiles')
-        .select('age_interest, personality_interest, art_style, women_type_interest')
-        .eq('id', session.user.id)
-        .maybeSingle();
-      if (profileErr) console.warn('profile fetch failed', profileErr);
-
-      // 2) Pull all public characters (same source as Discover)
+      // Pull all public characters (same source as Discover)
       var chars = null;
       if (window.YoursAPI && YoursAPI.getPublicCharacters) {
         try {
@@ -653,30 +615,7 @@
 
       if (!chars || !chars.length) { render(); return; }
 
-      // 3) Personality preference is stored with the same enum vocabulary as
-      //    the characters.personality column ('the_sweetheart', 'the_tease',
-      //    'the_dominant', 'the_submissive', 'the_mysterious') — compare directly.
-      var preferredPersonality = (profile && profile.personality_interest) || null;
-
-      function score(c) {
-        var s = 0;
-        if (preferredPersonality && c.personality === preferredPersonality) s += 0.5;
-        if (profile && profile.art_style && c.art_style === profile.art_style) s += 0.2;
-        if (profile && profile.age_interest) {
-          // Age classifier: under 30 is young, 30 and above is mature.
-          var isYoung = c.age < 30;
-          if ((profile.age_interest === 'young' && isYoung) || (profile.age_interest === 'mature' && !isYoung)) s += 0.2;
-        }
-        return s;
-      }
-
-      // Every active character is shown, ranked by the preference scores.
-      // Preferences only reorder the feed: they never hide characters whose
-      // art style or age does not match (Discover shows those too).
-      var allChars = chars
-        .map(function (c) { return Object.assign({}, c, { score: score(c) }); })
-        .sort(function (a, b) { return b.score - a.score; });
-      allCharsRef = allChars;
+      var allChars = chars.slice();
       // Refresh viewedCache entries with latest backend character data
       if (viewedCache.length) {
         var freshById = {};
@@ -685,7 +624,7 @@
         try { sessionStorage.setItem(VIEWED_CACHE_KEY, JSON.stringify(viewedCache)); } catch (e) {}
       }
 
-      var activeFilters = { age: 'any', style: 'any', status: 'any' };
+      var activeFilters = { age: 'any', style: 'any' };
       var filterModal = document.getElementById('feed-filter-modal');
       var filterBtn = document.getElementById('feed-filter-btn');
       var filterClose = document.getElementById('feed-filter-close');
@@ -707,7 +646,6 @@
       if (filterBackdrop) filterBackdrop.addEventListener('click', closeFilterModal);
 
       function applyFilters() {
-        appendedOthers = false;
         characters = allChars.filter(function (c) {
           if (activeFilters.age !== 'any') {
             var charAge = parseInt(c.age, 10) || 0;
@@ -718,15 +656,10 @@
             var charStyle = (c.art_style || '').toLowerCase();
             if (charStyle !== activeFilters.style) return false;
           }
-          if (activeFilters.status !== 'any') {
-            var isVerified = c.verified === true;
-            if (activeFilters.status === 'verified' && !isVerified) return false;
-            if (activeFilters.status === 'none' && isVerified) return false;
-          }
           return true;
         });
         if (filterDot) {
-          var hasFilter = activeFilters.age !== 'any' || activeFilters.style !== 'any' || activeFilters.status !== 'any';
+          var hasFilter = activeFilters.age !== 'any' || activeFilters.style !== 'any';
           filterDot.classList.toggle('hidden', !hasFilter);
         }
         current = 0;
