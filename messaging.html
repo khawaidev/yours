@@ -2009,7 +2009,7 @@
     // Fallback: first active character, so the page never shows an empty shell.
     supabase
       .from('characters')
-      .select('id,name,age,about,gender,personality,art_style,voice_id,circular_profile_image_url,verified,character_feeds(media_url,media_type)')
+      .select('id,name,age,about,gender,personality,art_style,voice_id,circular_profile_image_url,character_feeds(media_url,media_type)')
       .eq('is_active', true)
       .order('created_at', { ascending: true })
       .limit(1)

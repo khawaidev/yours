@@ -425,11 +425,6 @@
   var newChatBtn = document.getElementById('new-chat-btn');
   if (newChatBtn) newChatBtn.addEventListener('click', function () { window.location.href = 'index.html'; });
 
-  // Twitter-style verified seal (blue burst + white tick) when c.verified === true.
-  function verifiedBadge(v) {
-    return v === true ? '<svg viewBox="0 0 24 24" width="17" height="17" style="display:inline-block;vertical-align:-3px;margin-left:4px" role="img" aria-label="Verified"><path fill="#1d9bf0" d="M12 1.6l2.9 2 3.5-.5 1.3 3.3 3.3 1.3-.5 3.5 2 2.9-2 2.9.5 3.5-3.3 1.3-1.3 3.3-3.5-.5-2.9 2-2.9-2-3.5.5-1.3-3.3L1.1 19l.5-3.5-2-2.9 2-2.9-.5-3.5L4.4 4.9l1.3-3.3 3.5.5z"/><path fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="M8 12.2l2.6 2.6 5.2-5.4"/></svg>' : '';
-  }
-
   // ---- Search: live results from the DB character catalog ----
   function esc(s) {
     return String(s == null ? '' : s).replace(/[&<>"']/g, function (m) {
@@ -473,7 +468,7 @@
       var img = avatarImage(c);
       row.innerHTML =
         '<button class="relative shrink-0 rounded-full p-[2.5px] bg-gradient-to-r from-[#ff7e5f] to-[#ff4d6d] active:scale-95 transition-transform" type="button"><span class="block bg-[#131313] rounded-full p-[2.5px]"><img class="w-[56px] h-[56px] rounded-full object-cover" alt="' + esc(c.name || '') + ' avatar" src="' + esc(img) + '"></span></button>' +
-        '<div class="flex-1 min-w-0"><h3 class="font-label-md text-label-md text-white truncate pr-2">' + esc(nameAge) + verifiedBadge(c.verified) + '</h3>' +
+        '<div class="flex-1 min-w-0"><h3 class="font-label-md text-label-md text-white truncate pr-2">' + esc(nameAge) + '</h3>' +
         '<p class="font-body-md text-body-md text-white/70 truncate">' + esc(preview(sub)) + '</p></div>';
       row.addEventListener('click', function () { openChat(c); });
       resultsEl.appendChild(row);
@@ -531,7 +526,7 @@
         try {
           var res = await supabase
             .from('characters')
-            .select('id,name,age,about,gender,personality,art_style,voice_id,circular_profile_image_url,verified,character_feeds(media_url,media_type)')
+            .select('id,name,age,about,gender,personality,art_style,voice_id,circular_profile_image_url,character_feeds(media_url,media_type)')
             .in('id', ids);
           (res.data || []).forEach(function (c) { charsById[c.id] = c; });
         } catch (e) { /* offline: rows without a character are skipped */ }
